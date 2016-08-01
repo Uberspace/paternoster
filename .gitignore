@@ -49,3 +49,6 @@ coverage.xml
 venv/
 ENV/
 
+# ansible retry files
+*.retry
+
