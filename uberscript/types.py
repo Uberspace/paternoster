@@ -6,6 +6,8 @@ import tldextract
 def domain(val):
   val = val.encode('idna').decode('ascii')
 
+  if any(map(lambda p: len(p) > 63, val.split('.'))) or len(val) > 255:
+    raise ValueError('domain too long')
   if not re.match(r'^([a-zA-Z0-9](?:(?:[a-zA-Z0-9-]*|(?<!-)\.(?![-.]))*[a-zA-Z0-9]+)?)$', val):
     raise ValueError('invalid domain')
   if not tldextract.extract(val).suffix:
