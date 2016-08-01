@@ -60,7 +60,7 @@ UberScript only adds a couple of special types, which can be used by
 referencing the as `uberscript.types.<name>`.
 
 | Name | Category | Description |
-| ---- | ----------- |
+| ---- | -------- | ----------- |
 | `domain` | normal | a domain with valid length, format and tld |
 | `restricted_str` | factory | string which only allows certain characters given in regex-format (e.g. `a-z0-9`) |
 
