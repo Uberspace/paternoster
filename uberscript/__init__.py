@@ -74,7 +74,7 @@ class UberScript:
     args = parser.parse_args()
     self._check_arg_dependencies(parser, args)
 
-    self.args = args
+    self._parsed_args = args
 
   def execute_playbook(self):
     results_callback = ResultCallback()
@@ -84,6 +84,9 @@ class UberScript:
     inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=['localhost'])
     variable_manager.set_inventory(inventory)
     variable_manager.set_host_variable(inventory.localhost, 'ansible_python_interpreter', sys.executable)
+
+    for name in vars(self._parsed_args):
+      variable_manager.set_host_variable(inventory.localhost, 'ubrspc_' + name, getattr(self._parsed_args, name))
 
     pbex = PlaybookExecutor(
       playbooks=[self.playbook],
