@@ -14,7 +14,7 @@ more complicated checks like domain-validity).
 
 # Script-Development
 
-```
+```python
 #!/bin/env python2
 
 import uberscript
@@ -41,16 +41,16 @@ Only the most important ones are listed here:
 
 | Name | Description |
 | ---- | ----------- |
-| help | short text to describe the parameter in more detail |
-| type | used to sanity-check the given value (e.g. "is this really a domain?") |
-| action | can be used to create flag-arguments, when set to `store_true` or `store_false` |
-| required | enforce the presence of certain argments |
+| `help` | short text to describe the parameter in more detail |
+| `type` | used to sanity-check the given value (e.g. "is this really a domain?") |
+| `action` | can be used to create flag-arguments, when set to `store_true` or `store_false` |
+| `required` | enforce the presence of certain argments |
 
 There is a small number of arguments added by UberScript:
 
 | Name | Description |
 | ---- | ----------- |
-| depends | makes this argument depend on the presence of another one |
+| `depends` | makes this argument depend on the presence of another one |
 
 ### Types
 
@@ -61,8 +61,8 @@ referencing the as `uberscript.types.<name>`.
 
 | Name | Category | Description |
 | ---- | ----------- |
-| domain | normal | a domain with valid length, format and tld |
-| restricted_str | factory | string which only allows certain characters given in regex-format (e.g. `a-z0-9`) |
+| `domain` | normal | a domain with valid length, format and tld |
+| `restricted_str` | factory | string which only allows certain characters given in regex-format (e.g. `a-z0-9`) |
 
 All custom types fall into one of two categories: "normal" or "factory".
 Normal types can be supplied just as they are: `'type': uberscript.types.domain`.
@@ -77,7 +77,7 @@ tests.
 ## Setup
 To get a basic environment up and running, use the following commands:
 
-```
+```bash
 virtualenv venv --python python2
 source venv/bin/activate
 pip install -r requirements.txt
