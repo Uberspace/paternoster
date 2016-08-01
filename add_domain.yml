@@ -2,4 +2,4 @@
 - name: test play
   hosts: all
   tasks:
-    - debug: msg=foo
+    - debug: var=ubrspc_domain
