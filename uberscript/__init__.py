@@ -53,6 +53,10 @@ class UberScript:
           )
         )
 
+  def auto(self):
+    self.parse_args()
+    self.execute_playbook()
+
   def parse_args(self):
     parser = self._build_argparser()
 
