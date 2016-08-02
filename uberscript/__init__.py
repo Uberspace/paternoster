@@ -63,7 +63,8 @@ class UberScript:
 
   def become_root(self):
     if os.geteuid() != 0:
-        os.execvp('sudo', ['sudo', '--non-interactive', '--'] + sys.argv)
+        # -n disables password prompt, when sudo isn't configured properly
+        os.execvp('sudo', ['sudo', '-n', '--'] + sys.argv)
 
   def parse_args(self, args=None):
     parser = self._build_argparser()
