@@ -1,6 +1,7 @@
 import argparse
 import sys
 import os
+import os.path
 import json
 from collections import namedtuple
 
@@ -72,7 +73,15 @@ class UberScript:
 
     self._parsed_args = args
 
-  def execute_playbook(self):
+  def _check_playbook(self):
+    if not self.playbook:
+      raise ValueError('no playbook given')
+    if not os.path.isabs(self.playbook):
+      raise ValueError('path to playbook must be absolute')
+    if not os.path.isfile(self.playbook):
+      raise ValueError('playbook must exist and must not be a link')
+
+  def _get_playbook_executor(self):
     variable_manager = VariableManager()
     loader = DataLoader()
     inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=['localhost'])
@@ -82,7 +91,7 @@ class UberScript:
     for name in vars(self._parsed_args):
       variable_manager.set_host_variable(inventory.localhost, 'ubrspc_' + name, getattr(self._parsed_args, name))
 
-    pbex = PlaybookExecutor(
+    return PlaybookExecutor(
       playbooks=[self.playbook],
       inventory=inventory,
       variable_manager=variable_manager,
@@ -97,4 +106,6 @@ class UberScript:
       passwords={},
     )
 
-    pbex.run()
+  def execute_playbook(self):
+    self._check_playbook()
+    self._get_playbook_executor().run()
