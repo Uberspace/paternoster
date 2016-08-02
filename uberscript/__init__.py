@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 import json
 from collections import namedtuple
 
@@ -53,9 +54,15 @@ class UberScript:
           )
         )
 
-  def auto(self):
+  def auto(self, root=True):
+    if root:
+      self.become_root()
     self.parse_args()
     self.execute_playbook()
+
+  def become_root(self):
+    if os.geteuid() != 0:
+        os.execvp('sudo', ['sudo', '--non-interactive', '--'] + sys.argv)
 
   def parse_args(self, args=None):
     parser = self._build_argparser()

@@ -31,5 +31,6 @@ s = uberscript.UberScript(
   ],
 )
 
+s.become_root()
 s.parse_args()
 s.execute_playbook()
