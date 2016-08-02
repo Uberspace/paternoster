@@ -15,7 +15,7 @@ import pytest
 ])
 def test_type_domain(value, valid):
   from ..types import domain
-  
+
   if not valid:
     with pytest.raises(ValueError):
       domain(value)
@@ -32,9 +32,9 @@ def test_type_domain(value, valid):
 ])
 def test_type_restricted_str(param, value, valid):
   from ..types import restricted_str
-  
+
   check = restricted_str(param)
-  
+
   if not valid:
     with pytest.raises(ValueError):
       check(value)
