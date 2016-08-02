@@ -81,6 +81,16 @@ All custom types fall into one of two categories: "normal" or "factory".
 Normal types can be supplied just as they are: `'type': uberscript.types.domain`.
 Factory types require additional parameters to work properly: `'type': uberscript.types.restricted_str('a-z0-9')`.
 
+### Custom Types
+
+Just like UberScripts implemets a couple custom types, the developer of
+a script can do the same. The argparse library is very flexible in this
+regard, so it should even be possible to parse and validate x509-certificates,
+before passing their content to ansible, instead of their path.
+
+For further details refer to the `types.py`-file within UberScript or
+the [documentation of argparse itself](https://docs.python.org/2/library/argparse.html#type).
+
 # Library-Development
 
 This project uses python 2.7, because python 3.x is not supported by
