@@ -12,6 +12,19 @@ contents and passes them on to a given ansible playbook via the ansible
 python module. All parameters are checked for proper types (including
 more complicated checks like domain-validity).
 
+## Security
+
+This library is a small-ish wrapper around pythons battle-tested [argparse](https://docs.python.org/2/library/argparse.html)
+and the ansible api. Arguments are passed to argparse for evaluation.
+All standard-types like integers are handled by the python standard
+library. Special types like domains are implemented within UberScript.
+Once argparse has finished UberScript relies on the ansible API to
+execute the given playbook. All parameters are passed safely as variables.
+
+Before parsing parameters UberScript executes itself as root via sudo.
+Combined with a proper sudoers-config this ensures that the script has
+not been copied somewhere else is unmodified.
+
 # Script-Development
 
 ```python
