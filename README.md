@@ -27,6 +27,8 @@ not been copied somewhere else is unmodified.
 
 # Script-Development
 
+A typical boilerplate for UberScript looks like this:
+
 ```python
 #!/bin/env python2
 
@@ -34,7 +36,7 @@ import uberscript
 import uberscript.types
 
 uberscript.UberScript(
-  playbook='add_domain.yml',
+  playbook='/opt/uberspace/playbooks/user/add_domain.yml',
   parameters=[
     ('domain', 'd', {
       'help': 'this is the domain to add to your uberspace',
@@ -43,6 +45,10 @@ uberscript.UberScript(
   ],
 ).auto()
 ```
+
+The `auto()`-method-call executes all neccesary steps (become root, parse
+arguments, execute playbook) at once. Becoming root can be skipped by
+calling the method like `auto(root=False)`.
 
 ## Parameters
 
