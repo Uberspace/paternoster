@@ -85,6 +85,5 @@ pip install -r requirements.txt
 
 ## Tests
 The functionality of this library can be tested using pytest:
-
-```
-```
+`py.test uberscript`. New tests should be added to the `uberscript/test`-
+directory.
