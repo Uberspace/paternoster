@@ -2,6 +2,7 @@
 - name: install python
   hosts: all
   become: yes
+  tags: setup
   tasks:
     - name: install shelltools and python
       yum: pkg={{ item }} state=installed
@@ -18,6 +19,7 @@
 - name: setup python module
   hosts: all
   become: yes
+  tags: setup
   tasks:
     - command: python setup.py develop
       args:
@@ -27,6 +29,7 @@
 - name: deploy test scripts
   hosts: all
   become: yes
+  tags: scripts
   tasks:
     - name: deploy script
       copy: src={{ item }} dest=/usr/local/bin/{{ item|basename }} mode=0775
