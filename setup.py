@@ -7,8 +7,8 @@ setup(name='uberscript',
       author_email='ml@jonaspasche.com',
       packages=['uberscript'],
       install_requires=[
-        'tldextract==2.0.1',
+        'tldextract>=2.0.1',
         'ansible==2.1.1.0',
-        'pytest==2.9.2',
+        'pytest>=2.9.2',
       ],
       zip_safe=False)
