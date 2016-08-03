@@ -101,9 +101,11 @@ the [documentation of argparse itself](https://docs.python.org/2/library/argpars
 
 # Library-Development
 
-This project uses python 2.7, because python 3.x is not supported by
-ansible. It is tested using pytest. There are both unit and end-to-end
-tests.
+Most tasks (including adding new types) can be achieved by writing
+scripts only. Therefore, the library does not need to be changed in most
+cases. Sometimes it might be desirable to provide a new type or feature
+to all other scripts. To fulfill these needs, the following section
+outlines the setup and development process for library.
 
 ## Setup
 To get a basic environment up and running, use the following commands:
@@ -113,6 +115,10 @@ virtualenv venv --python python2.7
 source venv/bin/activate
 python setup.py develop
 ```
+
+This project uses python 2.7, because python 3.x is not yet supported by
+ansible. All code within this library is written to suppor both python 2
+and 3, so it's possible to make the switch, once ansible does.
 
 ### Vagrant
 
