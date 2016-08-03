@@ -30,7 +30,7 @@ not been copied somewhere else and is unmodified.
 A typical boilerplate for UberScript looks like this:
 
 ```python
-#!/bin/env python2
+#!/bin/env python2.7
 
 import uberscript
 import uberscript.types
@@ -109,7 +109,7 @@ tests.
 To get a basic environment up and running, use the following commands:
 
 ```bash
-virtualenv venv --python python2
+virtualenv venv --python python2.7
 source venv/bin/activate
 python setup.py develop
 ```
