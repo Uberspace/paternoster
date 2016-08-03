@@ -131,6 +131,10 @@ Last login: Wed Aug  3 17:23:02 2016 from 10.0.2.2
 PLAY [test play] ************** (...)
 ```
 
+If you want to add your own scripts, just add the corresponding files in
+`vagrant/files/playbooks` and `vagrant/files/scripts`. You can deploy it
+using the `ansible-playbook vagrant/site.yml --tags scripts` command.
+
 ## Tests
 The functionality of this library can be tested using pytest:
 `py.test uberscript`. New tests should be added to the `uberscript/test`-
