@@ -23,7 +23,7 @@ execute the given playbook. All parameters are passed safely as variables.
 
 Before parsing parameters UberScript executes itself as root via sudo.
 Combined with a proper sudoers-config this ensures that the script has
-not been copied somewhere else is unmodified.
+not been copied somewhere else and is unmodified.
 
 # Script-Development
 
