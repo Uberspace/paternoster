@@ -1,0 +1,5 @@
+---
+- name: test play
+  hosts: all
+  tasks:
+    - debug: var=ubrspc_domain

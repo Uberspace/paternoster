@@ -1,0 +1,41 @@
+---
+- name: install python
+  hosts: all
+  become: yes
+  tasks:
+    - name: install shelltools and python
+      yum: pkg={{ item }} state=installed
+      with_items:
+        - nano
+        - gcc
+        - openssl-devel
+        - python-devel
+        - python-setuptools
+
+    - name: install pip2
+      easy_install: name=pip
+
+- name: install python module
+  hosts: all
+  become: yes
+  tasks:
+    - name: install uberscript
+      pip: name=/vagrant
+
+- name: deploy test scripts
+  hosts: all
+  become: yes
+  tasks:
+    - name: deploy script
+      copy: src={{ item }} dest=/usr/local/bin/{{ item|basename }} mode=0775
+      with_fileglob: files/scripts/*
+
+    - name: sudoers configs
+      template: src=sudoers.j2 dest=/etc/sudoers.d/{{ item|basename }}
+      with_fileglob: files/scripts/*
+
+    - name: create playbook dir
+      file: state=directory name=/opt/uberspace/playbooks/
+    - name: deploy playbook
+      copy: src={{ item }} dest=/opt/uberspace/playbooks/{{ item|basename }}
+      with_fileglob: files/playbooks/*

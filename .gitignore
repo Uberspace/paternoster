@@ -52,3 +52,6 @@ ENV/
 # ansible retry files
 *.retry
 
+# vagrant
+.vagrant/
+

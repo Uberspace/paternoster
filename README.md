@@ -112,6 +112,25 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+Most features can be tested using a virtualenv only. If your development
+relies on the sudo-mechanism, you can spin up a vagrant VM which provides
+a dummy `uberspace-add-domain`-script as well as the library-code in the
+`/vagrant`-directory.
+
+```bash
+vagrant up
+vagrant ssh
+```
+
+inside the host:
+
+```
+Last login: Wed Aug  3 17:23:02 2016 from 10.0.2.2
+[vagrant@localhost ~]$ uberspace-add-domain -d a.com
+
+PLAY [test play] ************** (...)
+```
+
 ## Tests
 The functionality of this library can be tested using pytest:
 `py.test uberscript`. New tests should be added to the `uberscript/test`-
