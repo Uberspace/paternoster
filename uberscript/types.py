@@ -8,7 +8,7 @@ def domain(val):
 
   if any(map(lambda p: len(p) > 63, val.split('.'))) or len(val) > 255:
     raise ValueError('domain too long')
-  if not re.match(r'^([a-zA-Z0-9](?:(?:[a-zA-Z0-9-]*|(?<!-)\.(?![-.]))*[a-zA-Z0-9]+)?)$', val):
+  if not re.match(r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$', val):
     raise ValueError('invalid domain')
   if not tldextract.extract(val).suffix:
     raise ValueError('invalid domain suffix')
