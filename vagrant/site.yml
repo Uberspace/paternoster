@@ -15,12 +15,14 @@
     - name: install pip2
       easy_install: name=pip
 
-- name: install python module
+- name: setup python module
   hosts: all
   become: yes
   tasks:
-    - name: install uberscript
-      pip: name=/vagrant
+    - command: python setup.py develop
+      args:
+        chdir: /vagrant
+        creates: /usr/lib/python2.7/site-packages/uberscript.egg-link
 
 - name: deploy test scripts
   hosts: all

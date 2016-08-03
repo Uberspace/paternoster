@@ -109,7 +109,7 @@ To get a basic environment up and running, use the following commands:
 ```bash
 virtualenv venv --python python2
 source venv/bin/activate
-pip install -r requirements.txt
+python setup.py develop
 ```
 
 Most features can be tested using a virtualenv only. If your development
