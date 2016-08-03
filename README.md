@@ -113,7 +113,7 @@ pip install -r requirements.txt
 ```
 
 Most features can be tested using a virtualenv only. If your development
-relies on the sudo-mechanism, you can spin up a vagrant VM which provides
+relies on the sudo-mechanism, you can spin up a [vagrant VM](https://vagrantup.com) which provides
 a dummy `uberspace-add-domain`-script as well as the library-code in the
 `/vagrant`-directory.
 
