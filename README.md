@@ -5,8 +5,8 @@ execute ansible playbooks as root.
 
 # Theory of Operation
 
-The developer writes a small python script (10-30 lines, mostly
-definitions) which initializes UberScript. Following a method call the
+The developer writes a small python script (10-30 lines, most of which
+is a `dict`) which initializes UberScript. Following a method call the
 library takes over, parses user-given arguments, validates their
 contents and passes them on to a given ansible playbook via the ansible
 python module. All parameters are checked for proper types (including
@@ -48,7 +48,9 @@ uberscript.UberScript(
 
 The `auto()`-method-call executes all neccesary steps (become root, parse
 arguments, execute playbook) at once. Becoming root can be skipped by
-calling the method like `auto(root=False)`.
+calling the method like `auto(root=False)`. This can be used to create
+commands, which only affect the users home-directory (e.g. installation
+of a private pgsql instance).
 
 ## Parameters
 
