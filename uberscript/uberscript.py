@@ -92,7 +92,7 @@ class UberScript:
   def become_root(self):
     if os.geteuid() != 0:
       # -n disables password prompt, when sudo isn't configured properly
-      os.execvp('sudo', ['sudo', '-n', '--'] + sys.argv)
+      os.execv('/usr/bin/sudo', ['/usr/bin/sudo', '-n', '--'] + sys.argv)
     else:
       sudouser = os.environ.get('SUDO_USER', None)
       # $SUDO_USER is set directly by sudo, so users should not be alble
