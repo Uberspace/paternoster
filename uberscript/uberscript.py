@@ -11,6 +11,7 @@ from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
 from ansible.plugins.callback import CallbackBase
+import ansible.constants
 
 Options = namedtuple('Options', ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check', 'listhosts', 'listtasks', 'listtags', 'syntax'])
 
@@ -132,6 +133,8 @@ class UberScript:
       ),
       passwords={},
     )
+
+    ansible.constants.RETRY_FILES_ENABLED = False
 
     if not self._parsed_args.verbose:
       # ansible doesn't provide a proper API to overwrite this,
