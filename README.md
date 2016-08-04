@@ -100,6 +100,31 @@ before passing their content to ansible, instead of their path.
 For further details refer to the `types.py`-file within UberScript or
 the [documentation of argparse itself](https://docs.python.org/2/library/argparse.html#type).
 
+## Status Reporting
+
+There are multiple ways to let the user know, what's going on:
+
+### Failure
+
+You can use the [`fail`-module](http://docs.ansible.com/ansible/fail_module.html)
+to display a error message to the user. The `msg` option will be written
+to stderr as-is, followed by an immediate exit of the script with exit-
+code `1`.
+
+### Success
+
+To display a customized message when the playbook executes successfully
+just set the `success_msg`-attribute of `UberScript`, just as demonstrated
+in the boilerplate above. The message will be written to stdout as-is.
+
+### Progress Messages
+
+If you want to inform the user about the current task your playbook is
+executing, you can use the [`debug`-module](http://docs.ansible.com/ansible/debug_module.html).
+All messages sent by this module are written to stdout as-is. Note that
+only messages with the default `verbosity` value will be shown. All 
+other verbosity-levels can be used for actual debugging.
+
 # Library-Development
 
 Most tasks (including adding new types) can be achieved by writing
