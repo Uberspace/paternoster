@@ -108,12 +108,10 @@ class UberScript:
     self._parsed_args = args
 
   def _get_playbook_variables(self):
-    PREFIX= 'ubrspc_'
-
     if self._sudouser:
-      yield (PREFIX + 'sudouser', self._sudouser)
+      yield ('sudouser', self._sudouser)
     for name in vars(self._parsed_args):
-      yield (PREFIX + name, getattr(self._parsed_args, name))
+      yield ('param_' + name, getattr(self._parsed_args, name))
 
   def _check_playbook(self):
     if not self.playbook:

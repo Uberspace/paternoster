@@ -2,4 +2,4 @@
 - name: test play
   hosts: all
   tasks:
-    - debug: msg="Trying to add '{{ ubrspc_domain }}' to your space."
+    - debug: msg="Trying to add '{{ param_domain }}' to your space."

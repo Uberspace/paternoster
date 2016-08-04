@@ -125,6 +125,19 @@ All messages sent by this module are written to stdout as-is. Note that
 only messages with the default `verbosity` value will be shown. All 
 other verbosity-levels can be used for actual debugging.
 
+## Variables
+
+All arguments to the script are passed to ansible as variables with the
+`param_`-prefix. This means that `--domain foo.com` becomes the variable
+`param_domain` with value `foo.com`.
+
+There are a few special variables to provide the playbook further
+details about the environment it's in:
+
+| Name | Description |
+| ---- | ----------- |
+| `sudouser` | the user who executed the script originally. If the script is not configured to run as root, this variable does not exist. |
+
 # Library-Development
 
 Most tasks (including adding new types) can be achieved by writing
