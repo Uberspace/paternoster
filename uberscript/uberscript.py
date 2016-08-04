@@ -15,8 +15,6 @@ from ansible.vars import VariableManager
 from ansible.plugins.callback import CallbackBase
 import ansible.constants
 
-Options = namedtuple('Options', ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check', 'listhosts', 'listtasks', 'listtags', 'syntax'])
-
 
 class MinimalAnsibleCallback(CallbackBase):
   """ filters out all ansible messages except for playbook fails and debug-module-calls. """
@@ -35,6 +33,7 @@ class MinimalAnsibleCallback(CallbackBase):
       if 'msg' in args:
         print(args['msg'])
 
+
 class UberScript:
 
   def __init__(self, playbook, parameters, success_msg='executed successfully'):
@@ -42,12 +41,12 @@ class UberScript:
     self.parameters = parameters
     self.success_msg = success_msg
     self._sudouser = None
-  
+
   def _find_param(self, fname):
     for name, short, param in self.parameters:
       if name == fname or short == fname:
         return (name, short, param)
-  
+
   def _build_argparser(self):
     parser = argparse.ArgumentParser(add_help=False)
     requiredArgs = parser.add_argument_group('required arguments')
@@ -61,7 +60,7 @@ class UberScript:
     for name, short, param in self.parameters:
       argParams = param.copy()
       argParams.pop('depends', None)
-      
+
       if param.get('required', False):
         requiredArgs.add_argument('-' + short, '--' + name, **argParams)
       else:
@@ -91,15 +90,15 @@ class UberScript:
 
   def become_root(self):
     if os.geteuid() != 0:
-        # -n disables password prompt, when sudo isn't configured properly
-        os.execvp('sudo', ['sudo', '-n', '--'] + sys.argv)
+      # -n disables password prompt, when sudo isn't configured properly
+      os.execvp('sudo', ['sudo', '-n', '--'] + sys.argv)
     else:
-        sudouser = os.environ.get('SUDO_USER', None)
-        if sudouser and re.match('[a-z][a-z0-9]{0,20}', sudouser):
-          self._sudouser = sudouser
-        else:
-          print('invalid username', file=sys.stderr)
-          sys.exit(1)
+      sudouser = os.environ.get('SUDO_USER', None)
+      if sudouser and re.match('[a-z][a-z0-9]{0,20}', sudouser):
+        self._sudouser = sudouser
+      else:
+        print('invalid username', file=sys.stderr)
+        sys.exit(1)
 
   def parse_args(self, args=None):
     parser = self._build_argparser()
@@ -125,6 +124,8 @@ class UberScript:
       raise ValueError('playbook must exist and must not be a link')
 
   def _get_playbook_executor(self):
+    Options = namedtuple('Options', ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check', 'listhosts', 'listtasks', 'listtags', 'syntax'])
+
     variable_manager = VariableManager()
     loader = DataLoader()
     inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=['localhost'])
