@@ -162,7 +162,7 @@ inside the host:
 
 ```
 Last login: Wed Aug  3 17:23:02 2016 from 10.0.2.2
-[vagrant@localhost ~]$ uberspace-add-domain -d a.com
+[vagrant@localhost ~]$ uberspace-add-domain -d a.com -v
 
 PLAY [test play] ************** (...)
 ```
