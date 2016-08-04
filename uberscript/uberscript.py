@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import sys
 import os
@@ -20,7 +22,7 @@ class DevNullCallback(CallbackBase):
   def v2_runner_on_failed(self, result, ignore_errors=False):
     msg = result._result.get('msg', None)
     if msg:
-      print(msg)
+      print(msg, file=sys.stderr)
 
 
 class UberScript:
@@ -86,7 +88,7 @@ class UberScript:
         if sudouser and re.match('[a-z][a-z0-9]{0,20}', sudouser):
           self._sudouser = sudouser
         else:
-          print('invalid username')
+          print('invalid username', file=sys.stderr)
           sys.exit(1)
 
   def parse_args(self, args=None):
