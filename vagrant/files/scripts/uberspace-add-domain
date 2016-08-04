@@ -25,4 +25,5 @@ s = uberscript.UberScript(
       'depends': 'mailserver',
     }),
   ],
+  success_msg='Your domain has been added successfully.',
 ).auto()

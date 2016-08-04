@@ -17,14 +17,18 @@ Options = namedtuple('Options', ['connection', 'module_path', 'forks', 'become',
 
 
 class DevNullCallback(CallbackBase):
-  pass
+  def v2_runner_on_failed(self, result, ignore_errors=False):
+    msg = result._result.get('msg', None)
+    if msg:
+      print(msg)
 
 
 class UberScript:
 
-  def __init__(self, playbook, parameters):
+  def __init__(self, playbook, parameters, success_msg='executed successfully'):
     self.playbook = playbook
     self.parameters = parameters
+    self.success_msg = success_msg
     self._sudouser = None
   
   def _find_param(self, fname):
@@ -147,4 +151,9 @@ class UberScript:
 
   def execute_playbook(self):
     self._check_playbook()
-    self._get_playbook_executor().run()
+    status = self._get_playbook_executor().run()
+    if status == 0:
+      print(self.success_msg)
+      return True
+    else:
+      return False

@@ -43,6 +43,7 @@ uberscript.UberScript(
       'type': uberscript.types.domain,
     }),
   ],
+  success_msg='Your domain has been added successfully.',
 ).auto()
 ```
 
