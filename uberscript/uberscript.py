@@ -110,6 +110,7 @@ class UberScript:
   def _get_playbook_variables(self):
     if self._sudouser:
       yield ('sudouser', self._sudouser)
+    yield ('scriptname', os.path.basename(sys.argv[0]))
     for name in vars(self._parsed_args):
       yield ('param_' + name, getattr(self._parsed_args, name))
 

@@ -137,6 +137,7 @@ details about the environment it's in:
 | Name | Description |
 | ---- | ----------- |
 | `sudouser` | the user who executed the script originally. If the script is not configured to run as root, this variable does not exist. |
+| `scriptname` | the filename of the script, which is currently executed (e.g. `uberspace-add-domain`) |
 
 # Library-Development
 
