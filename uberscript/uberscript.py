@@ -18,7 +18,9 @@ import ansible.constants
 Options = namedtuple('Options', ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check', 'listhosts', 'listtasks', 'listtags', 'syntax'])
 
 
-class DevNullCallback(CallbackBase):
+class MinimalAnsibleCallback(CallbackBase):
+  """ filters out all ansible messages except for playbook fails and debug-module-calls. """
+
   def v2_runner_on_failed(self, result, ignore_errors=False):
     msg = result._result.get('msg', None)
     if msg:
@@ -154,7 +156,7 @@ class UberScript:
       # if you're using PlaybookExecutor instead of initializing
       # the TaskQueueManager (_tqm) yourself, like in the offical
       # example.
-      pexec._tqm._stdout_callback = DevNullCallback()
+      pexec._tqm._stdout_callback = MinimalAnsibleCallback()
 
     return pexec
 
