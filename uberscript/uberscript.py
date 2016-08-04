@@ -3,6 +3,7 @@ import sys
 import os
 import os.path
 import json
+import re
 from collections import namedtuple
 
 from ansible.executor.playbook_executor import PlaybookExecutor
@@ -23,6 +24,7 @@ class UberScript:
   def __init__(self, playbook, parameters):
     self.playbook = playbook
     self.parameters = parameters
+    self._sudouser = None
   
   def _find_param(self, fname):
     for name, short, param in self.parameters:
@@ -74,6 +76,13 @@ class UberScript:
     if os.geteuid() != 0:
         # -n disables password prompt, when sudo isn't configured properly
         os.execvp('sudo', ['sudo', '-n', '--'] + sys.argv)
+    else:
+        sudouser = os.environ.get('SUDO_USER', None)
+        if sudouser and re.match('[a-z][a-z0-9]{0,20}', sudouser):
+          self._sudouser = sudouser
+        else:
+          print('invalid username')
+          sys.exit(1)
 
   def parse_args(self, args=None):
     parser = self._build_argparser()
@@ -82,6 +91,14 @@ class UberScript:
     self._check_arg_dependencies(parser, args)
 
     self._parsed_args = args
+
+  def _get_playbook_variables(self):
+    PREFIX= 'ubrspc_'
+
+    if self._sudouser:
+      yield (PREFIX + 'sudouser', self._sudouser)
+    for name in vars(self._parsed_args):
+      yield (PREFIX + name, getattr(self._parsed_args, name))
 
   def _check_playbook(self):
     if not self.playbook:
@@ -98,8 +115,8 @@ class UberScript:
     variable_manager.set_inventory(inventory)
     variable_manager.set_host_variable(inventory.localhost, 'ansible_python_interpreter', sys.executable)
 
-    for name in vars(self._parsed_args):
-      variable_manager.set_host_variable(inventory.localhost, 'ubrspc_' + name, getattr(self._parsed_args, name))
+    for name, value in self._get_playbook_variables():
+      variable_manager.set_host_variable(inventory.localhost, name, value)
 
     pexec = PlaybookExecutor(
       playbooks=[self.playbook],
