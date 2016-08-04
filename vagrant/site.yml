@@ -32,7 +32,7 @@
   tags: scripts
   tasks:
     - name: deploy script
-      copy: src={{ item }} dest=/usr/local/bin/{{ item|basename }} mode=0775
+      file: src=/vagrant/vagrant/files/scripts/{{ item|basename }} dest=/usr/local/bin/{{ item|basename }} mode=0775 state=link
       with_fileglob: files/scripts/*
 
     - name: sudoers configs
@@ -42,5 +42,5 @@
     - name: create playbook dir
       file: state=directory name=/opt/uberspace/playbooks/
     - name: deploy playbook
-      copy: src={{ item }} dest=/opt/uberspace/playbooks/{{ item|basename }}
+      file: src=/vagrant/vagrant/files/playbooks/{{ item|basename }} dest=/opt/uberspace/playbooks/{{ item|basename }} mode=0700 state=link
       with_fileglob: files/playbooks/*

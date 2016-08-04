@@ -144,6 +144,8 @@ PLAY [test play] ************** (...)
 If you want to add your own scripts, just add the corresponding files in
 `vagrant/files/playbooks` and `vagrant/files/scripts`. You can deploy it
 using the `ansible-playbook vagrant/site.yml --tags scripts` command.
+Once your script has been deployed, you can just edit the source file
+to make further changes, as the file is symlinked, not copied.
 
 ## Tests
 The functionality of this library can be tested using pytest:
