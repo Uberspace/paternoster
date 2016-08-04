@@ -19,6 +19,8 @@ class restricted_str:
   __name__ = 'string'
 
   def __init__(self, allowed_chars):
+    # construct a regex matching a arbitrary number of characters within
+    # the given set.
     self.regex = re.compile('^[{}]+$'.format(allowed_chars))
 
   def __call__(self, val):
