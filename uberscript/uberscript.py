@@ -14,6 +14,10 @@ from ansible.plugins.callback import CallbackBase
 Options = namedtuple('Options', ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check', 'listhosts', 'listtasks', 'listtags', 'syntax'])
 
 
+class DevNullCallback(CallbackBase):
+  pass
+
+
 class UberScript:
 
   def __init__(self, playbook, parameters):
@@ -43,6 +47,11 @@ class UberScript:
         requiredArgs.add_argument('-' + short, '--' + name, **argParams)
       else:
         optionalArgs.add_argument('-' + short, '--' + name, **argParams)
+
+    optionalArgs.add_argument(
+      '-v', '--verbose', action='store_true',
+      help='run with a lot of debugging output'
+    )
 
     return parser
 
@@ -92,7 +101,7 @@ class UberScript:
     for name in vars(self._parsed_args):
       variable_manager.set_host_variable(inventory.localhost, 'ubrspc_' + name, getattr(self._parsed_args, name))
 
-    return PlaybookExecutor(
+    pexec = PlaybookExecutor(
       playbooks=[self.playbook],
       inventory=inventory,
       variable_manager=variable_manager,
@@ -106,6 +115,15 @@ class UberScript:
       ),
       passwords={},
     )
+
+    if not self._parsed_args.verbose:
+      # ansible doesn't provide a proper API to overwrite this,
+      # if you're using PlaybookExecutor instead of initializing
+      # the TaskQueueManager (_tqm) yourself, like in the offical
+      # example.
+      pexec._tqm._stdout_callback = DevNullCallback()
+
+    return pexec
 
   def execute_playbook(self):
     self._check_playbook()

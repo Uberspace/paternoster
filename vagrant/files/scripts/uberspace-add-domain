@@ -24,9 +24,5 @@ s = uberscript.UberScript(
       'type': uberscript.types.restricted_str('a-z0-9'),
       'depends': 'mailserver',
     }),
-    ('quiet', 'q', {
-      'help': 'quiet (no output)',
-      'action': 'store_true',
-    }),
   ],
 ).auto()
