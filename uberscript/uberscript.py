@@ -24,6 +24,14 @@ class DevNullCallback(CallbackBase):
     if msg:
       print(msg, file=sys.stderr)
 
+  def v2_runner_on_ok(self, result):
+    result = result._result
+    args = result['invocation']['module_args']
+    if result['invocation']['module_name'] == 'debug':
+      if 'var' in args:
+        print(result[args['var']])
+      if 'msg' in args:
+        print(args['msg'])
 
 class UberScript:
 
