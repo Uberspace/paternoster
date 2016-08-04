@@ -149,7 +149,7 @@ class UberScript:
       options=Options(
         connection='local',
         module_path=None,
-        forks=100,
+        forks=1,
         listhosts=False, listtasks=False, listtags=False, syntax=False,
         become=None, become_method=None, become_user=None, check=False
       ),
