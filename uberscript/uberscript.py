@@ -43,6 +43,7 @@ class UberScript:
     self._sudouser = None
 
   def _find_param(self, fname):
+    """ look for a parameter by either its short- or long-name """
     for name, short, param in self.parameters:
       if name == fname or short == fname:
         return (name, short, param)
@@ -94,6 +95,8 @@ class UberScript:
       os.execvp('sudo', ['sudo', '-n', '--'] + sys.argv)
     else:
       sudouser = os.environ.get('SUDO_USER', None)
+      # $SUDO_USER is set directly by sudo, so users should not be alble
+      # to trick here. Better be safe, than sorry, though.
       if sudouser and re.match('[a-z][a-z0-9]{0,20}', sudouser):
         self._sudouser = sudouser
       else:
@@ -130,6 +133,9 @@ class UberScript:
     loader = DataLoader()
     inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=['localhost'])
     variable_manager.set_inventory(inventory)
+    # force ansible to use the current python executable. Otherwise
+    # it can end up choosing a python3 one (named python) or a different
+    # python 2 version
     variable_manager.set_host_variable(inventory.localhost, 'ansible_python_interpreter', sys.executable)
 
     for name, value in self._get_playbook_variables():
