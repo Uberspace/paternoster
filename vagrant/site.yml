@@ -26,6 +26,14 @@
         chdir: /vagrant
         creates: /usr/lib/python2.7/site-packages/uberscript.egg-link
 
+- name: create test user
+  hosts: all
+  become: yes
+  tags: setup
+  tasks:
+    - name: create test user
+      user: name=testy state=present
+
 - name: deploy test scripts
   hosts: all
   become: yes
