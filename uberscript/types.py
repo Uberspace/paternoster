@@ -27,3 +27,26 @@ class restricted_str:
     if not self.regex.match(val):
       raise ValueError('invalid value')
     return val
+
+class range_int:
+  __name__ = 'integer'
+
+  def __init__(self, minimum=None, maximum=None):
+    if minimum is not None and maximum is not None and minimum > maximum:
+      raise ValueError('minimum must be smaller than maximum')
+
+    self.minimum = minimum
+    self.maximum = maximum
+
+  def __call__(self, val):
+    try:
+      val = int(val)
+    except TypeError:
+      raise ValueError('invalid integer')
+
+    if self.minimum is not None and val < self.minimum:
+      raise ValueError('value too small (must be >= {})'.format(self.minimum))
+    if self.maximum is not None and val > self.maximum:
+      raise ValueError('value too big (must be <= {})'.format(self.maximum))
+
+    return val
