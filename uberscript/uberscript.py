@@ -3,42 +3,17 @@ from __future__ import print_function
 import argparse
 import sys
 import os.path
-from collections import namedtuple
 
-from ansible.executor.playbook_executor import PlaybookExecutor
-from ansible.inventory import Inventory
-from ansible.parsing.dataloader import DataLoader
-from ansible.vars import VariableManager
-from ansible.plugins.callback import CallbackBase
-import ansible.constants
-
+from .runners.ansiblerunner import AnsibleRunner
 from .become_root import become_root
 
 
-class MinimalAnsibleCallback(CallbackBase):
-  """ filters out all ansible messages except for playbook fails and debug-module-calls. """
-
-  def v2_runner_on_failed(self, result, ignore_errors=False):
-    msg = result._result.get('msg', None)
-    if msg:
-      print(msg, file=sys.stderr)
-
-  def v2_runner_on_ok(self, result):
-    result = result._result
-    args = result['invocation']['module_args']
-    if result['invocation']['module_name'] == 'debug':
-      if 'var' in args:
-        print(result[args['var']])
-      if 'msg' in args:
-        print(args['msg'])
-
-
 class UberScript:
-  def __init__(self, playbook, parameters, success_msg='executed successfully'):
-    self.playbook = playbook
+  def __init__(self, runner_parameters, parameters, success_msg='executed successfully', runner_class=AnsibleRunner):
     self.parameters = parameters
     self.success_msg = success_msg
     self._sudouser = None
+    self._runner = runner_class(**runner_parameters)
 
   def _find_param(self, fname):
     """ look for a parameter by either its short- or long-name """
@@ -112,62 +87,8 @@ class UberScript:
     for name in vars(self._parsed_args):
       yield ('param_' + name, getattr(self._parsed_args, name))
 
-  def _check_playbook(self):
-    if not self.playbook:
-      raise ValueError('no playbook given')
-    if not os.path.isabs(self.playbook):
-      raise ValueError('path to playbook must be absolute')
-    if not os.path.isfile(self.playbook):
-      raise ValueError('playbook must exist and must not be a link')
-
-  def _get_playbook_executor(self):
-    Options = namedtuple('Options',
-                         ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check',
-                          'listhosts', 'listtasks', 'listtags', 'syntax'])
-
-    variable_manager = VariableManager()
-    loader = DataLoader()
-    inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=['localhost'])
-    variable_manager.set_inventory(inventory)
-    # force ansible to use the current python executable. Otherwise
-    # it can end up choosing a python3 one (named python) or a different
-    # python 2 version
-    variable_manager.set_host_variable(inventory.localhost, 'ansible_python_interpreter', sys.executable)
-
-    for name, value in self._get_playbook_variables():
-      variable_manager.set_host_variable(inventory.localhost, name, value)
-
-    pexec = PlaybookExecutor(
-      playbooks=[self.playbook],
-      inventory=inventory,
-      variable_manager=variable_manager,
-      loader=loader,
-      options=Options(
-        connection='local',
-        module_path=None,
-        forks=1,
-        listhosts=False, listtasks=False, listtags=False, syntax=False,
-        become=None, become_method=None, become_user=None, check=False
-      ),
-      passwords={},
-    )
-
-    ansible.constants.RETRY_FILES_ENABLED = False
-
-    if not self._parsed_args.verbose:
-      # ansible doesn't provide a proper API to overwrite this,
-      # if you're using PlaybookExecutor instead of initializing
-      # the TaskQueueManager (_tqm) yourself, like in the offical
-      # example.
-      pexec._tqm._stdout_callback = MinimalAnsibleCallback()
-
-    return pexec
-
   def execute_playbook(self):
-    self._check_playbook()
-    status = self._get_playbook_executor().run()
-    if status == 0:
+    status = self._runner.run(self._get_playbook_variables(), self._parsed_args.verbose)
+    if status:
       print(self.success_msg)
-      return True
-    else:
-      return False
+    return status

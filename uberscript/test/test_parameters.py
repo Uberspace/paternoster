@@ -14,7 +14,7 @@ from .. import UberScript, types
 ])
 def test_parameter_depends(args, valid):
   s = UberScript(
-    playbook='add_domain.yml',
+    runner_parameters={'playbook': ''},
     parameters=[
       ('mailserver', 'm', {
         'help': '', 'action': 'store_true'
@@ -47,7 +47,7 @@ def test_parameter_depends(args, valid):
 ])
 def test_forced_restricted_str(param, valid):
   s = UberScript(
-    playbook='add_domain.yml',
+    runner_parameters={'playbook': ''},
     parameters=[
       ('namespace', 'e', param),
     ],

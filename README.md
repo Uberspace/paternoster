@@ -36,7 +36,7 @@ import uberscript
 import uberscript.types
 
 uberscript.UberScript(
-  playbook='/opt/uberspace/playbooks/user/add_domain.yml',
+  runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-add-domain.yml'},
   parameters=[
     ('domain', 'd', {
       'help': 'this is the domain to add to your uberspace',
