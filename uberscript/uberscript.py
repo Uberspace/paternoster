@@ -2,10 +2,8 @@ from __future__ import print_function
 
 import argparse
 import sys
-import os
 import os.path
 import json
-import re
 from collections import namedtuple
 
 from ansible.executor.playbook_executor import PlaybookExecutor
@@ -14,6 +12,8 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
 from ansible.plugins.callback import CallbackBase
 import ansible.constants
+
+from .become_root import become_root
 
 
 class MinimalAnsibleCallback(CallbackBase):
@@ -89,23 +89,13 @@ class UberScript:
 
   def auto(self, root=True):
     if root:
-      self.become_root()
+      try:
+        self._sudo_user = become_root()
+      except ValueError as e:
+        print(e, file=sys.stderr)
+        sys.exit(1)
     self.parse_args()
     self.execute_playbook()
-
-  def become_root(self):
-    if os.geteuid() != 0:
-      # -n disables password prompt, when sudo isn't configured properly
-      os.execv('/usr/bin/sudo', ['/usr/bin/sudo', '-n', '--'] + sys.argv)
-    else:
-      sudouser = os.environ.get('SUDO_USER', None)
-      # $SUDO_USER is set directly by sudo, so users should not be alble
-      # to trick here. Better be safe, than sorry, though.
-      if sudouser and re.match('[a-z][a-z0-9]{0,20}', sudouser):
-        self._sudouser = sudouser
-      else:
-        print('invalid username', file=sys.stderr)
-        sys.exit(1)
 
   def parse_args(self, args=None):
     parser = self._build_argparser()
