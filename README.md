@@ -100,7 +100,7 @@ All custom types fall into one of two categories: "normal" or "factory":
 
 Just like UberScripts implemets a couple custom types, the developer of
 a script can do the same. The argparse library is very flexible in this
-regard, so it should even be possible to parse and validate x509-certificates,
+regard, so it should even be possible to parse and validate x.509-certificates,
 before passing their content to ansible, instead of their path.
 
 For further details refer to the `types.py`-file within UberScript or
@@ -108,7 +108,7 @@ the [documentation of argparse itself](https://docs.python.org/2/library/argpars
 
 ### Dependencies
 
-In some cases a parameter may need an other one to function correctly. A
+In some cases a parameter may need another one to function correctly. A
 real-life example of this might be the `--namespace` parameter, which
 depends on the `--mailserver` parameter in `uberspace-add-domain`. Such
 a dependency can be expressed using the `depends`-option of a pararmeter:
@@ -186,12 +186,13 @@ python setup.py develop
 ```
 
 This project uses python 2.7, because python 3.x is not yet supported by
-ansible. All code within this library is written to suppor both python 2
-and 3, so it's possible to make the switch, once ansible does.
+ansible. The library code is aimed to be compatible with both python 2
+and 3. However, because of the current lack of python 3 support of the
+ansible API this is currently not tested.
 
 ### Vagrant
 
-Most features can be tested using a virtualenv only. If your development
+Most features, where unit tests suffice can be tested using a virtualenv only. If your development
 relies on the sudo-mechanism, you can spin up a [vagrant VM](https://vagrantup.com) which provides
 a dummy `uberspace-add-domain`-script as well as the library-code in the
 `/vagrant`-directory.
