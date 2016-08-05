@@ -82,10 +82,10 @@ def test_type_restricted_str_maxlen_default():
   (None, 100, 101, False),
   (0, None, -1, False),
 ])
-def test_range_int(minimum, maximum, value, valid):
-  from ..types import range_int
+def test_restricted_int(minimum, maximum, value, valid):
+  from ..types import restricted_int
 
-  check = range_int(minimum, maximum)
+  check = restricted_int(minimum, maximum)
 
   if not valid:
     with pytest.raises(ValueError):
@@ -95,7 +95,7 @@ def test_range_int(minimum, maximum, value, valid):
 
 
 def test_range_int_ctor():
-  from ..types import range_int
+  from ..types import restricted_int
 
   with pytest.raises(ValueError):
-    range_int(100, 0)
+    restricted_int(100, 0)

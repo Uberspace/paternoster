@@ -41,7 +41,7 @@ class restricted_str:
     return val
 
 
-class range_int:
+class restricted_int:
   __name__ = 'integer'
 
   def __init__(self, minimum=None, maximum=None):
