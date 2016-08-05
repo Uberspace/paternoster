@@ -101,6 +101,29 @@ before passing their content to ansible, instead of their path.
 For further details refer to the `types.py`-file within UberScript or
 the [documentation of argparse itself](https://docs.python.org/2/library/argparse.html#type).
 
+### Dependencies
+
+In some cases a parameter may need an other one to function correctly. A
+real-life example of this might be the `--namespace` parameter, which
+depends on the `--mailserver` parameter in `uberspace-add-domain`. Such
+a dependency can be expressed using the `depends`-option of a pararmeter:
+
+```
+parameters=[
+  ('mailserver', 'm', {
+    'help': 'add domain to the mailserver configuration',
+    'action': 'store_true'
+  }),
+  ('namespace', 'e', {
+    'help': 'use this namespace when adding a mail domain',
+    'type': uberscript.types.restricted_str('a-z0-9'),
+    'depends': 'mailserver',
+  }),
+]
+```
+
+At the moment there can only be a single dependency.
+
 ## Status Reporting
 
 There are multiple ways to let the user know, what's going on:
