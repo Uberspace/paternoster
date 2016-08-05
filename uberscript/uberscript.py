@@ -62,6 +62,10 @@ class UberScript:
       argParams = param.copy()
       argParams.pop('depends', None)
 
+      if ('type' not in argParams or argParams['type'] in (str, unicode)) and \
+        argParams.get('action', 'store') not in ('store_true', 'store_false', 'store_const', 'append_const', 'count'):
+        raise ValueError('restricted_str must be used for all string arguments')
+
       if param.get('required', False):
         requiredArgs.add_argument('-' + short, '--' + name, **argParams)
       else:

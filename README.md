@@ -76,10 +76,14 @@ There is a small number of arguments added by UberScript:
 
 ### Types
 
-In general the type-argument is identical to the one supplied to the
-python function [`add_argument()`](https://docs.python.org/2/library/argparse.html#type).
-UberScript only adds a couple of special types, which can be used by
-referencing the as `uberscript.types.<name>`.
+In general the type-argument is mostly identical to the one supplied to
+the python function [`add_argument()`](https://docs.python.org/2/library/argparse.html#type).
+To enforce a certain level of security, **all strings must be of the type
+`restricted_str`**. It is not possible to add an string argument, which
+does not have a defined set of characters. In addtion to `restricted_str`
+UberScripts adds a couple of other special types, which can be used by
+referencing them as `uberscript.types.<name>`, after importing
+`uberscript.types`.
 
 | Name | Category | Description |
 | ---- | -------- | ----------- |
