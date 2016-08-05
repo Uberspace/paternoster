@@ -3,7 +3,6 @@ from __future__ import print_function
 import argparse
 import sys
 import os.path
-import json
 from collections import namedtuple
 
 from ansible.executor.playbook_executor import PlaybookExecutor
@@ -35,7 +34,6 @@ class MinimalAnsibleCallback(CallbackBase):
 
 
 class UberScript:
-
   def __init__(self, playbook, parameters, success_msg='executed successfully'):
     self.playbook = playbook
     self.parameters = parameters
@@ -63,7 +61,7 @@ class UberScript:
       argParams.pop('depends', None)
 
       if ('type' not in argParams or argParams['type'] in (str, unicode)) and \
-        argParams.get('action', 'store') not in ('store_true', 'store_false', 'store_const', 'append_const', 'count'):
+          argParams.get('action', 'store') not in ('store_true', 'store_false', 'store_const', 'append_const', 'count'):
         raise ValueError('restricted_str must be used for all string arguments')
 
       if param.get('required', False):
@@ -123,7 +121,9 @@ class UberScript:
       raise ValueError('playbook must exist and must not be a link')
 
   def _get_playbook_executor(self):
-    Options = namedtuple('Options', ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check', 'listhosts', 'listtasks', 'listtags', 'syntax'])
+    Options = namedtuple('Options',
+                         ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check',
+                          'listhosts', 'listtasks', 'listtags', 'syntax'])
 
     variable_manager = VariableManager()
     loader = DataLoader()

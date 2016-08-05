@@ -2,18 +2,21 @@ import re
 
 import tldextract
 
+DOMAIN_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
+
 
 def domain(val):
   val = val.encode('idna').decode('ascii')
 
   if any(map(lambda p: len(p) > 63, val.split('.'))) or len(val) > 255:
     raise ValueError('domain too long')
-  if not re.match(r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$', val):
+  if not re.match(DOMAIN_REGEX, val):
     raise ValueError('invalid domain')
   if not tldextract.extract(val).suffix:
     raise ValueError('invalid domain suffix')
 
   return val
+
 
 class restricted_str:
   __name__ = 'string'
@@ -36,6 +39,7 @@ class restricted_str:
     if self.minlen is not None and len(val) < self.minlen:
       raise ValueError('string is too short (must be >= {})'.format(self.minlen))
     return val
+
 
 class range_int:
   __name__ = 'integer'
