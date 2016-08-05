@@ -18,14 +18,23 @@ def domain(val):
 class restricted_str:
   __name__ = 'string'
 
-  def __init__(self, allowed_chars):
+  def __init__(self, allowed_chars, minlen=1, maxlen=255):
+    if minlen is not None and maxlen is not None and minlen > maxlen:
+      raise ValueError('minlen must be smaller than maxlen')
+
     # construct a regex matching a arbitrary number of characters within
     # the given set.
     self.regex = re.compile('^[{}]+$'.format(allowed_chars))
+    self.minlen = minlen
+    self.maxlen = maxlen
 
   def __call__(self, val):
     if not self.regex.match(val):
       raise ValueError('invalid value')
+    if self.maxlen is not None and len(val) > self.maxlen:
+      raise ValueError('string is too long (must be <= {})'.format(self.maxlen))
+    if self.minlen is not None and len(val) < self.minlen:
+      raise ValueError('string is too short (must be >= {})'.format(self.minlen))
     return val
 
 class range_int:
