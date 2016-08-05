@@ -91,9 +91,10 @@ referencing them as `uberscript.types.<name>`, after importing
 | `restricted_str` | factory | string which only allows certain characters given in regex-format (e.g. `a-z0-9`). Additonally a `minlen` (default `1`) and `maxlen` (default `255`) can be passed to restrict the strings length. |
 | `range_int` | factory | integer which can be restricted by a `minimum` and `maximum`-value, both of which are inclusive |
 
-All custom types fall into one of two categories: "normal" or "factory".
-Normal types can be supplied just as they are: `'type': uberscript.types.domain`.
-Factory types require additional parameters to work properly: `'type': uberscript.types.restricted_str('a-z0-9')`.
+All custom types fall into one of two categories: "normal" or "factory":
+
+* Normal types can be supplied just as they are: `'type': uberscript.types.domain`.
+* Factory types require additional parameters to work properly: `'type': uberscript.types.restricted_str('a-z0-9')`.
 
 ### Custom Types
 
