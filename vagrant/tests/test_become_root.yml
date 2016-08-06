@@ -17,3 +17,22 @@
           - "script.stdout_lines[0] != 'UID:0'"
           - "script.stdout_lines[1] == 'UID:0'"
           - "script.stdout_lines[2] == 'vagrant'"
+
+- name: become_root should not execute addtional commands
+  hosts: all
+  tasks:
+    - include: drop_script.yml
+      vars:
+        script_params: "'&& touch /root/foo'"
+        script: |
+          #!/bin/env python2.7
+          from uberscript.become_root import become_root
+          become_root()
+
+    - stat: path=/root/foo
+      become: yes
+      register: testfile
+
+    - assert:
+        that:
+          - "not testfile.stat.exists"
