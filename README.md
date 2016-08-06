@@ -223,6 +223,8 @@ to make further changes, as the file is symlinked, not copied.
 
 The core functionality of this library can be tested using the `py.test`-
 command. New tests should be added to the `uberscript/test`-directory.
+Please refer to the [pytest-documentation](http://doc.pytest.org/) for
+further details.
 
 ### System Tests
 
