@@ -1,4 +1,4 @@
-- name: test become_root
+- name: test ansible runner
   hosts: all
   tasks:
     - include: drop_script.yml

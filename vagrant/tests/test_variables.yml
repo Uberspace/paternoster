@@ -1,4 +1,4 @@
-- name: test become_root
+- name: test script_name and sudo_user variables
   hosts: all
   tasks:
     - include: drop_script.yml
