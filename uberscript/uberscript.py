@@ -12,7 +12,7 @@ class UberScript:
   def __init__(self, runner_parameters, parameters, success_msg='executed successfully', runner_class=AnsibleRunner):
     self.parameters = parameters
     self.success_msg = success_msg
-    self._sudouser = None
+    self._sudo_user = None
     self._runner = runner_class(**runner_parameters)
 
   def _find_param(self, fname):
@@ -79,8 +79,8 @@ class UberScript:
     self._parsed_args = args
 
   def _get_runner_variables(self):
-    if self._sudouser:
-      yield ('sudo_user', self._sudouser)
+    if self._sudo_user:
+      yield ('sudo_user', self._sudo_user)
 
     yield ('script_name', os.path.basename(sys.argv[0]))
 

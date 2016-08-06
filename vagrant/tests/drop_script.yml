@@ -5,21 +5,28 @@
     mode: 0775
     content: "{{ script }}"
 
+- name: drop playbook
+  become: yes
+  copy:
+    dest: /opt/uberspace/playbooks/uberspace-unittest.yml
+    content: "{{ playbook }}"
+
 - name: sudoers config
   become: yes
   template: src=../templates/sudoers.j2 dest=/etc/sudoers.d/uberspace-unittest
   vars:
     item: uberspace-unittest
 
-- shell: uberspace-unittest
+- shell: uberspace-unittest {{ script_params|default('') }}
   become_user: testy
   register: script
 
-- name: delete script and sudoers config
+- name: delete script, playbook and sudoers config
   become: yes
   file:
     name: "{{ item }}"
     state: absent
   with_items:
     - /usr/local/bin/uberspace-unittest
+    - /opt/uberspace/playbooks/uberspace-unittest.yml
     - /etc/sudoers.d/uberspace-unittest
