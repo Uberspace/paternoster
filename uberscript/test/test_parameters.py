@@ -58,3 +58,22 @@ def test_forced_restricted_str(param, valid):
       s.parse_args([])
   else:
     s.parse_args([])
+
+
+def test_parameter_passing():
+  class MockRunner:
+    def run(self, *args, **kwargs):
+      self.args = args
+      self.kwargs = kwargs
+
+  s = UberScript(
+    runner_parameters={},
+    parameters=[
+      ('namespace', 'e', {'type': types.restricted_str('a')}),
+    ],
+    runner_class=MockRunner
+  )
+  s.parse_args(['-e', 'aaaa'])
+  s.execute()
+
+  assert dict(s._runner.args[0])['param_namespace'] == 'aaaa'
