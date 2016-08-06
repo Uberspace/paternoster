@@ -5,7 +5,10 @@ setup(name='uberscript',
       description='',
       author='Michael Lutonsky',
       author_email='ml@jonaspasche.com',
-      packages=['uberscript'],
+      packages=[
+        'uberscript',
+        'uberscript.runners',
+      ],
       install_requires=[
         'tldextract>=2.0.1',
         'ansible==2.1.1.0',
