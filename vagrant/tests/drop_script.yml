@@ -20,6 +20,7 @@
 - shell: uberspace-unittest {{ script_params|default('') }}
   become_user: testy
   register: script
+  ignore_errors: "{{ ignore_script_errors|default(false) }}"
 
 - name: delete script, playbook and sudoers config
   become: yes
