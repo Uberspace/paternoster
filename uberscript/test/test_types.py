@@ -10,6 +10,7 @@ import pytest
   ("uberspace.deee", False),
   ("-bla.com", False),
   ("a42'.com", False),
+  ("*.google.at", False),
   ("a" * 65 + ".com", False),
   (("a" * 40 + '.') * 8 + "com", False),
 ])
