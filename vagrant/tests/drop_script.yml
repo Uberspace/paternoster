@@ -9,7 +9,7 @@
   become: yes
   copy:
     dest: /opt/uberspace/playbooks/uberspace-unittest.yml
-    content: "{{ playbook }}"
+    content: "{{ playbook|default('') }}"
 
 - name: sudoers config
   become: yes
