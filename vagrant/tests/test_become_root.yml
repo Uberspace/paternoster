@@ -1,0 +1,19 @@
+- name: test become_root
+  hosts: all
+  tasks:
+    - include: drop_script.yml
+      vars:
+        script: |
+          #!/bin/env python2.7
+          from uberscript.become_root import become_root
+          import os
+
+          print('UID:{}'.format(os.geteuid()))
+          user = become_root()
+          print(user)
+
+    - assert:
+        that:
+          - "script.stdout_lines[0] != 'UID:0'"
+          - "script.stdout_lines[1] == 'UID:0'"
+          - "script.stdout_lines[2] == 'vagrant'"

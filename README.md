@@ -218,5 +218,15 @@ Once your script has been deployed, you can just edit the source file
 to make further changes, as the file is symlinked, not copied.
 
 ## Tests
-The functionality of this library can be tested using the `py.test`-
+
+### Unit Tests
+
+The core functionality of this library can be tested using the `py.test`-
 command. New tests should be added to the `uberscript/test`-directory.
+
+### System Tests
+
+Some features (like the `become_root` function) require a correctly
+setup linux environment. They can be tested using the provided ansible
+playbooks in `vagrant/tests`. At some later point in development, these
+will be run automatically by py.test or a makefile.

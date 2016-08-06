@@ -1,0 +1,25 @@
+- name: drop script
+  become: yes
+  copy:
+    dest: /usr/local/bin/uberspace-unittest
+    mode: 0775
+    content: "{{ script }}"
+
+- name: sudoers config
+  become: yes
+  template: src=../templates/sudoers.j2 dest=/etc/sudoers.d/uberspace-unittest
+  vars:
+    item: uberspace-unittest
+
+- shell: uberspace-unittest
+  become_user: testy
+  register: script
+
+- name: delete script and sudoers config
+  become: yes
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - /usr/local/bin/uberspace-unittest
+    - /etc/sudoers.d/uberspace-unittest
