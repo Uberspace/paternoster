@@ -218,6 +218,5 @@ Once your script has been deployed, you can just edit the source file
 to make further changes, as the file is symlinked, not copied.
 
 ## Tests
-The functionality of this library can be tested using pytest:
-`py.test uberscript`. New tests should be added to the `uberscript/test`-
-directory.
+The functionality of this library can be tested using the `py.test`-
+command. New tests should be added to the `uberscript/test`-directory.
