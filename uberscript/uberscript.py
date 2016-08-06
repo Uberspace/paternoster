@@ -78,7 +78,7 @@ class UberScript:
 
     self._parsed_args = args
 
-  def _get_playbook_variables(self):
+  def _get_runner_variables(self):
     if self._sudouser:
       yield ('sudo_user', self._sudouser)
 
@@ -88,7 +88,7 @@ class UberScript:
       yield ('param_' + name, getattr(self._parsed_args, name))
 
   def execute_playbook(self):
-    status = self._runner.run(self._get_playbook_variables(), self._parsed_args.verbose)
+    status = self._runner.run(self._get_runner_variables(), self._parsed_args.verbose)
     if status:
       print(self.success_msg)
     return status
