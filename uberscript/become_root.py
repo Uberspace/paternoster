@@ -5,6 +5,10 @@ import re
 
 def become_root():
   if os.geteuid() != 0:
+    # flush output buffers. Otherwise the output before the
+    # become_root()-call might be never shown to the user
+    sys.stdout.flush()
+    sys.stderr.flush()
     # -n disables password prompt, when sudo isn't configured properly
     os.execv('/usr/bin/sudo', ['/usr/bin/sudo', '-n', '--'] + sys.argv)
   else:
