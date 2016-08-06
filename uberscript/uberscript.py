@@ -68,7 +68,7 @@ class UberScript:
         print(e, file=sys.stderr)
         sys.exit(1)
     self.parse_args()
-    self.execute_playbook()
+    self.execute()
 
   def parse_args(self, args=None):
     parser = self._build_argparser()
@@ -87,7 +87,7 @@ class UberScript:
     for name in vars(self._parsed_args):
       yield ('param_' + name, getattr(self._parsed_args, name))
 
-  def execute_playbook(self):
+  def execute(self):
     status = self._runner.run(self._get_runner_variables(), self._parsed_args.verbose)
     if status:
       print(self.success_msg)
