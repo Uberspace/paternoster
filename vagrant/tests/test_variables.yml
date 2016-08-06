@@ -1,0 +1,25 @@
+- name: test become_root
+  hosts: all
+  tasks:
+    - include: drop_script.yml
+      vars:
+        playbook: |
+          - hosts: all
+            tasks:
+              - debug: var=script_name
+              - debug: var=sudo_user
+        script: |
+          #!/bin/env python2.7
+
+          import uberscript
+
+          s = uberscript.UberScript(
+            runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-unittest.yml'},
+            parameters=[],
+          ).auto()
+
+    - assert:
+        that:
+          - "script.stdout_lines[0] == 'uberspace-unittest'"
+          - "script.stdout_lines[1] == 'vagrant'"
+          # "--parameters" are tested using normal unittests
