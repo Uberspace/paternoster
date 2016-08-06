@@ -1,5 +1,6 @@
 - name: test become_root
   hosts: all
+  gather_facts: no
   tasks:
     - include: drop_script.yml
       vars:
@@ -20,6 +21,7 @@
 
 - name: become_root should not execute addtional commands
   hosts: all
+  gather_facts: no
   tasks:
     - include: drop_script.yml
       vars:

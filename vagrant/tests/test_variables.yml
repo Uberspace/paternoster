@@ -1,5 +1,6 @@
 - name: test script_name and sudo_user variables
   hosts: all
+  gather_facts: no
   tasks:
     - include: drop_script.yml
       vars:

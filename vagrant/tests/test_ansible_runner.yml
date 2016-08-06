@@ -1,5 +1,6 @@
 - name: test ansible runner
   hosts: all
+  gather_facts: no
   tasks:
     - include: drop_script.yml
       vars:
