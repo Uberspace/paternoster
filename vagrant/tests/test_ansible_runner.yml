@@ -1,0 +1,19 @@
+- name: test become_root
+  hosts: all
+  tasks:
+    - include: drop_script.yml
+      vars:
+        ignore_script_errors: yes
+        script: |
+          #!/bin/env python2.7
+
+          import uberscript
+
+          s = uberscript.UberScript(
+            runner_parameters={'playbook': '/i/do/not/exist.yml'},
+            parameters=[],
+          ).auto()
+
+    - assert:
+        that:
+          - "'ValueError: playbook must exist and must not be a link' in script.stderr"
