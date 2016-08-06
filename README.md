@@ -230,5 +230,62 @@ further details.
 
 Some features (like the `become_root` function) require a correctly
 setup linux environment. They can be tested using the provided ansible
-playbooks in `vagrant/tests`. At some later point in development, these
-will be run automatically by py.test or a makefile.
+playbooks in `vagrant/tests`.
+
+The playbooks can be invoked using the `ansible-playbook`-command:
+
+```
+$ ansible-playbook vagrant/tests/test_variables.yml
+
+PLAY [test script_name and sudo_user variables] ********************************
+
+(...)
+
+PLAY RECAP *********************************************************************
+default                    : ok=7    changed=5    unreachable=0    failed=0
+```
+
+It is also possible to run all playbooks by executing `ansible-playbook vagrant/tests/test_*.yml`.
+At some later point in development, the tests will be run automatically by
+pytest or some other mechanism.
+
+#### Boilerplate
+
+A typical [ansible playbook](http://docs.ansible.com/ansible/playbooks.html)
+for a system-test might look like this:
+
+```yaml
+- name: give this test a proper name
+  hosts: all
+  tasks:
+    - include: drop_script.yml
+      vars:
+        ignore_script_errors: yes
+        script_params: --some-parameter
+        playbook: |
+          - hosts: all
+            tasks:
+              - debug: msg="hello world"
+        script: |
+          #!/bin/env python2.7
+          # some python code to test
+
+    - assert:
+        that:
+          - "script.stdout_lines[0] == 'something'"
+```
+
+Most of the heavy lifting is done by the included `drop_script.yml`-file. It
+creates the required python-script & playbook, executes it and stores the result
+in the `script`-variable. After the execution, all created files are removed.
+After the script has been executed, the [`assert`-module](http://docs.ansible.com/ansible/assert_module.html)
+can be used to check the results.
+
+There are several parameters to control the behaviour of `drop_script.yml`:
+
+| Name | Optional | Description |
+| ---- | -------- | ----------- |
+| `script` | no | the **content** of a python script to save as `/usr/local/bin/uberspace-unittest` and execute |
+| `playbook` | yes (default: empty) | the **content** of a playbook to save as `/opt/uberspace/playbooks/uberspace-unittest.yml` |
+| `ignore_script_errors` | yes (default: `false`) | whether to continue even if python script has a non-zero exitcode |
+| `script_params` | yes (default: empty) | command line parameters for the script (e.g. `"--domain foo.com"`) |
