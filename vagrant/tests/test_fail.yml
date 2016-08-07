@@ -1,0 +1,25 @@
+- name: test fail module
+  hosts: all
+  gather_facts: no
+  tasks:
+    - include: drop_script.yml
+      vars:
+        ignore_script_errors: yes
+        playbook: |
+          - hosts: all
+            tasks:
+              - fail: msg=42
+        script: |
+          #!/bin/env python2.7
+
+          import uberscript
+
+          s = uberscript.UberScript(
+            runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-unittest.yml'},
+            parameters=[],
+          ).auto()
+
+    - assert:
+        that:
+          - "script.stderr == '42'"
+          - "script.rc == 1"
