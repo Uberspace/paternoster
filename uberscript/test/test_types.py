@@ -3,25 +3,30 @@
 import pytest
 
 
-@pytest.mark.parametrize("value,valid", [
-  ("uberspace.de", True),
-  ("foo.google", True),
-  (u"foobär.com", True),
-  ("uberspace.deee", False),
-  ("-bla.com", False),
-  ("a42'.com", False),
-  ("*.google.at", False),
-  ("a" * 65 + ".com", False),
-  (("a" * 40 + '.') * 8 + "com", False),
+@pytest.mark.parametrize("value,wildcard,valid", [
+  ("uberspace.de", False, True),
+  ("foo.google", False, True),
+  (u"foobär.com", False, True),
+  ("uberspace.deee", False, False),
+  ("-bla.com", False, False),
+  ("a42'.com", False, False),
+  ("*.google.at", False, False),
+  ("*.google.at", True, True),
+  ("foo.*.google.at", True, False),
+  ("foo.*", True, False),
+  ("a" * 65 + ".com", False, False),
+  (("a" * 40 + '.') * 8 + "com", False, False),
 ])
-def test_type_domain(value, valid):
+def test_type_domain(value, wildcard, valid):
   from ..types import domain
+
+  check = domain(wildcard)
 
   if not valid:
     with pytest.raises(ValueError):
-      domain(value)
+      check(value)
   else:
-    domain(value)
+    check(value)
 
 
 @pytest.mark.parametrize("allowed_chars,minlen,maxlen,value,valid", [

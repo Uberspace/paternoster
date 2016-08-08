@@ -8,7 +8,7 @@ s = uberscript.UberScript(
   parameters=[
     ('domain', 'd', {
       'help': 'this is the domain to add to your uberspace',
-      'type': uberscript.types.domain,
+      'type': uberscript.types.domain(),
       'required': True,
     }),
     ('webserver', 'w', {

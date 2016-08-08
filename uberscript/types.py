@@ -2,20 +2,29 @@ import re
 
 import tldextract
 
-DOMAIN_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
 
+class domain:
+  __name__ = 'domain'
+  DOMAIN_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
 
-def domain(val):
-  val = val.encode('idna').decode('ascii')
+  def __init__(self, wildcard=False):
+    self._wildcard = wildcard
 
-  if any(map(lambda p: len(p) > 63, val.split('.'))) or len(val) > 255:
-    raise ValueError('domain too long')
-  if not re.match(DOMAIN_REGEX, val):
-    raise ValueError('invalid domain')
-  if not tldextract.extract(val).suffix:
-    raise ValueError('invalid domain suffix')
+  def __call__(self, val):
+    val = val.encode('idna').decode('ascii')
+    domain = val
 
-  return val
+    if self._wildcard and val.startswith('*.'):
+      val = val[2:]
+
+    if any(map(lambda p: len(p) > 63, val.split('.'))) or len(val) > 255:
+      raise ValueError('domain too long')
+    if not re.match(self.DOMAIN_REGEX, val):
+      raise ValueError('invalid domain')
+    if not tldextract.extract(val).suffix:
+      raise ValueError('invalid domain suffix')
+
+    return domain
 
 
 class restricted_str:
