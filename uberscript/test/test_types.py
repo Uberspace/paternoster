@@ -82,6 +82,10 @@ def test_type_restricted_str_maxlen_default():
   (0, 100, 101, False),
   (None, 100, 101, False),
   (0, None, -1, False),
+  (None, 100, 99, True),
+  (0, None, 1, True),
+  (None, 100, -1000, True),
+  (0, None, 1000, True),
 ])
 def test_restricted_int(minimum, maximum, value, valid):
   from ..types import restricted_int
