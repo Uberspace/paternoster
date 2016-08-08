@@ -32,12 +32,12 @@ class restricted_str:
     self.maxlen = maxlen
 
   def __call__(self, val):
-    if not self.regex.match(val):
-      raise ValueError('invalid value')
     if self.maxlen is not None and len(val) > self.maxlen:
       raise ValueError('string is too long (must be <= {})'.format(self.maxlen))
     if self.minlen is not None and len(val) < self.minlen:
       raise ValueError('string is too short (must be >= {})'.format(self.minlen))
+    if not self.regex.match(val):
+      raise ValueError('invalid value')
     return val
 
 
