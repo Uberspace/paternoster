@@ -68,7 +68,8 @@ class UberScript:
         print(e, file=sys.stderr)
         sys.exit(1)
     self.parse_args()
-    self.execute()
+    status = self.execute()
+    sys.exit(0 if status else 1)
 
   def parse_args(self, args=None):
     parser = self._build_argparser()
