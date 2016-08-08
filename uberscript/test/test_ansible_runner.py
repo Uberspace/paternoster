@@ -6,7 +6,7 @@ import pytest
   (['../playbook.yml'], {}, False),
   (['/playbook.yml'], {}, True),
 ])
-def test_parameter_depends(args, kwargs, valid, monkeypatch):
+def test_playbook_validation(args, kwargs, valid, monkeypatch):
   import os
   from ..runners.ansiblerunner import AnsibleRunner
   from ansible.errors import AnsibleFileNotFound
