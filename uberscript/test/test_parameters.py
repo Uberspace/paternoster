@@ -60,12 +60,14 @@ def test_forced_restricted_str(param, valid):
     s.parse_args([])
 
 
-def test_parameter_passing():
-  class MockRunner:
-    def run(self, *args, **kwargs):
-      self.args = args
-      self.kwargs = kwargs
+class MockRunner:
+  def run(self, *args, **kwargs):
+    self.args = args
+    self.kwargs = kwargs
+    return True
 
+
+def test_parameter_passing():
   s = UberScript(
     runner_parameters={},
     parameters=[
@@ -77,3 +79,17 @@ def test_parameter_passing():
   s.execute()
 
   assert dict(s._runner.args[0])['param_namespace'] == 'aaaa'
+
+
+def test_success_msg(capsys):
+  s = UberScript(
+    runner_parameters={},
+    parameters=[],
+    runner_class=MockRunner,
+    success_msg='4242',
+  )
+  s.parse_args([])
+  s.execute()
+
+  out, err = capsys.readouterr()
+  assert out == '4242\n'
