@@ -45,7 +45,7 @@ class UberScript:
         optionalArgs.add_argument('-' + short, '--' + name, **argParams)
 
     optionalArgs.add_argument(
-      '-v', '--verbose', action='store_true',
+      '-v', '--verbose', action='count', default=0,
       help='run with a lot of debugging output'
     )
 

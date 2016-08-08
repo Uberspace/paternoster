@@ -3,6 +3,26 @@ from __future__ import print_function
 import sys
 from collections import namedtuple
 
+# Verbosity within ansbible is controlled by the Display-class. Each and
+# every ansible-file creates their own instance of this class, like this:
+#
+#  try:
+#     from __main__ import display
+#   except ImportError:
+#     from ansible.utils.display import Display
+#     display = Display()
+#
+# This means that the verbosity-parameter of display _always_ default to
+# zero. There is no sane way to overwrite this. Within a normal ansible
+# setup __main__ corresponds to the current executable (e.g. "ansible-playbook"),
+# which creates a Display instance based on the cli parameters (-v, -vv, ...).
+#
+# This has to happen before anything from ansible is imported!
+import __main__
+from ansible.utils.display import Display
+
+__main__.display = Display()
+
 import ansible.constants
 import os.path
 from ansible.executor.playbook_executor import PlaybookExecutor
@@ -38,6 +58,10 @@ class AnsibleRunner:
     Options = namedtuple('Options',
                          ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check',
                           'listhosts', 'listtasks', 'listtags', 'syntax'])
+
+    # -v given to us enables ansibles non-debug output.
+    # So -vv should become ansibles -v.
+    __main__.display.verbosity = max(0, verbose - 1)
 
     variable_manager = VariableManager()
     loader = DataLoader()
