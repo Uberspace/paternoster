@@ -60,13 +60,16 @@ class UberScript:
           )
         )
 
+  def become_root(self):
+    try:
+      self._sudo_user = become_root()
+    except ValueError as e:
+      print(e, file=sys.stderr)
+      sys.exit(1)
+
   def auto(self, root=True):
     if root:
-      try:
-        self._sudo_user = become_root()
-      except ValueError as e:
-        print(e, file=sys.stderr)
-        sys.exit(1)
+      self.become_root()
     self.parse_args()
     status = self.execute()
     sys.exit(0 if status else 1)
