@@ -5,7 +5,7 @@ import sys
 import os.path
 
 from .runners.ansiblerunner import AnsibleRunner
-from .become_root import become_root
+from .root import become_root
 
 
 class UberScript:
