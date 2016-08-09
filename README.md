@@ -44,12 +44,12 @@ uberscript.UberScript(
     }),
   ],
   success_msg='Your domain has been added successfully.',
-).auto()
+).auto(become_root=True)
 ```
 
 The `auto()`-method-call executes all neccesary steps (become root, parse
 arguments, execute playbook) at once. Becoming root can be skipped by
-calling the method like `auto(become_root=False)`. This can be used to create
+calling the method without parameters: `auto()`. This can be used to create
 commands, which only affect the users home-directory (e.g. installation
 of a private pgsql instance).
 

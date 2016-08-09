@@ -67,7 +67,7 @@ class UberScript:
       print(e, file=sys.stderr)
       sys.exit(1)
 
-  def auto(self, become_root=True):
+  def auto(self, become_root=False):
     if become_root:
       self.become_root()
     self.parse_args()

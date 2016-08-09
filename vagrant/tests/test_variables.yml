@@ -17,7 +17,7 @@
           s = uberscript.UberScript(
             runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-unittest.yml'},
             parameters=[],
-          ).auto()
+          ).auto(become_root=True)
 
     - assert:
         that:
