@@ -19,3 +19,7 @@ def become_root():
       return sudouser
     else:
       raise ValueError('invalid username: "{}"'.format(sudouser))
+
+
+def check_root():
+  return os.geteuid() == 0

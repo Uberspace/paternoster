@@ -47,11 +47,12 @@ uberscript.UberScript(
 ).auto(become_root=True)
 ```
 
-The `auto()`-method-call executes all neccesary steps (become root, parse
-arguments, execute playbook) at once. Becoming root can be skipped by
-calling the method without parameters: `auto()`. This can be used to create
-commands, which only affect the users home-directory (e.g. installation
-of a private pgsql instance).
+In this case the `auto()`-method-call executes all neccesary steps (become
+root, parse arguments, execute playbook) at once. Whether the playbook
+should be executed with root privileges, can be controlled by the `become_root`-
+parameter. It is also possible to enforce that only the root user can start
+the script by passing `check_root=True`. Note that these parameters are
+exclusive.
 
 ## Parameters
 
