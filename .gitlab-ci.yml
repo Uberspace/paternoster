@@ -10,6 +10,7 @@ build_job:
     - virtualenv venv --python python2
     - source venv/bin/activate && python setup.py develop
   artifacts:
+    expire_in: 1 day
     paths:
       - venv
 
