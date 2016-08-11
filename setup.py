@@ -1,4 +1,12 @@
-from setuptools import setup
+from __future__ import print_function
+import sys
+
+try:
+  from setuptools import setup
+except ImportError:
+  print("Paternoster needs setuptools.", file=sys.stderr)
+  print("Please install it using your package-manager or pip.", file=sys.stderr)
+  sys.exit(1)
 
 setup(name='paternoster',
       version='0.1',
