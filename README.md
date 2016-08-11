@@ -1,4 +1,4 @@
-# UberScript
+# Paternoster
 
 This python library provides an easy and safe way to let ordinary users
 execute ansible playbooks as root.
@@ -6,7 +6,7 @@ execute ansible playbooks as root.
 # Theory of Operation
 
 The developer writes a small python script (10-30 lines, most of which
-is a `dict`) which initializes UberScript. Following a method call the
+is a `dict`) which initializes Paternoster. Following a method call the
 library takes over, parses user-given arguments, validates their
 contents and passes them on to a given ansible playbook via the ansible
 python module. All parameters are checked for proper types (including
@@ -17,30 +17,30 @@ more complicated checks like domain-validity).
 This library is a small-ish wrapper around pythons battle-tested [argparse](https://docs.python.org/2/library/argparse.html)
 and the ansible api. Arguments are passed to argparse for evaluation.
 All standard-types like integers are handled by the python standard
-library. Special types like domains are implemented within UberScript.
-Once argparse has finished UberScript relies on the ansible API to
+library. Special types like domains are implemented within Paternoster.
+Once argparse has finished Paternoster relies on the ansible API to
 execute the given playbook. All parameters are passed safely as variables.
 
-Before parsing parameters UberScript executes itself as root via sudo.
+Before parsing parameters Paternoster executes itself as root via sudo.
 Combined with a proper sudoers-config this ensures that the script has
 not been copied somewhere else and is unmodified.
 
 # Script-Development
 
-A typical boilerplate for UberScript looks like this:
+A typical boilerplate for Paternoster looks like this:
 
 ```python
 #!/bin/env python2.7
 
-import uberscript
-import uberscript.types
+import paternoster
+import paternoster.types
 
-uberscript.UberScript(
+paternoster.Paternoster(
   runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-add-domain.yml'},
   parameters=[
     ('domain', 'd', {
       'help': 'this is the domain to add to your uberspace',
-      'type': uberscript.types.domain,
+      'type': paternoster.types.domain,
     }),
   ],
   success_msg='Your domain has been added successfully.',
@@ -69,7 +69,7 @@ Only the most important ones are listed here:
 | `action` | can be used to create flag-arguments, when set to `store_true` or `store_false` |
 | `required` | enforce the presence of certain argments |
 
-There is a small number of arguments added by UberScript:
+There is a small number of arguments added by Paternoster:
 
 | Name | Description |
 | ---- | ----------- |
@@ -82,9 +82,9 @@ the python function [`add_argument()`](https://docs.python.org/2/library/argpars
 To enforce a certain level of security, **all strings must be of the type
 `restricted_str`**. It is not possible to add an string argument, which
 does not have a defined set of characters. In addtion to `restricted_str`
-UberScripts adds a couple of other special types, which can be used by
-referencing them as `uberscript.types.<name>`, after importing
-`uberscript.types`.
+Paternosters adds a couple of other special types, which can be used by
+referencing them as `paternoster.types.<name>`, after importing
+`paternoster.types`.
 
 | Name | Category | Description |
 | ---- | -------- | ----------- |
@@ -94,17 +94,17 @@ referencing them as `uberscript.types.<name>`, after importing
 
 All custom types fall into one of two categories: "normal" or "factory":
 
-* Normal types can be supplied just as they are: `'type': uberscript.types.domain`.
-* Factory types require additional parameters to work properly: `'type': uberscript.types.restricted_str('a-z0-9')`.
+* Normal types can be supplied just as they are: `'type': paternoster.types.domain`.
+* Factory types require additional parameters to work properly: `'type': paternoster.types.restricted_str('a-z0-9')`.
 
 ### Custom Types
 
-Just like UberScripts implemets a couple custom types, the developer of
+Just like Paternosters implemets a couple custom types, the developer of
 a script can do the same. The argparse library is very flexible in this
 regard, so it should even be possible to parse and validate x.509-certificates,
 before passing their content to ansible, instead of their path.
 
-For further details refer to the `types.py`-file within UberScript or
+For further details refer to the `types.py`-file within Paternoster or
 the [documentation of argparse itself](https://docs.python.org/2/library/argparse.html#type).
 
 ### Dependencies
@@ -122,7 +122,7 @@ parameters=[
   }),
   ('namespace', 'e', {
     'help': 'use this namespace when adding a mail domain',
-    'type': uberscript.types.restricted_str('a-z0-9'),
+    'type': paternoster.types.restricted_str('a-z0-9'),
     'depends': 'mailserver',
   }),
 ]
@@ -144,7 +144,7 @@ code `1`.
 ### Success
 
 To display a customized message when the playbook executes successfully
-just set the `success_msg`-attribute of `UberScript`, just as demonstrated
+just set the `success_msg`-attribute of `Paternoster`, just as demonstrated
 in the boilerplate above. The message will be written to stdout as-is.
 
 ### Progress Messages
@@ -223,7 +223,7 @@ to make further changes, as the file is symlinked, not copied.
 ### Unit Tests
 
 The core functionality of this library can be tested using the `py.test`-
-command. New tests should be added to the `uberscript/test`-directory.
+command. New tests should be added to the `paternoster/test`-directory.
 Please refer to the [pytest-documentation](http://doc.pytest.org/) for
 further details.
 
