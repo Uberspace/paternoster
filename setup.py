@@ -14,4 +14,5 @@ setup(name='paternoster',
         'ansible==2.1.1.0',
         'pytest>=2.9.2',
       ],
-      zip_safe=False)
+      zip_safe=False,
+      )
