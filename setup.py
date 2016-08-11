@@ -1,13 +1,13 @@
 from setuptools import setup
 
-setup(name='uberscript',
+setup(name='paternoster',
       version='0.1',
       description='',
       author='Michael Lutonsky',
       author_email='ml@jonaspasche.com',
       packages=[
-        'uberscript',
-        'uberscript.runners',
+        'paternoster',
+        'paternoster.runners',
       ],
       install_requires=[
         'tldextract>=2.0.1',

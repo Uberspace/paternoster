@@ -6,7 +6,7 @@
       vars:
         script: |
           #!/bin/env python2.7
-          from uberscript.root import become_root
+          from paternoster.root import become_root
           import os
 
           print('UID:{}'.format(os.geteuid()))
@@ -28,7 +28,7 @@
         script_params: "'&& touch /root/foo'"
         script: |
           #!/bin/env python2.7
-          from uberscript.root import become_root
+          from paternoster.root import become_root
           become_root()
 
     - stat: path=/root/foo

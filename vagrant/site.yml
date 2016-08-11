@@ -24,7 +24,7 @@
     - command: python setup.py develop
       args:
         chdir: /vagrant
-        creates: /usr/lib/python2.7/site-packages/uberscript.egg-link
+        creates: /usr/lib/python2.7/site-packages/paternoster.egg-link
 
 - name: create test user
   hosts: all

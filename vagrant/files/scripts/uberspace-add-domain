@@ -1,14 +1,14 @@
 #!/bin/env python2.7
 
-import uberscript
-import uberscript.types
+import paternoster
+import paternoster.types
 
-s = uberscript.UberScript(
+s = paternoster.Paternoster(
   runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-add-domain.yml'},
   parameters=[
     ('domain', 'd', {
       'help': 'this is the domain to add to your uberspace',
-      'type': uberscript.types.domain(),
+      'type': paternoster.types.domain(),
       'required': True,
     }),
     ('webserver', 'w', {
@@ -21,7 +21,7 @@ s = uberscript.UberScript(
     }),
     ('namespace', 'e', {
       'help': 'use this namespace when adding a mail domain',
-      'type': uberscript.types.restricted_str('a-z0-9'),
+      'type': paternoster.types.restricted_str('a-z0-9'),
       'depends': 'mailserver',
     }),
   ],

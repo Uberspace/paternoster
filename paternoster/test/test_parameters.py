@@ -1,6 +1,6 @@
 import pytest
 
-from .. import UberScript, types
+from .. import Paternoster, types
 
 
 @pytest.mark.parametrize("args,valid", [
@@ -13,7 +13,7 @@ from .. import UberScript, types
   (['--namespace', 'a', '--mailserver'], True),
 ])
 def test_parameter_depends(args, valid):
-  s = UberScript(
+  s = Paternoster(
     runner_parameters={'playbook': ''},
     parameters=[
       ('mailserver', 'm', {
@@ -46,7 +46,7 @@ def test_parameter_depends(args, valid):
   ({'action': 'append_const', 'const': 5}, True),
 ])
 def test_forced_restricted_str(param, valid):
-  s = UberScript(
+  s = Paternoster(
     runner_parameters={'playbook': ''},
     parameters=[
       ('namespace', 'e', param),
@@ -68,7 +68,7 @@ class MockRunner:
 
 
 def test_parameter_passing():
-  s = UberScript(
+  s = Paternoster(
     runner_parameters={},
     parameters=[
       ('namespace', 'e', {'type': types.restricted_str('a')}),
@@ -82,7 +82,7 @@ def test_parameter_passing():
 
 
 def test_success_msg(capsys):
-  s = UberScript(
+  s = Paternoster(
     runner_parameters={},
     parameters=[],
     runner_class=MockRunner,

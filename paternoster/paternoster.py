@@ -8,7 +8,7 @@ from .runners.ansiblerunner import AnsibleRunner
 from .root import become_root, check_root
 
 
-class UberScript:
+class Paternoster:
   def __init__(self, runner_parameters, parameters, success_msg='executed successfully', runner_class=AnsibleRunner):
     self.parameters = parameters
     self.success_msg = success_msg

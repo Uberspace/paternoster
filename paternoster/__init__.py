@@ -1,1 +1,1 @@
-from .uberscript import UberScript
+from .paternoster import Paternoster

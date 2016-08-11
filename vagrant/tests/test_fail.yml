@@ -12,9 +12,9 @@
         script: |
           #!/bin/env python2.7
 
-          import uberscript
+          import paternoster
 
-          s = uberscript.UberScript(
+          s = paternoster.Paternoster(
             runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-unittest.yml'},
             parameters=[],
           ).auto()
