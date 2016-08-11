@@ -1,7 +1,8 @@
 # Paternoster
 
-This python library provides an easy and safe way to let ordinary users
-execute ansible playbooks as root.
+Paternoster provides users with the ability to run certain tasks as
+root or another user, while ensuring safety by providing a common
+interface and battle tested parameter parsing/checking.
 
 # Theory of Operation
 
