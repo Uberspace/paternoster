@@ -39,5 +39,5 @@ setup(name='paternoster',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 2 :: Only',
       ],
-      zip_safe=False,
+      zip_safe=True,
       )
