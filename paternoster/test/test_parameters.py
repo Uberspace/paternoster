@@ -1,4 +1,5 @@
 import pytest
+import six
 
 from .. import Paternoster, types
 
@@ -32,10 +33,10 @@ def test_parameter_depends(args, valid):
     s.parse_args(args)
 
 
-@pytest.mark.parametrize("param,valid", [
+@pytest.mark.parametrize("param,valid", filter(lambda x: x is not None, [
   ({}, False),
   ({'type': str}, False),
-  ({'type': unicode}, False),
+  ({'type': unicode}, False) if six.PY2 else None,
   ({'type': types.restricted_str('a')}, True),
   ({'type': lambda x: x}, True),
   ({'action': 'store_true'}, True),
@@ -45,7 +46,7 @@ def test_parameter_depends(args, valid):
   ({'action': 'append', 'type': str}, False),
   ({'action': 'append', 'type': types.restricted_str('a')}, True),
   ({'action': 'append_const', 'const': 5}, True),
-])
+]))
 def test_forced_restricted_str(param, valid):
   s = Paternoster(
     runner_parameters={'playbook': ''},

@@ -24,6 +24,7 @@ setup(name='paternoster',
         'tldextract>=2.0.1',
         'ansible==2.1.1.0',
         'pytest>=2.9.2',
+        'six',
       ],
       classifiers=[
         'Development Status :: 4 - Beta',

@@ -3,6 +3,9 @@ from __future__ import print_function
 import argparse
 import sys
 import os.path
+import inspect
+
+import six
 
 from .runners.ansiblerunner import AnsibleRunner
 from .root import become_root, check_root
@@ -21,6 +24,19 @@ class Paternoster:
       if name == fname or short == fname:
         return (name, short, param)
 
+  def _check_type(self, argParams):
+    action_whitelist = ('store_true', 'store_false', 'store_const', 'append_const', 'count')
+    action = argParams.get('action', 'store')
+
+    if 'type' not in argParams and action not in action_whitelist:
+      raise ValueError('a type must be specified for each user-supplied argument')
+
+    type = argParams.get('type', str)
+    is_str_type = inspect.isclass(type) and issubclass(type, six.string_types)
+
+    if is_str_type and action not in action_whitelist:
+      raise ValueError('restricted_str instead of str or unicode must be used for all string arguments')
+
   def _build_argparser(self):
     parser = argparse.ArgumentParser(add_help=False)
     requiredArgs = parser.add_argument_group('required arguments')
@@ -35,9 +51,7 @@ class Paternoster:
       argParams = param.copy()
       argParams.pop('depends', None)
 
-      if ('type' not in argParams or argParams['type'] in (str, unicode)) and \
-          argParams.get('action', 'store') not in ('store_true', 'store_false', 'store_const', 'append_const', 'count'):
-        raise ValueError('restricted_str must be used for all string arguments')
+      self._check_type(argParams)
 
       if param.get('required', False):
         requiredArgs.add_argument('-' + short, '--' + name, **argParams)
