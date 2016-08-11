@@ -188,9 +188,7 @@ python setup.py develop
 ```
 
 This project uses python 2.7, because python 3.x is not yet supported by
-ansible. The library code is aimed to be compatible with both python 2
-and 3. However, because of the current lack of python 3 support of the
-ansible API this is currently not tested.
+ansible. All non-ansible code is tested with python 3.5 as well.
 
 ### Vagrant
 
@@ -223,8 +221,10 @@ to make further changes, as the file is symlinked, not copied.
 
 ### Unit Tests
 
-The core functionality of this library can be tested using the `py.test`-
-command. New tests should be added to the `paternoster/test`-directory.
+The core functionality of this library can be tested using the `tox`-
+command. If only python 2.x or 3.x should be tested, the `-e` parameter
+can be used, like so: `tox -e py35`, `tox -e py27`. New tests should be
+added to the `paternoster/test`-directory.
 Please refer to the [pytest-documentation](http://doc.pytest.org/) for
 further details.
 
