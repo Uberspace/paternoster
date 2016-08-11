@@ -3,8 +3,8 @@ from setuptools import setup
 setup(name='paternoster',
       version='0.1',
       description='',
-      author='Michael Lutonsky',
-      author_email='ml@jonaspasche.com',
+      author='uberspace.de',
+      author_email='hallo@uberspace.de',
       packages=[
         'paternoster',
         'paternoster.runners',
