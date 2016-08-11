@@ -37,6 +37,7 @@ def test_parameter_depends(args, valid):
   ({'type': str}, False),
   ({'type': unicode}, False),
   ({'type': types.restricted_str('a')}, True),
+  ({'type': lambda x: x}, True),
   ({'action': 'store_true'}, True),
   ({'action': 'store_false'}, True),
   ({'action': 'store_const', 'const': 5}, True),
