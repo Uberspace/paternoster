@@ -66,6 +66,7 @@ To get a basic environment up and running, use the following commands:
 virtualenv venv --python python2.7
 source venv/bin/activate
 python setup.py develop
+pip install -r dev-requirements.txt
 ```
 
 This project uses python 2.7, because python 3.x is not yet supported by

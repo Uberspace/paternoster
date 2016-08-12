@@ -25,6 +25,10 @@
       args:
         chdir: /vagrant
         creates: /usr/lib/python2.7/site-packages/paternoster.egg-link
+    - name: install development requirements
+      pip:
+        requirements: /vagrant/dev-requirements.txt
+        executable: pip2.7
 
 - name: create test user
   hosts: all
