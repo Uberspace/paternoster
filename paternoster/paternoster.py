@@ -13,14 +13,14 @@ from .root import become_root, check_root
 
 class Paternoster:
   def __init__(self, runner_parameters, parameters, success_msg='executed successfully', runner_class=AnsibleRunner):
-    self.parameters = parameters
-    self.success_msg = success_msg
+    self._parameters = parameters
+    self._success_msg = success_msg
     self._sudo_user = None
     self._runner = runner_class(**runner_parameters)
 
   def _find_param(self, fname):
     """ look for a parameter by either its short- or long-name """
-    for name, short, param in self.parameters:
+    for name, short, param in self._parameters:
       if name == fname or short == fname:
         return (name, short, param)
 
@@ -47,7 +47,7 @@ class Paternoster:
       help='show this help message and exit'
     )
 
-    for name, short, param in self.parameters:
+    for name, short, param in self._parameters:
       argParams = param.copy()
       argParams.pop('depends', None)
 
@@ -66,7 +66,7 @@ class Paternoster:
     return parser
 
   def _check_arg_dependencies(self, parser, args):
-    for name, short, param in self.parameters:
+    for name, short, param in self._parameters:
       if 'depends' in param and getattr(args, name, None) and not getattr(args, param['depends'], None):
         parser.error(
           'argument --{} (-{}) requires --{} (-{}) to be present.'.format(
@@ -118,5 +118,5 @@ class Paternoster:
   def execute(self):
     status = self._runner.run(self._get_runner_variables(), self._parsed_args.verbose)
     if status:
-      print(self.success_msg)
+      print(self._success_msg)
     return status
