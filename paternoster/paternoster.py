@@ -24,6 +24,8 @@ class Paternoster:
       if name == fname or short == fname:
         return (name, short, param)
 
+    raise KeyError('Parameter {0} could not be found'.format(fname))
+
   def _check_type(self, argParams):
     """ assert that an argument does not use a string type opposed to an restricted_str, else raise a ValueError """
     action_whitelist = ('store_true', 'store_false', 'store_const', 'append_const', 'count')
