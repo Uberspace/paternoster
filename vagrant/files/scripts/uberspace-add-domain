@@ -26,4 +26,4 @@ s = paternoster.Paternoster(
     }),
   ],
   success_msg='Your domain has been added successfully.',
-).auto()
+).auto(become_root=True)
