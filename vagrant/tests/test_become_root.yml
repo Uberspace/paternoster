@@ -1,4 +1,4 @@
-- name: test become_root
+- name: test become_user
   hosts: all
   gather_facts: no
   tasks:
@@ -6,11 +6,11 @@
       vars:
         script: |
           #!/bin/env python2.7
-          from paternoster.root import become_root
+          from paternoster.root import become_user
           import os
 
           print('UID:{}'.format(os.geteuid()))
-          user = become_root()
+          user = become_user('root')
           print(user)
 
     - assert:
@@ -19,7 +19,29 @@
           - "script.stdout_lines[1] == 'UID:0'"
           - "script.stdout_lines[2] == 'vagrant'"
 
-- name: become_root should not execute addtional commands
+- name: test become_user parameter
+  hosts: all
+  gather_facts: no
+  tasks:
+    - include: drop_script.yml
+      vars:
+        script: |
+          #!/bin/env python2.7
+          import os
+          from paternoster.root import become_user
+          print('UID:{}'.format(os.geteuid()))
+          become_user('testy')
+
+    - stat: path=/root/foo
+      become: yes
+      register: testfile
+
+    - assert:
+        that:
+          - "script.stdout_lines[0] == 'UID:1000'"
+          - "script.stdout_lines[1] == 'UID:1001'"
+
+- name: become_user should not execute addtional commands
   hosts: all
   gather_facts: no
   tasks:
@@ -28,8 +50,8 @@
         script_params: "'&& touch /root/foo'"
         script: |
           #!/bin/env python2.7
-          from paternoster.root import become_root
-          become_root()
+          from paternoster.root import become_user
+          become_user('root')
 
     - stat: path=/root/foo
       become: yes

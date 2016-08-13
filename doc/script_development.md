@@ -21,11 +21,14 @@ paternoster.Paternoster(
 ```
 
 In this case the `auto()`-method-call executes all neccesary steps (become
-root, parse arguments, execute playbook) at once. Whether the playbook
-should be executed with root privileges, can be controlled by the `become_root`-
-parameter. It is also possible to enforce that only the root user can start
-the script by passing `check_root=True`. Note that these parameters are
-exclusive.
+root, parse arguments, execute playbook) at once. Which user should ultimately
+execute the script is determined by these three parameters:
+
+* `become_user`: string; execute as the given user, e.g. `nginx`
+* `become_root`: boolean; execute as root, alias for `become_user='root'`
+* `check_root`: boolean; abort, if the user is not already root
+
+Note that these parameters are mutually exclusive.
 
 ## Parameters
 

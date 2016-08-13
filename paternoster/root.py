@@ -1,16 +1,17 @@
 import os
 import sys
+import pwd
 import re
 
 
-def become_root():
-    if os.geteuid() != 0:
+def become_user(user):
+    if os.geteuid() != pwd.getpwnam(user).pw_uid:
         # flush output buffers. Otherwise the output before the
         # become_root()-call might be never shown to the user
         sys.stdout.flush()
         sys.stderr.flush()
         # -n disables password prompt, when sudo isn't configured properly
-        os.execv('/usr/bin/sudo', ['/usr/bin/sudo', '-n', '--'] + sys.argv)
+        os.execv('/usr/bin/sudo', ['/usr/bin/sudo', '-u', user, '-n', '--'] + sys.argv)
     else:
         sudouser = os.environ.get('SUDO_USER', None)
         # $SUDO_USER is set directly by sudo, so users should not be alble

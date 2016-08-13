@@ -8,7 +8,7 @@ import inspect
 import six
 
 from .runners.ansiblerunner import AnsibleRunner
-from .root import become_root, check_root
+from .root import become_user, check_root
 
 
 class Paternoster:
@@ -77,26 +77,28 @@ class Paternoster:
                     )
                 )
 
-    def become_root(self):
-        try:
-            self._sudo_user = become_root()
-        except ValueError as e:
-            print(e, file=sys.stderr)
-            sys.exit(1)
-
     def check_root(self):
         if not check_root():
             print('This script can only be used by the root user.', file=sys.stderr)
             sys.exit(1)
 
-    def auto(self, become_root=False, check_root=False):
-        if check_root and become_root:
-            raise ValueError('check_root and become_root can not be supplied together')
+    def become_user(self, user):
+        try:
+            self._sudo_user = become_user(user)
+        except ValueError as e:
+            print(e, file=sys.stderr)
+            sys.exit(1)
+
+    def auto(self, become_root=False, become_user=None, check_root=False):
+        if sum([bool(become_root), bool(become_user), bool(check_root)]) > 1:
+            raise ValueError('check_root, become_user and become_root can not be supplied together')
 
         if check_root:
             self.check_root()
+        if become_user:
+            self.become_user(become_user)
         if become_root:
-            self.become_root()
+            self.become_user('root')
         self.parse_args()
         status = self.execute()
         sys.exit(0 if status else 1)
