@@ -1,6 +1,8 @@
 from __future__ import print_function
 
 import sys
+import os
+import os.path
 from collections import namedtuple
 
 # Verbosity within ansbible is controlled by the Display-class. Each and
@@ -111,5 +113,6 @@ class AnsibleRunner:
 
   def run(self, variables, verbose):
     self._check_playbook()
+    os.chdir(os.path.dirname(self._playbook))
     status = self._get_playbook_executor(variables, verbose).run()
     return True if status == 0 else False
