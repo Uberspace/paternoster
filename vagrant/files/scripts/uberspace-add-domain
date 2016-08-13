@@ -4,26 +4,26 @@ import paternoster
 import paternoster.types
 
 s = paternoster.Paternoster(
-  runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-add-domain.yml'},
-  parameters=[
-    ('domain', 'd', {
-      'help': 'this is the domain to add to your uberspace',
-      'type': paternoster.types.domain(),
-      'required': True,
-    }),
-    ('webserver', 'w', {
-      'help': 'add domain to the webserver configuration',
-      'action': 'store_true',
-    }),
-    ('mailserver', 'm', {
-      'help': 'add domain to the mailserver configuration',
-      'action': 'store_true'
-    }),
-    ('namespace', 'e', {
-      'help': 'use this namespace when adding a mail domain',
-      'type': paternoster.types.restricted_str('a-z0-9'),
-      'depends': 'mailserver',
-    }),
-  ],
-  success_msg='Your domain has been added successfully.',
+    runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-add-domain.yml'},
+    parameters=[
+        ('domain', 'd', {
+            'help': 'this is the domain to add to your uberspace',
+            'type': paternoster.types.domain(),
+            'required': True,
+        }),
+        ('webserver', 'w', {
+            'help': 'add domain to the webserver configuration',
+            'action': 'store_true',
+        }),
+        ('mailserver', 'm', {
+            'help': 'add domain to the mailserver configuration',
+            'action': 'store_true'
+        }),
+        ('namespace', 'e', {
+            'help': 'use this namespace when adding a mail domain',
+            'type': paternoster.types.restricted_str('a-z0-9'),
+            'depends': 'mailserver',
+        }),
+    ],
+    success_msg='Your domain has been added successfully.',
 ).auto(become_root=True)
