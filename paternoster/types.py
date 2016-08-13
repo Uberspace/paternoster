@@ -1,5 +1,4 @@
 import re
-
 import tldextract
 
 
@@ -21,7 +20,7 @@ class domain:
       raise ValueError('domain too long')
     if not re.match(self.DOMAIN_REGEX, val):
       raise ValueError('invalid domain')
-    if not tldextract.extract(val).suffix:
+    if not tldextract.TLDExtract(suffix_list_urls=[])(val).suffix:
       raise ValueError('invalid domain suffix')
 
     return domain
