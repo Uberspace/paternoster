@@ -107,7 +107,7 @@ class AnsibleRunner:
     if not os.path.isabs(self._playbook):
       raise ValueError('path to playbook must be absolute')
     if not os.path.isfile(self._playbook):
-      raise ValueError('playbook must exist and must not be a link')
+      raise ValueError('playbook must exist')
 
   def run(self, variables, verbose):
     self._check_playbook()
