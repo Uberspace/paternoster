@@ -4,8 +4,6 @@ Paternoster provides users with the ability to run certain tasks as
 root or another user, while ensuring safety by providing a common
 interface and battle tested parameter parsing/checking.
 
-# Theory of Operation
-
 The developer writes a small python script (10-30 lines, most of which
 is a `dict`) which initializes Paternoster. Following a method call the
 library takes over, parses user-given arguments, validates their
