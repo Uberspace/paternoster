@@ -2,6 +2,7 @@ import pytest
 import six
 
 from .. import Paternoster, types
+from .mockrunner import MockRunner
 
 
 @pytest.mark.parametrize("args,valid", [
@@ -101,13 +102,6 @@ def test_parameter_required(required, argv, valid):
             s.parse_args(argv)
     else:
         s.parse_args(argv)
-
-
-class MockRunner:
-    def run(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-        return True
 
 
 def test_parameter_passing():
