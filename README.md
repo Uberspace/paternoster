@@ -24,6 +24,30 @@ Before parsing parameters Paternoster executes itself as root via sudo.
 Combined with a proper sudoers-config this ensures that the script has
 not been copied somewhere else and is unmodified.
 
+# Deployment
+
+## sudo
+
+If you are planning to let users execute certain commands as root,
+a few changes to your `sudo`-configuration are needed. boils down to:
+
+```
+ALL ALL = NOPASSWD: /usr/local/bin/your-script-name
+```
+
+This line allows *any* user to execute the given command as root.
+If you're using the `become_user`-parameter the config needs to be
+changed to allow that.
+
+Pleas refer to the [`sudoers(5)`-manpage](https://www.sudo.ws/man/1.8.17/sudoers.man.html) for details.
+
+## Notes
+
+* this library makes use of the `tldextract`-module. Internally this
+  relies on a list of top level domains, which changes every so often.
+  Execute the `tldextract --update`-command as root in a cronjob or
+  similar to keep the list up to date.
+
 # Script-Development
 
 A typical boilerplate for Paternoster looks like this:
