@@ -1,1 +1,5 @@
+# do not ever do this in production. this is just to allow
+# the unittests to use _any_ user. On a production system
+# this can have serious security consequences!
+
 ALL ALL=(ALL) NOPASSWD: /usr/local/bin/{{ item|basename }}
