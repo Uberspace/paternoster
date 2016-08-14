@@ -33,6 +33,25 @@ def test_parameter_depends(args, valid):
         s.parse_args(args)
 
 
+def test_find_param():
+    s = Paternoster(
+        runner_parameters={},
+        parameters=[
+            ('namespace', 'e', {'type': types.restricted_str('a')}),
+            ('mailserver', 'm', {'action': 'store_true'}),
+        ],
+        runner_class=MockRunner
+    )
+
+    assert s._find_param('e')[0] == 'namespace'
+    assert s._find_param('m')[0] == 'mailserver'
+    assert s._find_param('namespace')[1] == 'e'
+    assert s._find_param('mailserver')[1] == 'm'
+
+    with pytest.raises(KeyError):
+        s._find_param('somethingelse')
+
+
 @pytest.mark.parametrize("param,valid", filter(lambda x: x is not None, [
     ({}, False),
     ({'type': str}, False),
