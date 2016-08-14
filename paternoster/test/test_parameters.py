@@ -81,6 +81,28 @@ def test_forced_restricted_str(param, valid):
         s.parse_args([])
 
 
+@pytest.mark.parametrize("required,argv,valid", [
+    (True, ['-e', 'aa'], True),
+    (True, [], False),
+    (False, ['-e', 'aa'], True),
+    (False, [], True),
+])
+def test_parameter_required(required, argv, valid):
+    s = Paternoster(
+        runner_parameters={},
+        parameters=[
+            ('namespace', 'e', {'type': types.restricted_str('a'), 'required': required}),
+        ],
+        runner_class=MockRunner
+    )
+
+    if not valid:
+        with pytest.raises(SystemExit):
+            s.parse_args(argv)
+    else:
+        s.parse_args(argv)
+
+
 class MockRunner:
     def run(self, *args, **kwargs):
         self.args = args
