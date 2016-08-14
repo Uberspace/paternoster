@@ -91,7 +91,7 @@ class Paternoster:
 
     def auto(self, become_root=False, become_user=None, check_root=False):
         if sum([bool(become_root), bool(become_user), bool(check_root)]) > 1:
-            raise ValueError('check_root, become_user and become_root can not be supplied together')
+            raise ValueError('check_root, become_user and become_root cannot be supplied together')
 
         if check_root:
             self.check_root()
