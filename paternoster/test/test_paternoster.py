@@ -3,6 +3,8 @@
 import pytest
 import sys
 
+from .mockrunner import MockRunner
+
 
 @pytest.mark.parametrize("args,kwargs,valid", [
     [[], {'become_root': False, 'become_user': None, 'check_root': False}, True],
@@ -32,3 +34,21 @@ def test_auto(args, kwargs, valid, monkeypatch):
             p.auto(*args, **kwargs)
     else:
         p.auto(*args, **kwargs)
+
+
+@pytest.mark.parametrize("status,rc", [
+    (True, 0),
+    (False, 1),
+])
+def test_auto_returncode(status, rc):
+    from ..paternoster import Paternoster
+
+    p = Paternoster(
+        runner_parameters={'result': status},
+        parameters=[], runner_class=MockRunner
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        p.auto()
+
+    assert excinfo.value[0] == rc
