@@ -15,6 +15,8 @@ def test_playbook_validation(args, kwargs, isfilertn, valid, monkeypatch):
     if isfilertn is not None:
         monkeypatch.setattr(os.path, 'isfile', lambda *args, **kwargs: isfilertn)
 
+    monkeypatch.setattr(os, 'chdir', lambda *args, **kwargs: None)
+
     try:
         if not valid:
             with pytest.raises(ValueError):
