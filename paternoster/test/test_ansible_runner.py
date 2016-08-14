@@ -25,3 +25,32 @@ def test_playbook_validation(args, kwargs, isfilertn, valid, monkeypatch):
             AnsibleRunner(*args, **kwargs).run({}, False)
     except AnsibleFileNotFound:
         pass
+
+
+@pytest.mark.parametrize("task,exp_out,exp_err,exp_status", [
+    ("debug: msg=hi", "hi\n", "", True),
+    ("debug: var=param_foo", "22\n", "", True),
+    ("command: echo hi", "", "", True),
+    ("fail: msg=42", "", "42\n", False),
+])
+def test_fail_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
+    import os
+    from ..runners.ansiblerunner import AnsibleRunner
+
+    playbook_path = '/tmp/paternoster-test-playbook.yml'
+    playbook = """
+    - hosts: all
+      gather_facts: no
+      tasks:
+        - """ + task
+
+    with open(playbook_path, 'w') as f:
+        f.write(playbook)
+
+    monkeypatch.setattr(os, 'chdir', lambda *args, **kwargs: None)
+    status = AnsibleRunner(playbook_path).run([('param_foo', 22)], False)
+
+    out, err = capsys.readouterr()
+    assert out == exp_out
+    assert err == exp_err
+    assert status == exp_status
