@@ -27,6 +27,37 @@ def test_playbook_validation(args, kwargs, isfilertn, valid, monkeypatch):
         pass
 
 
+@pytest.mark.parametrize("verbosity,keywords,notkeywords", [
+    (False, [], ["TASK [debug]", "PLAY RECAP"]),
+    (True, ["TASK [debug]", "PLAY RECAP"], ["ESTABLISH LOCAL CONNECTION"]),
+    (3, ["TASK [debug]", "PLAY RECAP", "task path"], []),
+])
+def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
+    import os
+    from ..runners.ansiblerunner import AnsibleRunner
+
+    playbook_path = '/tmp/paternoster-test-playbook.yml'
+    playbook = """
+    - hosts: all
+      gather_facts: no
+      tasks:
+        - debug: msg=a
+    """
+
+    with open(playbook_path, 'w') as f:
+        f.write(playbook)
+
+    monkeypatch.setattr(os, 'chdir', lambda *args, **kwargs: None)
+    AnsibleRunner(playbook_path).run([], verbosity)
+
+    out, err = capsys.readouterr()
+
+    for kw in keywords:
+        assert (kw in out) or (kw in err)
+    for kw in notkeywords:
+        assert (kw not in out) and (kw not in err)
+
+
 @pytest.mark.parametrize("task,exp_out,exp_err,exp_status", [
     ("debug: msg=hi", "hi\n", "", True),
     ("debug: var=param_foo", "22\n", "", True),
