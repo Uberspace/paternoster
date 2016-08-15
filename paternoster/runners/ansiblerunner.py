@@ -42,12 +42,13 @@ class MinimalAnsibleCallback(CallbackBase):
 
     def v2_runner_on_ok(self, result):
         result = result._result
-        args = result['invocation']['module_args']
-        if result['invocation']['module_name'] == 'debug':
-            if 'var' in args:
-                print(result[args['var']])
-            if 'msg' in args:
-                print(args['msg'])
+        if 'invocation' in result:
+            if result['invocation'].get('module_name', None) == 'debug':
+                args = result['invocation'].get('module_args', None)
+                if 'var' in args:
+                    print(result[args['var']])
+                if 'msg' in args:
+                    print(args['msg'])
 
 
 class AnsibleRunner:
