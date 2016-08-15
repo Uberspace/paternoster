@@ -16,12 +16,18 @@ class domain:
         if self._wildcard and val.startswith('*.'):
             val = val[2:]
 
+        extracted = tldextract.TLDExtract(suffix_list_urls=[])(val)
+
         if any(map(lambda p: len(p) > 63, val.split('.'))) or len(val) > 255:
             raise ValueError('domain too long')
+        if val.count('.') < 1:
+            raise ValueError('domain has too few components')
         if not re.match(self.DOMAIN_REGEX, val):
             raise ValueError('invalid domain')
-        if not tldextract.TLDExtract(suffix_list_urls=[])(val).suffix:
+        if not extracted.suffix:
             raise ValueError('invalid domain suffix')
+        if not extracted.domain:
+            raise ValueError('invalid domain')
 
         return domain
 
