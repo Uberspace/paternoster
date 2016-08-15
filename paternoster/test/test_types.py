@@ -10,12 +10,20 @@ import pytest
     ("uberspace.deee", False, False),
     ("-bla.com", False, False),
     ("a42'.com", False, False),
+    ('some"thing.com', False, False),
     ("*.google.at", False, False),
     ("*.google.at", True, True),
     ("foo.*.google.at", True, False),
     ("foo.*", True, False),
+    ('someth\x00ing.com', False, False),
+    ('something', False, False),
+    ('*.de', True, False),
+    ('*', True, False),
+    ('*.*.de', True, False),
+    ('*.', True, False),
     ("a" * 65 + ".com", False, False),
     (("a" * 40 + '.') * 8 + "com", False, False),
+    ('', False, False),
 ])
 def test_type_domain(value, wildcard, valid):
     from ..types import domain
