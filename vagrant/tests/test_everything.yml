@@ -1,0 +1,27 @@
+- name: test parameter passing with sudo in one go
+  hosts: all
+  gather_facts: no
+  tasks:
+    - include: drop_script.yml
+      vars:
+        script_params: -d aaaa
+        playbook: |
+          - hosts: all
+            tasks:
+              - debug: var=param_domain
+        script: |
+          #!/bin/env python2.7
+
+          import paternoster
+          import paternoster.types
+
+          s = paternoster.Paternoster(
+            runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-unittest.yml'},
+            parameters=[
+              ('domain', 'd', { 'type': paternoster.types.restricted_str('a-z') }),
+            ],
+          ).auto(become_root=True)
+
+    - assert:
+        that:
+          - "script.stdout_lines[0] == 'aaaa'"
