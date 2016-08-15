@@ -37,21 +37,24 @@ def test_type_domain(value, wildcard, valid):
         check(value)
 
 
-@pytest.mark.parametrize("allowed_chars,minlen,maxlen,value,valid", [
-    ("a-z", None, None, "aaaaaabb", True),
-    ("a-z", None, None, "aaaaaabb2", False),
-    ("b", None, None, "bbbb", True),
-    ("b", None, None, "a", False),
-    ("a-z0-9", None, None, "aaaaaabb2", True),
-    ("a", 3, None, "a" * 2, False),
-    ("a", None, 5, "a" * 5, True),
-    ("a", None, 5, "a" * 6, False),
-    ("a", 3, 5, "a" * 4, True),
+@pytest.mark.parametrize("allowed_chars,regex,minlen,maxlen,value,valid", [
+    ("a-z", None, None, None, "aaaaaabb", True),
+    ("a-z", None, None, None, "aaaaaabb2", False),
+    ("b", None, None, None, "bbbb", True),
+    ("b", None, None, None, "a", False),
+    ("a-z0-9", None, None, None, "aaaaaabb2", True),
+    ("a", None, 3, None, "a" * 2, False),
+    ("a", None, None, 5, "a" * 5, True),
+    ("a", None, None, 5, "a" * 6, False),
+    ("a", None, 3, 5, "a" * 4, True),
+    ("a-z", None, None, None, "aaaaaabb", True),
+    (None, '^[a-z]$', None, None, "a", True),
+    (None, '^[a-z]$', None, None, "aa", False),
 ])
-def test_type_restricted_str(allowed_chars, minlen, maxlen, value, valid):
+def test_type_restricted_str(allowed_chars, regex, minlen, maxlen, value, valid):
     from ..types import restricted_str
 
-    check = restricted_str(allowed_chars, minlen, maxlen)
+    check = restricted_str(allowed_chars=allowed_chars, regex=regex, minlen=minlen, maxlen=maxlen)
 
     if not valid:
         with pytest.raises(ValueError):
@@ -60,11 +63,21 @@ def test_type_restricted_str(allowed_chars, minlen, maxlen, value, valid):
         check(value)
 
 
-def test_type_restricted_str_ctor():
+@pytest.mark.parametrize('allowed_chars,regex,minlen,maxlen,valid', [
+    ("a", None, 100, 0, False),
+    ("a", "^aa$", None, None, False),
+    (None, "a", None, None, False),
+    (None, "^a", None, None, False),
+    (None, "a$", None, None, False),
+])
+def test_type_restricted_str_ctor(allowed_chars, regex, minlen, maxlen, valid):
     from ..types import restricted_str
 
-    with pytest.raises(ValueError):
-        restricted_str("a", 100, 0)
+    if not valid:
+        with pytest.raises(ValueError):
+            restricted_str(allowed_chars=allowed_chars, regex=regex, minlen=minlen, maxlen=maxlen)
+    else:
+        restricted_str(allowed_chars=allowed_chars, regex=regex, minlen=minlen, maxlen=maxlen)
 
 
 def test_type_restricted_str_minlen_default():

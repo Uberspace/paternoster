@@ -65,7 +65,7 @@ referencing them as `paternoster.types.<name>`, after importing
 | Name | Category | Description |
 | ---- | -------- | ----------- |
 | `domain` | factory | a domain with valid length, format and tld |
-| `restricted_str` | factory | string which only allows certain characters given in regex-format (e.g. `a-z0-9`). Additonally a `minlen` (default `1`) and `maxlen` (default `255`) can be passed to restrict the strings length. |
+| `restricted_str` | factory | string which only allows certain characters given in regex-format (e.g. `a-z0-9`). Alternatively a regex can be supplied using the `regex`-parameter. This regex must be anchored. Additonally a `minlen` (default `1`) and `maxlen` (default `255`) can be passed to restrict the strings length. |
 | `restricted_int` | factory | integer which can be restricted by a `minimum` and `maximum`-value, both of which are inclusive |
 
 All custom types fall into one of two categories: "normal" or "factory":

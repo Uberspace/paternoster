@@ -35,13 +35,24 @@ class domain:
 class restricted_str:
     __name__ = 'string'
 
-    def __init__(self, allowed_chars, minlen=1, maxlen=255):
+    def __init__(self, allowed_chars=None, regex=None, minlen=1, maxlen=255):
         if minlen is not None and maxlen is not None and minlen > maxlen:
             raise ValueError('minlen must be smaller than maxlen')
+        if not allowed_chars and not regex:
+            raise ValueError('either allowed_chars or regex must be supplied')
+        if allowed_chars and regex:
+            raise ValueError('allowed_chars or regex are mutally exclusive')
 
-        # construct a regex matching a arbitrary number of characters within
-        # the given set.
-        self._regex = re.compile('^[{}]+$'.format(allowed_chars))
+        if allowed_chars:
+            # construct a regex matching a arbitrary number of characters within
+            # the given set.
+            self._regex = re.compile('^[{}]+$'.format(allowed_chars))
+        elif regex:
+            if not regex.startswith('^') or not regex.endswith('$'):
+                raise ValueError('regex must be anchored')
+
+            self._regex = re.compile(regex)
+
         self._minlen = minlen
         self._maxlen = maxlen
 
