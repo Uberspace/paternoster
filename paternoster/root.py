@@ -16,7 +16,7 @@ def become_user(user):
         sudouser = os.environ.get('SUDO_USER', None)
         # $SUDO_USER is set directly by sudo, so users should not be alble
         # to trick here. Better be safe, than sorry, though.
-        if sudouser and re.match('[a-z][a-z0-9]{0,20}', sudouser):
+        if sudouser and re.match('^[a-z][a-z0-9]{0,20}$', sudouser):
             return sudouser
         else:
             raise ValueError('invalid username: "{}"'.format(sudouser))
