@@ -51,4 +51,4 @@ def test_auto_returncode(status, rc):
     with pytest.raises(SystemExit) as excinfo:
         p.auto()
 
-    assert excinfo.value[0] == rc
+    assert excinfo.value.code == rc

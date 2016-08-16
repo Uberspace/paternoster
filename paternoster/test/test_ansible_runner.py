@@ -1,3 +1,4 @@
+import sys
 import pytest
 
 
@@ -27,6 +28,7 @@ def test_playbook_validation(args, kwargs, isfilertn, valid, monkeypatch):
         pass
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 0), reason="requires python2")
 @pytest.mark.parametrize("verbosity,keywords,notkeywords", [
     (False, [], ["TASK [debug]", "PLAY RECAP"]),
     (True, ["TASK [debug]", "PLAY RECAP"], ["ESTABLISH LOCAL CONNECTION"]),
@@ -58,6 +60,7 @@ def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
         assert (kw not in out) and (kw not in err)
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 0), reason="requires python2")
 @pytest.mark.parametrize("task,exp_out,exp_err,exp_status", [
     ("debug: msg=hi", "hi\n", "", True),
     ("debug: var=param_foo", "22\n", "", True),
