@@ -1,5 +1,7 @@
 # Paternoster
 
+<img align="left" height="150" src="logo.png">
+
 Paternoster provides users with the ability to run certain tasks as
 root or another user, while ensuring safety by providing a common
 interface and battle tested parameter parsing/checking.
