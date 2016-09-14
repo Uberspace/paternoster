@@ -26,6 +26,12 @@ Before parsing parameters Paternoster executes itself as root via sudo.
 Combined with a proper sudoers-config this ensures that the script has
 not been copied somewhere else and is unmodified.
 
+## License
+
+All code in this repository (including this document) is licensed under
+the MIT license. The logo (both the png and svg versions) is licensed
+unter the [CC-BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.
+
 # Deployment
 
 ## sudo
