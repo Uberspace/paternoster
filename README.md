@@ -203,3 +203,14 @@ There are several parameters to control the behaviour of `drop_script.yml`:
 | `playbook` | yes (default: empty) | the **content** of a playbook to save as `/opt/uberspace/playbooks/uberspace-unittest.yml` |
 | `ignore_script_errors` | yes (default: `false`) | whether to continue even if python script has a non-zero exitcode |
 | `script_params` | yes (default: empty) | command line parameters for the script (e.g. `"--domain foo.com"`) |
+
+# PyPI
+
+Assuming you have been handed the required credentials, the package on
+PyPI can be updated like this:
+
+```
+rm dist/*
+python setup.py sdist bdist_wheel
+twine upload dist/*
+```
