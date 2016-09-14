@@ -34,6 +34,10 @@ unter the [CC-BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) 
 
 # Deployment
 
+## Python-Module
+
+The python module can be installed using pip: `pip install paternoster`.
+
 ## sudo
 
 If you are planning to let users execute certain commands as root,
