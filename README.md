@@ -2,8 +2,6 @@
 
 <img align="left" height="150" src="logo.png">
 
-[![Build Status](https://travis-ci.org/Uberspace/paternoster.svg?branch=master)](https://travis-ci.org/Uberspace/paternoster)
-
 Paternoster provides users with the ability to run certain tasks as
 root or another user, while ensuring safety by providing a common
 interface and battle tested parameter parsing/checking.
@@ -14,6 +12,8 @@ library takes over, parses user-given arguments, validates their
 contents and passes them on to a given ansible playbook via the ansible
 python module. All parameters are checked for proper types (including
 more complicated checks like domain-validity).
+
+[![Build Status](https://travis-ci.org/Uberspace/paternoster.svg?branch=master)](https://travis-ci.org/Uberspace/paternoster)
 
 ## Security
 
