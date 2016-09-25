@@ -2,6 +2,8 @@
 
 <img align="left" height="150" src="logo.png">
 
+[![Build Status](https://travis-ci.org/Uberspace/paternoster.svg?branch=master)](https://travis-ci.org/Uberspace/paternoster)
+
 Paternoster provides users with the ability to run certain tasks as
 root or another user, while ensuring safety by providing a common
 interface and battle tested parameter parsing/checking.
