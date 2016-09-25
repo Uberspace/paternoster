@@ -1,0 +1,5 @@
+language: python
+python:
+  - "3.5"
+install: pip -q install tox
+script: tox
