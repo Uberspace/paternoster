@@ -1,4 +1,5 @@
 import os
+import os.path
 import sys
 import pwd
 import re
@@ -10,8 +11,12 @@ def become_user(user):
         # become_root()-call might be never shown to the user
         sys.stdout.flush()
         sys.stderr.flush()
+
+        # resolve symlinks, so the path given in sudo-config matches
+        realme = os.path.realpath(sys.argv[0])
+
         # -n disables password prompt, when sudo isn't configured properly
-        os.execv('/usr/bin/sudo', ['/usr/bin/sudo', '-u', user, '-n', '--'] + sys.argv)
+        os.execv('/usr/bin/sudo', ['/usr/bin/sudo', '-u', user, '-n', '--', realme] + sys.argv[1:])
     else:
         sudouser = os.environ.get('SUDO_USER', None)
         # $SUDO_USER is set directly by sudo, so users should not be alble

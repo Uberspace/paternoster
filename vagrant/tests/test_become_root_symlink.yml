@@ -1,0 +1,48 @@
+- name: test become_user
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: drop script
+      become: yes
+      copy:
+        dest: /usr/local/bin/uberspace-unittest
+        mode: 0775
+        content: |
+          #!/bin/env python2.7
+          import os
+          from paternoster.root import become_user
+          print('UID:{}'.format(os.geteuid()))
+          become_user('root')
+
+    - name: sudoers config
+      become: yes
+      template: src=../templates/sudoers.j2 dest=/etc/sudoers.d/uberspace-unittest
+      vars:
+        item: uberspace-unittest
+
+    - name: create symlink
+      become: yes
+      file:
+        src: /usr/local/bin/uberspace-unittest
+        dest: /bin/ubrspc-ut
+        state: link
+
+    - shell: /bin/ubrspc-ut
+      become: yes
+      become_user: testy
+      register: script
+
+    - assert:
+        that:
+          - script.stdout_lines[0] == 'UID:1001'
+          - script.stdout_lines[1] == 'UID:0'
+
+    - name: delete script, symlink and sudoers config
+      become: yes
+      file:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - /usr/local/bin/uberspace-unittest
+        - /etc/sudoers.d/uberspace-unittest
+        - /bin/ubrspc-ut
