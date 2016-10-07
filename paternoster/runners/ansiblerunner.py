@@ -38,7 +38,8 @@ class MinimalAnsibleCallback(CallbackBase):
     """ filters out all ansible messages except for playbook fails and debug-module-calls. """
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
-        print(result._result['msg'], file=sys.stderr)
+        if not ignore_errors:
+            print(result._result['msg'], file=sys.stderr)
 
     def v2_runner_on_ok(self, result):
         result = result._result

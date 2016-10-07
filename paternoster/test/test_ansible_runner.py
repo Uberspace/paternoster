@@ -66,6 +66,7 @@ def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
     ("debug: var=param_foo", "22\n", "", True),
     ("command: echo hi", "", "", True),
     ("fail: msg=42", "", "42\n", False),
+    ("fail: msg=42\n          ignore_errors: yes", "", "", True),
 ])
 def test_fail_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
     import os
