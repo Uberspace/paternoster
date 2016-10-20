@@ -5,6 +5,19 @@ import os
 import os.path
 from collections import namedtuple
 
+# Ansible loads the ansible.cfg in the following order. Each ansible.cfg
+# automatically overwrites all values of the former ones.
+#
+#  1. Path given in $ANSIBLE_CONFIG
+#  2. ansible.cfg file in the current directory
+#  3. .ansible.cfg file in the home directory
+#  4. /etc/ansible/ansible.cfg
+#
+# Since the current directory is controlled by the user and we don't
+# want them to be able to load their own config and thus their own
+# ansible modules, we need to counter them by setting the env-variable.
+os.environ['ANSIBLE_CONFIG'] = '/etc/ansible/ansible.cfg'
+
 # Verbosity within ansbible is controlled by the Display-class. Each and
 # every ansible-file creates their own instance of this class, like this:
 #
@@ -26,7 +39,6 @@ from ansible.utils.display import Display
 __main__.display = Display()
 
 import ansible.constants
-import os.path
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
