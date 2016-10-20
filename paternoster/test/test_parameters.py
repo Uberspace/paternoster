@@ -118,15 +118,20 @@ def test_parameter_passing():
     assert dict(s._runner.args[0])['param_namespace'] == 'aaaa'
 
 
-def test_success_msg(capsys):
+@pytest.mark.parametrize("success_msg,expected", [
+    ('4242', '4242\n'),
+    ('', ''),
+    (None, ''),
+])
+def test_success_msg(success_msg, expected, capsys):
     s = Paternoster(
         runner_parameters={},
         parameters=[],
         runner_class=MockRunner,
-        success_msg='4242',
+        success_msg=success_msg,
     )
     s.parse_args([])
     s.execute()
 
     out, err = capsys.readouterr()
-    assert out == '4242\n'
+    assert out == expected

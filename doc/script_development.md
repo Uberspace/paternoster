@@ -122,6 +122,7 @@ code `1`.
 To display a customized message when the playbook executes successfully
 just set the `success_msg`-attribute of `Paternoster`, just as demonstrated
 in the boilerplate above. The message will be written to stdout as-is.
+This behavior can be disabled by passing `""` or `None` as the `success_msg`.
 
 ### Progress Messages
 

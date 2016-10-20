@@ -122,6 +122,6 @@ class Paternoster:
 
     def execute(self):
         status = self._runner.run(self._get_runner_variables(), self._parsed_args.verbose)
-        if status:
+        if status and self._success_msg:
             print(self._success_msg)
         return status
