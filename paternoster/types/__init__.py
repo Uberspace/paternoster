@@ -100,3 +100,9 @@ class restricted_int:
             raise ValueError('value too big (must be <= {})'.format(self._maximum))
 
         return val
+
+__all__ = [
+    'domain',
+    'restricted_int',
+    'restricted_str',
+]
