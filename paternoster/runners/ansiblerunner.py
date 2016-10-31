@@ -18,6 +18,13 @@ from collections import namedtuple
 # ansible modules, we need to counter them by setting the env-variable.
 os.environ['ANSIBLE_CONFIG'] = '/etc/ansible/ansible.cfg'
 
+# by default ansible uses "$HOME/.ansible/tmp" as the directory to drop
+# its module files. For some reason $HOME is not resolved when using the
+# python API directly resuling in a new directory called '$HOME' within
+# the paternoster source. This forces the modules to be dropped in /tmp.
+os.environ['ANSIBLE_REMOTE_TEMP'] = '/tmp'
+os.environ['ANSIBLE_LOCAL_TEMP'] = '/tmp'
+
 # Verbosity within ansbible is controlled by the Display-class. Each and
 # every ansible-file creates their own instance of this class, like this:
 #
