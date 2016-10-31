@@ -70,6 +70,18 @@ class restricted_int:
     __name__ = 'integer'
 
     def __init__(self, minimum=None, maximum=None):
+        if minimum is not None:
+            try:
+                minimum = int(minimum)
+            except:
+                raise ValueError('minimum is not a integer')
+
+        if maximum is not None:
+            try:
+                maximum = int(maximum)
+            except:
+                raise ValueError('maximum is not a integer')
+
         if minimum is not None and maximum is not None and minimum > maximum:
             raise ValueError('minimum must be smaller than maximum')
 

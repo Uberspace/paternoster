@@ -130,3 +130,17 @@ def test_range_int_ctor():
 
     with pytest.raises(ValueError):
         restricted_int(100, 0)
+
+
+def test_range_int_ctor_types_min():
+    from ..types import restricted_int
+
+    with pytest.raises(ValueError):
+        restricted_int(minimum="foo")
+
+
+def test_range_int_ctor_types_max():
+    from ..types import restricted_int
+
+    with pytest.raises(ValueError):
+        restricted_int(maximum="bar")
