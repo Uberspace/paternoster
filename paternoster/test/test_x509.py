@@ -100,19 +100,19 @@ def _wrap_key(val):
     return "-----BEGIN PRIVATE KEY-----\n" + str(val).strip() + "\n-----END PRIVATE KEY-----\n"
 
 
-@pytest.mark.parametrize("pem,valid", [
-    ("", False),
-    (_wrap_cert(""), False),
-    ("\0", False),
-    (_wrap_cert("\0"), False),
-    (_wrap_cert(base64.b64encode(b"a" * 512000)), False),
-    ("a", False),
-    (_wrap_cert("a"), False),
-    ("-----BEGIN CERTIFICATE-----", False),
-    ("-----BEGIN CERTIFICATE-----\n", False),
-    (LOCALHOST_CERT, True),
+@pytest.mark.parametrize("pem,opts,valid", [
+    ("", {}, False),
+    (_wrap_cert(""), {}, False),
+    ("\0", {}, False),
+    (_wrap_cert("\0"), {}, False),
+    (_wrap_cert(base64.b64encode(b"a" * 512000)), {}, False),
+    ("a", {}, False),
+    (_wrap_cert("a"), {}, False),
+    ("-----BEGIN CERTIFICATE-----", {}, False),
+    ("-----BEGIN CERTIFICATE-----\n", {}, False),
+    (LOCALHOST_CERT, {'not_expired': False}, True),
 ])
-def test_x509_cert(pem, valid):
+def test_x509_cert(pem, opts, valid):
     from ..types import x509_certificate
 
     f = NamedTemporaryFile(delete=False, mode='w')
@@ -121,7 +121,7 @@ def test_x509_cert(pem, valid):
         f.write(pem)
         f.close()
 
-        check = x509_certificate()
+        check = x509_certificate(**opts)
 
         if not valid:
             with pytest.raises(ValueError):

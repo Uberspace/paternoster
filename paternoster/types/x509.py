@@ -107,13 +107,19 @@ class x509_privatekey:
 
 
 class x509_certificate:
-    def __init__(self):
-        pass
+    def __init__(self, needs_domain=True, not_expired=True):
+        self.needs_domain = needs_domain
+        self.not_expired = not_expired
 
     def __call__(self, val):
         try:
             cert = EasyCertificate.load_from_file(val)
         except:
             raise ValueError('invalid certificate')
+
+        if self.needs_domain and not len(cert.domains):
+            raise ValueError('certificate is not valid for a single domain')
+        if self.not_expired and cert.expired:
+            raise ValueError('certificate is no longer valid')
 
         return cert
