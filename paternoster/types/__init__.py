@@ -3,6 +3,8 @@ import tldextract
 import six.moves.urllib as urllib
 import os.path
 
+from .x509 import x509_certificate, x509_privatekey
+
 
 class domain:
     __name__ = 'domain'
@@ -180,4 +182,6 @@ __all__ = [
     'domain',
     'restricted_int',
     'restricted_str',
+    'x509_certificate',
+    'x509_privatekey',
 ]

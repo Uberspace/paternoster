@@ -26,6 +26,9 @@ setup(name='paternoster',
       },
       install_requires=[
           'tldextract>=2.0.1',
+          'pyasn1',
+          'pyasn1-modules',
+          'pyOpenSSL',
           'six',
       ],
       classifiers=[
