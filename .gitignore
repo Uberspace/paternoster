@@ -58,3 +58,6 @@ ENV/
 # PyCharm
 .idea/
 *.iml
+
+# VSCode
+.vscode
