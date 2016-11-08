@@ -82,6 +82,26 @@ def test_forced_restricted_str(param, valid):
         s.parse_args([])
 
 
+@pytest.mark.parametrize("param,valid", filter(lambda x: x is not None, [
+    ({'positional': True, 'type': types.restricted_str('a')}, True),
+    ({'positional': True, 'type': types.restricted_str('a'), 'required': True}, False),
+    ({'positional': True, 'type': types.restricted_str('a'), 'required': False}, False),
+]))
+def test_positional(param, valid):
+    s = Paternoster(
+        runner_parameters={'playbook': ''},
+        parameters=[
+            ('namespace', 'e', param),
+        ],
+    )
+
+    if not valid:
+        with pytest.raises(TypeError):
+            s.parse_args(['aaa'])
+    else:
+        s.parse_args(['aaa'])
+
+
 @pytest.mark.parametrize("required,argv,valid", [
     (True, ['-e', 'aa'], True),
     (True, [], False),

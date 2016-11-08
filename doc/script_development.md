@@ -50,6 +50,7 @@ There is a small number of arguments added by Paternoster:
 | Name | Description |
 | ---- | ----------- |
 | `depends` | makes this argument depend on the presence of another one |
+| `positional` | indicates whether the argument is a --keyword one (default) or positional. Must not be supplied together with `required'. |
 
 ### Types
 
