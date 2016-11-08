@@ -43,7 +43,7 @@ Only the most important ones are listed here:
 | `help` | short text to describe the parameter in more detail |
 | `type` | used to sanity-check the given value (e.g. "is this really a domain?") |
 | `action` | can be used to create flag-arguments, when set to `store_true` or `store_false` |
-| `required` | enforce the presence of certain argments |
+| `required` | enforce the presence of certain arguments |
 
 There is a small number of arguments added by Paternoster:
 
