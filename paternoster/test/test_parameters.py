@@ -118,6 +118,33 @@ def test_parameter_passing():
     assert dict(s._runner.args[0])['param_namespace'] == 'aaaa'
 
 
+@pytest.mark.parametrize("value,valid", [
+    (1, True),
+    (5, True),
+    (60, True),
+    (600, False),
+    (6, False),
+    (2, False),
+    ("a", False),
+])
+def test_parameter_argparse(value, valid):
+    s = Paternoster(
+        runner_parameters={},
+        parameters=[
+            ('number', 'n', {'type': int, 'choices': [1, 5, 60]}),
+        ],
+        runner_class=MockRunner
+    )
+
+    argv = ['-n', str(value)]
+
+    if not valid:
+        with pytest.raises(SystemExit):
+            s.parse_args(argv)
+    else:
+        s.parse_args(argv)
+
+
 @pytest.mark.parametrize("success_msg,expected", [
     ('4242', '4242\n'),
     ('', ''),
