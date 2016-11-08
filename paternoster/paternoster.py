@@ -53,13 +53,19 @@ class Paternoster:
         for name, short, param in self._parameters:
             argParams = param.copy()
             argParams.pop('depends', None)
+            argParams.pop('positional', None)
 
             self._check_type(argParams)
 
-            if param.get('required', False):
-                requiredArgs.add_argument('-' + short, '--' + name, **argParams)
+            if param.get('positional', False):
+                paramName = [name]
             else:
-                optionalArgs.add_argument('-' + short, '--' + name, **argParams)
+                paramName = ['-' + short, '--' + name]
+
+            if param.get('required', False) or param.get('positional', False):
+                requiredArgs.add_argument(*paramName, **argParams)
+            else:
+                optionalArgs.add_argument(*paramName, **argParams)
 
         optionalArgs.add_argument(
             '-v', '--verbose', action='count', default=0,
