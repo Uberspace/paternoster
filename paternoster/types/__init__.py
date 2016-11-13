@@ -4,7 +4,7 @@ import tldextract
 
 class domain:
     __name__ = 'domain'
-    DOMAIN_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'  # noqa
+    DOMAIN_REGEX = r'\A(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])\Z'  # noqa
 
     def __init__(self, wildcard=False):
         self._wildcard = wildcard
@@ -46,11 +46,13 @@ class restricted_str:
         if allowed_chars:
             # construct a regex matching a arbitrary number of characters within
             # the given set.
-            self._regex = re.compile('^[{}]+$'.format(allowed_chars))
+            self._regex = re.compile(r'\A[{}]+\Z'.format(allowed_chars))
         elif regex:
             if not regex.startswith('^') or not regex.endswith('$'):
                 raise ValueError('regex must be anchored')
 
+            # replace $ at the end with \Z, so we can't match "a\n" for "^a$"
+            regex = r'\A' + regex[1:-1] + r'\Z'
             self._regex = re.compile(regex)
 
         self._minlen = minlen

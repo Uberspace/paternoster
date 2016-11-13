@@ -6,6 +6,8 @@ import pytest
 @pytest.mark.parametrize("value,wildcard,valid", [
     ("uberspace.de", False, True),
     ("foo.google", False, True),
+    ("foo.de\n", False, False),
+    ("foo.de\nbar.com", False, False),
     (u"foobär.com", False, True),
     ("uberspace.deee", False, False),
     ("-bla.com", False, False),
@@ -40,6 +42,8 @@ def test_type_domain(value, wildcard, valid):
 @pytest.mark.parametrize("allowed_chars,regex,minlen,maxlen,value,valid", [
     ("a-z", None, None, None, "aaaaaabb", True),
     ("a-z", None, None, None, "aaaaaabb2", False),
+    ("a-z", None, None, None, "aaaa\n", False),
+    ("a-z", None, None, None, "aaaa\nbb", False),
     ("b", None, None, None, "bbbb", True),
     ("b", None, None, None, "a", False),
     ("a-z0-9", None, None, None, "aaaaaabb2", True),
@@ -50,6 +54,7 @@ def test_type_domain(value, wildcard, valid):
     ("a-z", None, None, None, "aaaaaabb", True),
     (None, '^[a-z]$', None, None, "a", True),
     (None, '^[a-z]$', None, None, "aa", False),
+    (None, '^a$', None, None, "a\n", False),
 ])
 def test_type_restricted_str(allowed_chars, regex, minlen, maxlen, value, valid):
     from ..types import restricted_str
