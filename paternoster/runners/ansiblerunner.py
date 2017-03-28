@@ -60,6 +60,9 @@ class MinimalAnsibleCallback(CallbackBase):
         if not ignore_errors:
             print(result._result['msg'], file=sys.stderr)
 
+    def v2_runner_item_on_ok(self, result):
+        self.v2_runner_on_ok(result)
+
     def v2_runner_on_ok(self, result):
         result = result._result
         if 'invocation' in result:
