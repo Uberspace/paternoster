@@ -9,7 +9,7 @@ except ImportError:
     sys.exit(1)
 
 setup(name='paternoster',
-      version='1.1.0',
+      version='1.1.1',
       description='Paternoster provides users with the ability to run certain tasks as '
                   'root or another user, while ensuring safety by providing a common '
                   'interface and battle tested parameter parsing/checking.',
