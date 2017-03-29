@@ -78,14 +78,14 @@ class AnsibleRunner:
     def __init__(self, playbook):
         self._playbook = playbook
 
-    def _get_playbook_executor(self, variables, verbose):
+    def _get_playbook_executor(self, variables, verbosity):
         Options = namedtuple('Options',
                              ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check',
                               'listhosts', 'listtasks', 'listtags', 'syntax'])
 
         # -v given to us enables ansibles non-debug output.
         # So -vv should become ansibles -v.
-        __main__.display.verbosity = max(0, verbose - 1)
+        __main__.display.verbosity = max(0, verbosity - 1)
 
         variable_manager = VariableManager()
         loader = DataLoader()
@@ -116,7 +116,7 @@ class AnsibleRunner:
 
         ansible.constants.RETRY_FILES_ENABLED = False
 
-        if not verbose:
+        if not verbosity:
             # ansible doesn't provide a proper API to overwrite this,
             # if you're using PlaybookExecutor instead of initializing
             # the TaskQueueManager (_tqm) yourself, like in the offical
@@ -133,8 +133,8 @@ class AnsibleRunner:
         if not os.path.isfile(self._playbook):
             raise ValueError('playbook must exist')
 
-    def run(self, variables, verbose):
+    def run(self, variables, verbosity):
         self._check_playbook()
         os.chdir(os.path.dirname(self._playbook))
-        status = self._get_playbook_executor(variables, verbose).run()
+        status = self._get_playbook_executor(variables, verbosity).run()
         return True if status == 0 else False
