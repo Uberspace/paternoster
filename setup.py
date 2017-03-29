@@ -22,7 +22,6 @@ setup(name='paternoster',
       ],
       install_requires=[
           'tldextract>=2.0.1',
-          'ansible==2.2.0.0',
           'six',
       ],
       classifiers=[
