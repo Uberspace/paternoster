@@ -53,6 +53,3 @@
 
     - name: create playbook dir
       file: state=directory name=/opt/uberspace/playbooks/
-    - name: deploy playbook
-      file: src=/vagrant/vagrant/files/playbooks/{{ item|basename }} dest=/opt/uberspace/playbooks/{{ item|basename }} mode=0700 state=link
-      with_fileglob: files/playbooks/*

@@ -1,38 +1,66 @@
-# Paternoster
+# Paternoster [![Build Status](https://travis-ci.org/Uberspace/paternoster.svg?branch=master)](https://travis-ci.org/Uberspace/paternoster)
 
 <img align="left" height="150" src="logo.png">
 
-Paternoster provides users with the ability to run certain tasks as
-root or another user, while ensuring safety by providing a common
-interface and battle tested parameter parsing/checking.
+Paternoster enables ansible playbooks to be run like normal bash or python
+scripts. It parses the given parameters using python's [argparse](https://docs.python.org/2/library/argparse.html)
+and the passes them on to the actual playbook via the ansible API. In addition
+it provides an automated way to run commands as another user, which can be used
+to give normal shell users special privileges, while still having a sleek and
+easy to understand user interface.
 
-The developer writes a small python script (10-30 lines, most of which
-is a `dict`) which initializes Paternoster. Following a method call the
-library takes over, parses user-given arguments, validates their
-contents and passes them on to a given ansible playbook via the ansible
-python module. All parameters are checked for proper types (including
-more complicated checks like domain-validity).
+Once everything is set up, a paternoster script can be used like this:
 
-[![Build Status](https://travis-ci.org/Uberspace/paternoster.svg?branch=master)](https://travis-ci.org/Uberspace/paternoster)
+```
+$ create-user --help
+usage: create-user [-h] -u USERNAME [-v]
 
-## Security
+required arguments:
+  -u USERNAME, --username USERNAME
+                        name of the user to create
 
-This library is a small-ish wrapper around pythons battle-tested [argparse](https://docs.python.org/2/library/argparse.html)
-and the ansible api. Arguments are passed to argparse for evaluation.
-All standard-types like integers are handled by the python standard
-library. Special types like domains are implemented within Paternoster.
-Once argparse has finished Paternoster relies on the ansible API to
-execute the given playbook. All parameters are passed safely as variables.
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --verbose         run with a lot of debugging output
+$ create-user -u luto
+creating user luto
+```
 
-Before parsing parameters Paternoster executes itself as root via sudo.
-Combined with a proper sudoers-config this ensures that the script has
-not been copied somewhere else and is unmodified.
+The script looks like a normal ansible playbook, except for a few additions.
+Firstly, it uses a different shebang-line, which kicks off paternoster instead
+of ansible. Secondly, there is a special play at the beginning of the playbook,
+which contains the configuration for parameter parsing and other features.
 
-## License
+```yaml
+#!/usr/bin/env paternoster
 
-All code in this repository (including this document) is licensed under
-the MIT license. The logo (both the png and svg versions) is licensed
-unter the [CC-BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.
+- hosts: paternoster
+  vars:
+    parameters:
+      - name: username
+        short: u
+        help: "name of the user to create"
+        type: paternoster.types.restricted_str
+        required: yes
+        type_params:
+          regex: '^[a-z]+$'
+
+- hosts: localhost
+  tasks:
+    - debug: msg="creating user {{ param_username }}"
+```
+
+For more information on how to develop scripts using paternoster, please refer
+the the corresponding sub-document: [`doc/script_development.md`](doc/script_development.md).
+
+## Privilege Escalation
+
+Paternoster also provides an automated way to run commands as another user. To
+use this feature, set the `become_user` to the desired username. This causes
+paternoster to execute itself as the given user using sudo. For this to work a
+sudoers-config has to be created by the developer.
+
+Please refer to the Deployment section of this document for further details.
 
 # Deployment
 
@@ -50,10 +78,8 @@ ALL ALL = NOPASSWD: /usr/local/bin/your-script-name
 ```
 
 This line allows *any* user to execute the given command as root.
-If you're using the `become_user`-parameter the config needs to be
-changed to allow that.
 
-Pleas refer to the [`sudoers(5)`-manpage](https://www.sudo.ws/man/1.8.17/sudoers.man.html) for details.
+Please refer to the [`sudoers(5)`-manpage](https://www.sudo.ws/man/1.8.17/sudoers.man.html) for details.
 
 ## Notes
 
@@ -62,34 +88,9 @@ Pleas refer to the [`sudoers(5)`-manpage](https://www.sudo.ws/man/1.8.17/sudoers
   Execute the `tldextract --update`-command as root in a cronjob or
   similar to keep the list up to date.
 
-# Script-Development
-
-A typical boilerplate for Paternoster looks like this:
-
-```python
-#!/bin/env python2.7
-
-import paternoster
-import paternoster.types
-
-paternoster.Paternoster(
-  runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-add-domain.yml'},
-  parameters=[
-    ('domain', 'd', {
-      'help': 'this is the domain to add to your uberspace',
-      'type': paternoster.types.domain,
-    }),
-  ],
-  success_msg='Your domain has been added successfully.',
-).auto(become_root=True)
-```
-
-Please refer to the corresponding sub-document on how to develop scripts
-using Paternoster: [`doc/script_development.md`](doc/script_development.md).
-
 # Library-Development
 
-Most tasks (including adding new types) can be achieved by writing
+Most tasks can be achieved by writing
 scripts only. Therefore, the library does not need to be changed in most
 cases. Sometimes it might be desirable to provide a new type or feature
 to all other scripts. To fulfill these needs, the following section
@@ -130,8 +131,8 @@ PLAY [test play] ************** (...)
 ```
 
 If you want to add your own scripts, just add the corresponding files in
-`vagrant/files/playbooks` and `vagrant/files/scripts`. You can deploy it
-using the `ansible-playbook vagrant/site.yml --tags scripts` command.
+`vagrant/files/scripts`. You can deploy it using the following command:
+`ansible-playbook vagrant/site.yml --tags scripts`.
 Once your script has been deployed, you can just edit the source file
 to make further changes, as the file is symlinked, not copied.
 
@@ -210,7 +211,7 @@ There are several parameters to control the behaviour of `drop_script.yml`:
 | `ignore_script_errors` | yes (default: `false`) | whether to continue even if python script has a non-zero exitcode |
 | `script_params` | yes (default: empty) | command line parameters for the script (e.g. `"--domain foo.com"`) |
 
-# PyPI
+## PyPI
 
 Assuming you have been handed the required credentials, the package on
 PyPI can be updated like this:
@@ -220,3 +221,9 @@ rm dist/*
 python setup.py sdist bdist_wheel
 twine upload dist/*
 ```
+
+# License
+
+All code in this repository (including this document) is licensed under
+the MIT license. The logo (both the png and svg versions) is licensed
+unter the [CC-BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.

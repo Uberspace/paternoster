@@ -20,6 +20,9 @@ setup(name='paternoster',
           'paternoster',
           'paternoster.runners',
       ],
+      entry_points = {
+          'console_scripts': ['paternoster=paternoster.shebang:main'],
+      },
       install_requires=[
           'tldextract>=2.0.1',
           'six',

@@ -17,7 +17,8 @@
           s = paternoster.Paternoster(
             runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-unittest.yml'},
             parameters=[],
-          ).auto(become_root=True)
+            become_user='root',
+          ).auto()
 
     - assert:
         that:

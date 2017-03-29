@@ -9,6 +9,8 @@
           - hosts: all
             tasks:
               - debug: var=param_domain
+              - debug: var=ansible_user
+              - debug: var=sudo_user
         script: |
           #!/bin/env python2.7
 
@@ -18,10 +20,13 @@
           s = paternoster.Paternoster(
             runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-unittest.yml'},
             parameters=[
-              ('domain', 'd', { 'type': paternoster.types.restricted_str('a-z') }),
+              { 'name': 'domain', 'short': 'd', 'type': paternoster.types.restricted_str('a-z') },
             ],
-          ).auto(become_root=True)
+            become_user='root',
+          ).auto()
 
     - assert:
         that:
           - "script.stdout_lines[0] == 'aaaa'"
+          - "script.stdout_lines[1] == 'root'"
+          - "script.stdout_lines[2] == 'vagrant'"

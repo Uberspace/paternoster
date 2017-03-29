@@ -18,12 +18,14 @@ def test_parameter_depends(args, valid):
     s = Paternoster(
         runner_parameters={'playbook': ''},
         parameters=[
-            ('mailserver', 'm', {
+            {
+                'name': 'mailserver', 'short': 'm',
                 'help': '', 'action': 'store_true'
-            }),
-            ('namespace', 'e', {
-                'help': '', 'type': types.restricted_str('a'), 'depends': 'mailserver',
-            }),
+            },
+            {
+                'name': 'namespace', 'short': 'e',
+                'help': '', 'type': types.restricted_str('a'), 'depends_on': 'mailserver',
+            },
         ],
     )
 
@@ -38,16 +40,16 @@ def test_find_param():
     s = Paternoster(
         runner_parameters={},
         parameters=[
-            ('namespace', 'e', {'type': types.restricted_str('a')}),
-            ('mailserver', 'm', {'action': 'store_true'}),
+            {'name': 'mailserver', 'short': 'm', 'type': types.restricted_str('a')},
+            {'name': 'namespace', 'short': 'e', 'action': 'store_true'},
         ],
         runner_class=MockRunner
     )
 
-    assert s._find_param('e')[0] == 'namespace'
-    assert s._find_param('m')[0] == 'mailserver'
-    assert s._find_param('namespace')[1] == 'e'
-    assert s._find_param('mailserver')[1] == 'm'
+    assert s._find_param('e')['name'] == 'namespace'
+    assert s._find_param('m')['name'] == 'mailserver'
+    assert s._find_param('namespace')['short'] == 'e'
+    assert s._find_param('mailserver')['short'] == 'm'
 
     with pytest.raises(KeyError):
         s._find_param('somethingelse')
@@ -68,11 +70,11 @@ def test_find_param():
     ({'action': 'append_const', 'const': 5}, True),
 ]))
 def test_forced_restricted_str(param, valid):
+    p = {'name': 'namespace', 'short': 'e'}
+    p.update(param)
     s = Paternoster(
         runner_parameters={'playbook': ''},
-        parameters=[
-            ('namespace', 'e', param),
-        ],
+        parameters=[p],
     )
 
     if not valid:
@@ -88,11 +90,11 @@ def test_forced_restricted_str(param, valid):
     ({'positional': True, 'type': types.restricted_str('a'), 'required': False}, False),
 ]))
 def test_positional(param, valid):
+    p = {'name': 'namespace', 'short': 'e'}
+    p.update(param)
     s = Paternoster(
         runner_parameters={'playbook': ''},
-        parameters=[
-            ('namespace', 'e', param),
-        ],
+        parameters=[p],
     )
 
     if not valid:
@@ -112,7 +114,7 @@ def test_parameter_required(required, argv, valid):
     s = Paternoster(
         runner_parameters={},
         parameters=[
-            ('namespace', 'e', {'type': types.restricted_str('a'), 'required': required}),
+            {'name': 'namespace', 'short': 'e', 'type': types.restricted_str('a'), 'required': required},
         ],
         runner_class=MockRunner
     )
@@ -128,7 +130,7 @@ def test_parameter_passing():
     s = Paternoster(
         runner_parameters={},
         parameters=[
-            ('namespace', 'e', {'type': types.restricted_str('a')}),
+            {'name': 'namespace', 'short': 'e', 'type': types.restricted_str('a')},
         ],
         runner_class=MockRunner
     )
@@ -151,7 +153,7 @@ def test_parameter_argparse(value, valid):
     s = Paternoster(
         runner_parameters={},
         parameters=[
-            ('number', 'n', {'type': int, 'choices': [1, 5, 60]}),
+            {'name': 'number', 'short': 'n', 'type': int, 'choices': [1, 5, 60]},
         ],
         runner_class=MockRunner
     )

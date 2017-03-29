@@ -1,5 +1,0 @@
----
-- name: test play
-  hosts: all
-  tasks:
-    - debug: msg="Trying to add '{{ param_domain }}' to your space."

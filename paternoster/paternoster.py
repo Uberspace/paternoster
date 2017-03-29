@@ -1,4 +1,5 @@
 from __future__ import print_function
+from __future__ import absolute_import
 
 import argparse
 import sys
@@ -8,21 +9,30 @@ import inspect
 import six
 
 from .runners.ansiblerunner import AnsibleRunner
-from .root import become_user, check_root
+from .root import become_user, check_user
+import paternoster.types
 
 
 class Paternoster:
-    def __init__(self, runner_parameters, parameters, success_msg='executed successfully', runner_class=AnsibleRunner):
+    def __init__(self,
+                 runner_parameters,
+                 parameters,
+                 become_user=None, check_user=None,
+                 success_msg=None,
+                 runner_class=AnsibleRunner,
+                 ):
         self._parameters = parameters
+        self._become_user = become_user
+        self._check_user = check_user
         self._success_msg = success_msg
         self._sudo_user = None
         self._runner = runner_class(**runner_parameters)
 
     def _find_param(self, fname):
         """ look for a parameter by either its short- or long-name """
-        for name, short, param in self._parameters:
-            if name == fname or short == fname:
-                return (name, short, param)
+        for param in self._parameters:
+            if param['name'] == fname or param.get('short', None) == fname:
+                return param
 
         raise KeyError('Parameter {0} could not be found'.format(fname))
 
@@ -40,6 +50,23 @@ class Paternoster:
         if is_str_type and action not in action_whitelist:
             raise ValueError('restricted_str instead of str or unicode must be used for all string arguments')
 
+    def _convert_type(sefl, argParams):
+        param_type = argParams.pop('type', None)
+        param_type_params = argParams.pop('type_params', {})
+
+        if isinstance(param_type, str):
+            if param_type == 'int':
+                argParams['type'] = int
+            elif param_type == 'str':
+                argParams['type'] = str
+            elif param_type.startswith('paternoster.types.'):
+                type_clazz = getattr(sys.modules['paternoster.types'], param_type.rpartition('.')[2])
+                argParams['type'] = type_clazz(**param_type_params)
+            else:
+                raise Exception('unknown type ' + param_type)
+        elif param_type:
+            argParams['type'] = param_type
+
     def _build_argparser(self):
         parser = argparse.ArgumentParser(add_help=False)
         requiredArgs = parser.add_argument_group('required arguments')
@@ -50,17 +77,20 @@ class Paternoster:
             help='show this help message and exit'
         )
 
-        for name, short, param in self._parameters:
+        for param in self._parameters:
             argParams = param.copy()
-            argParams.pop('depends', None)
+            argParams.pop('depends_on', None)
             argParams.pop('positional', None)
+            argParams.pop('short', None)
+            argParams.pop('name', None)
 
+            self._convert_type(argParams)
             self._check_type(argParams)
 
             if param.get('positional', False):
-                paramName = [name]
+                paramName = [param['name']]
             else:
-                paramName = ['-' + short, '--' + name]
+                paramName = ['-' + param['short'], '--' + param['name']]
 
             if param.get('required', False) or param.get('positional', False):
                 requiredArgs.add_argument(*paramName, **argParams)
@@ -75,36 +105,35 @@ class Paternoster:
         return parser
 
     def _check_arg_dependencies(self, parser, args):
-        for name, short, param in self._parameters:
-            if 'depends' in param and getattr(args, name, None) and not getattr(args, param['depends'], None):
+        for param in self._parameters:
+            param_given = getattr(args, param['name'], None)
+            dependency_given = 'depends_on' not in param or getattr(args, param['depends_on'], None)
+
+            if param_given and not dependency_given:
                 parser.error(
-                    'argument --{} (-{}) requires --{} (-{}) to be present.'.format(
-                        name, short, param['depends'], self._find_param(param['depends'])[1]
-                    )
+                    'argument --{} requires --{} to be present.'.format(param['name'], param['depends_on'])
                 )
 
-    def check_root(self):
-        if not check_root():
-            print('This script can only be used by the root user.', file=sys.stderr)
+    def check_user(self):
+        if not self._check_user:
+            return
+        if not check_user(self._check_user):
+            print('This script can only be used by the user ' + self._check_user, file=sys.stderr)
             sys.exit(1)
 
-    def become_user(self, user):
+    def become_user(self):
+        if not self._become_user:
+            return
+
         try:
-            self._sudo_user = become_user(user)
+            self._sudo_user = become_user(self._become_user)
         except ValueError as e:
             print(e, file=sys.stderr)
             sys.exit(1)
 
-    def auto(self, become_root=False, become_user=None, check_root=False):
-        if sum([bool(become_root), bool(become_user), bool(check_root)]) > 1:
-            raise ValueError('check_root, become_user and become_root cannot be supplied together')
-
-        if check_root:
-            self.check_root()
-        if become_user:
-            self.become_user(become_user)
-        if become_root:
-            self.become_user('root')
+    def auto(self):
+        self.check_user()
+        self.become_user()
         self.parse_args()
         status = self.execute()
         sys.exit(0 if status else 1)

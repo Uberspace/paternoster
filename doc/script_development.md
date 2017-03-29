@@ -2,55 +2,58 @@
 
 A typical boilerplate for Paternoster looks like this:
 
-```python
-#!/bin/env python2.7
+```yml
+#!/usr/bin/env paternoster
 
-import paternoster
-import paternoster.types
+- hosts: paternoster
+  vars:
+    parameters:
+      - name: username
+        short: u
+        help: "name of the user to create"
+        type: paternoster.types.restricted_str
+        required: yes
+        type_params:
+          regex: '^[a-z]+$'
 
-paternoster.Paternoster(
-  runner_parameters={'playbook': '/opt/uberspace/playbooks/uberspace-add-domain.yml'},
-  parameters=[
-    ('domain', 'd', {
-      'help': 'this is the domain to add to your uberspace',
-      'type': paternoster.types.domain,
-    }),
-  ],
-  success_msg='Your domain has been added successfully.',
-).auto(become_root=True)
+- hosts: localhost
+  tasks:
+    - debug: msg="creating user {{ param_username }}"
 ```
 
-In this case the `auto()`-method-call executes all neccesary steps (become
-root, parse arguments, execute playbook) at once. Which user should ultimately
-execute the script is determined by these three parameters:
+Inside `vars` the following values can be set:
 
-* `become_user`: string; execute as the given user, e.g. `nginx`
-* `become_root`: boolean; execute as root, alias for `become_user='root'`
-* `check_root`: boolean; abort, if the user is not already root
-
-Note that these parameters are mutually exclusive.
+* `parameters`: command line parameters to parse, check and pass on to ansible
+* `become_user`: use `sudo` to execute the playbook as the given user (e.g. `root`)
+* `check_user`: check that the user running the script is the one given here
+* `success_msg`: print this message once the script as exited successfully
 
 ## Parameters
 
-All parameters are represented by a tuple of `('longname', 'shortname', {})`.
-Long- and shortname are the respective `--long` and `-s`hort command line
-arguments, followed by a dictionary supplying addtional values. Within
-the dict all parameters to pythons [`add_argument()`-function](https://docs.python.org/2/library/argparse.html#the-add-argument-method) can be used.
-Only the most important ones are listed here:
+Each parameter is represented by a dictionary within the `patermeters` list.
+The values supplied there are passed onto pythons [`add_argument()`-function](https://docs.python.org/2/library/argparse.html#the-add-argument-method),
+except for a few special ones:
 
 | Name | Description |
 | ---- | ----------- |
-| `help` | short text to describe the parameter in more detail |
-| `type` | used to sanity-check the given value (e.g. "is this really a domain?") |
-| `action` | can be used to create flag-arguments, when set to `store_true` or `store_false` |
-| `required` | enforce the presence of certain arguments |
+| `name` | `--long` name on the command line |
+| `short` | `-s`hort name on the command line |
+| `type` | a class, which is parse and validate the value given by the user |
+| `type_params` | optional parameters for the type class |
+| `depends_on` | makes this argument depend on the presence of another one |
+| `positional` | indicates whether the argument is a `--keyword` one (default) or positional. Must not be supplied together with `required'. |
 
-There is a small number of arguments added by Paternoster:
+All arguments to the script are passed to ansible as variables with the
+`param_`-prefix. This means that `--domain foo.com` becomes the variable
+`param_domain` with value `foo.com`.
+
+There are a few special variables to provide the playbook further
+details about the environment it's in:
 
 | Name | Description |
 | ---- | ----------- |
-| `depends` | makes this argument depend on the presence of another one |
-| `positional` | indicates whether the argument is a --keyword one (default) or positional. Must not be supplied together with `required'. |
+| `sudo_user` | the user who executed the script originally. If the script is not configured to run as root, this variable does not exist. |
+| `script_name` | the filename of the script, which is currently executed (e.g. `uberspace-add-domain`) |
 
 ### Types
 
@@ -74,16 +77,6 @@ All custom types fall into one of two categories: "normal" or "factory":
 * Normal types can be supplied just as they are: `'type': paternoster.types.domain`.
 * Factory types require additional parameters to work properly: `'type': paternoster.types.restricted_str('a-z0-9')`.
 
-### Custom Types
-
-Just like Paternosters implemets a couple custom types, the developer of
-a script can do the same. The argparse library is very flexible in this
-regard, so it should even be possible to parse and validate x.509-certificates,
-before passing their content to ansible, instead of their path.
-
-For further details refer to the `types.py`-file within Paternoster or
-the [documentation of argparse itself](https://docs.python.org/2/library/argparse.html#type).
-
 ### Dependencies
 
 In some cases a parameter may need another one to function correctly. A
@@ -91,21 +84,20 @@ real-life example of this might be the `--namespace` parameter, which
 depends on the `--mailserver` parameter in `uberspace-add-domain`. Such
 a dependency can be expressed using the `depends`-option of a pararmeter:
 
+```yml
+parameters:
+  - name: mailserver
+    short: m
+    help: add domain to the mailserver configuration
+    action: store_true
+  - name: namespace
+    short: e
+    help: use this namespace when adding a mail domain
+    type: paternoster.types.restricted_str
+    type_params:
+      allowed_chars: a-z0-9
+    depends_on: mailserver
 ```
-parameters=[
-  ('mailserver', 'm', {
-    'help': 'add domain to the mailserver configuration',
-    'action': 'store_true'
-  }),
-  ('namespace', 'e', {
-    'help': 'use this namespace when adding a mail domain',
-    'type': paternoster.types.restricted_str('a-z0-9'),
-    'depends': 'mailserver',
-  }),
-]
-```
-
-At the moment there can only be a single dependency.
 
 ## Status Reporting
 
@@ -132,17 +124,3 @@ executing, you can use the [`debug`-module](http://docs.ansible.com/ansible/debu
 All messages sent by this module are written to stdout as-is. Note that
 only messages with the default `verbosity` value will be shown. All
 other verbosity-levels can be used for actual debugging.
-
-## Variables
-
-All arguments to the script are passed to ansible as variables with the
-`param_`-prefix. This means that `--domain foo.com` becomes the variable
-`param_domain` with value `foo.com`.
-
-There are a few special variables to provide the playbook further
-details about the environment it's in:
-
-| Name | Description |
-| ---- | ----------- |
-| `sudo_user` | the user who executed the script originally. If the script is not configured to run as root, this variable does not exist. |
-| `script_name` | the filename of the script, which is currently executed (e.g. `uberspace-add-domain`) |

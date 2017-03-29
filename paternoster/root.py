@@ -27,5 +27,5 @@ def become_user(user):
             raise ValueError('invalid username: "{}"'.format(sudouser))
 
 
-def check_root():
-    return os.geteuid() == 0
+def check_user(user):
+    return os.geteuid() == pwd.getpwnam(user).pw_uid
