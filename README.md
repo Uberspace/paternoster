@@ -107,7 +107,7 @@ pip install -r dev-requirements.txt
 ```
 
 This project uses python 2.7, because python 3.x is not yet supported by
-ansible. All non-ansible code is tested with python 3.5 as well.
+ansible. All non-ansible code is tested with python 3 as well.
 
 ### Vagrant
 
@@ -142,7 +142,7 @@ to make further changes, as the file is symlinked, not copied.
 
 The core functionality of this library can be tested using the `tox`-
 command. If only python 2.x or 3.x should be tested, the `-e` parameter
-can be used, like so: `tox -e py35`, `tox -e py27`. New tests should be
+can be used, like so: `tox -e py36`, `tox -e py27`. New tests should be
 added to the `paternoster/test`-directory.
 Please refer to the [pytest-documentation](http://doc.pytest.org/) for
 further details.
