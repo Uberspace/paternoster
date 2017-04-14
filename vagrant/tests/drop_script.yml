@@ -1,3 +1,7 @@
+- name: install ansible
+  become: yes
+  command: pip install ansible{{ install_ansible_version }}
+
 - name: drop script
   become: yes
   copy:

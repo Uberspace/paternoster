@@ -147,28 +147,29 @@ added to the `paternoster/test`-directory.
 Please refer to the [pytest-documentation](http://doc.pytest.org/) for
 further details.
 
-### System Tests
+### Integration Tests
 
 Some features (like the `become_root` function) require a correctly
 setup linux environment. They can be tested using the provided ansible
 playbooks in `vagrant/tests`.
 
-The playbooks can be invoked using the `ansible-playbook`-command:
+The playbooks can be invoked using the `run_integration_tests.py`-utility:
 
 ```
-$ ansible-playbook vagrant/tests/test_variables.yml
+$ ./vagrant/run_integration_tests.py --file test_variables.yml
+=== running test_variables.yml with ansible>=2.1,<2.2
+=== running test_variables.yml with ansible>=2.2,<2.3
+=== running test_variables.yml with ansible>=2.3,<2.4
+$ ./vagrant/run_integration_tests.py ansible22 --file test_variables.yml
+=== running test_variables.yml with ansible>=2.2,<2.3
+$ ./vagrant/run_integration_tests.py --help
+usage: run_integration_tests.py [-h] [--file FILE]
+                                [{ansible21,ansible22,ansible23,all}]
 
-PLAY [test script_name and sudo_user variables] ********************************
+Run paternoster integration tests.
 
 (...)
-
-PLAY RECAP *********************************************************************
-default                    : ok=7    changed=5    unreachable=0    failed=0
 ```
-
-It is also possible to run all playbooks by executing `ansible-playbook vagrant/tests/test_*.yml`.
-At some later point in development, the tests will be run automatically by
-pytest or some other mechanism.
 
 #### Boilerplate
 
