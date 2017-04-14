@@ -4,6 +4,7 @@ import sys
 import os
 import os.path
 from collections import namedtuple
+from distutils.version import LooseVersion
 
 # Ansible loads the ansible.cfg in the following order. Each ansible.cfg
 # automatically overwrites all values of the former ones.
@@ -51,6 +52,9 @@ from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.plugins.callback import CallbackBase
 from ansible.vars import VariableManager
+import ansible.release
+
+ANSIBLE_VERSION = LooseVersion(ansible.release.__version__)
 
 
 class MinimalAnsibleCallback(CallbackBase):
@@ -63,15 +67,37 @@ class MinimalAnsibleCallback(CallbackBase):
     def v2_runner_item_on_ok(self, result):
         self.v2_runner_on_ok(result)
 
-    def v2_runner_on_ok(self, result):
-        result = result._result
-        if 'invocation' in result:
-            if result['invocation'].get('module_name', None) == 'debug':
+    def _get_action_args(self, result):
+        if ANSIBLE_VERSION < LooseVersion('2.3'):
+            result = result._result
+            if 'invocation' in result:
+                action = result['invocation'].get('module_name', None)
                 args = result['invocation'].get('module_args', None)
-                if 'var' in args:
-                    print(result[args['var']])
-                if 'msg' in args:
-                    print(args['msg'])
+            else:
+                action = None
+                args = {}
+
+            isloop = False
+        else:
+            action = result._task_fields.get('action', None)
+            args = result._task_fields.get('args', {})
+            isloop = 'results' in result._result
+
+        return (action, args, isloop)
+
+    def v2_runner_on_ok(self, result):
+        action, args, isloop = self._get_action_args(result)
+
+        if isloop:
+            # ansible 2.2+ calls runner_on_ok after all items have passed
+            # older versions don't.
+            return
+
+        if action == 'debug':
+            if 'var' in args:
+                print(result._result[args['var']])
+            if 'msg' in args:
+                print(args['msg'])
 
 
 class AnsibleRunner:
@@ -89,7 +115,7 @@ class AnsibleRunner:
 
         variable_manager = VariableManager()
         loader = DataLoader()
-        inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=['localhost'])
+        inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list='localhost,')
         variable_manager.set_inventory(inventory)
         # force ansible to use the current python executable. Otherwise
         # it can end up choosing a python3 one (named python) or a different

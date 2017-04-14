@@ -9,7 +9,7 @@
           - hosts: all
             tasks:
               - debug: var=param_domain
-              - debug: var=ansible_user
+              - debug: var=ansible_user_id
               - debug: var=sudo_user
         script: |
           #!/bin/env python2.7
