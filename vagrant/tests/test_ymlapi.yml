@@ -1,0 +1,29 @@
+- name: test parameter passing with sudo in one go
+  hosts: all
+  gather_facts: no
+  tasks:
+    - include: drop_script.yml
+      vars:
+        script_params: -u aaaa
+        script: |
+          #!/usr/bin/env paternoster
+          - hosts: paternoster
+            vars:
+              success_msg: 42
+              parameters:
+                - name: username
+                  short: u
+                  help: "name of the user to create"
+                  type: paternoster.types.restricted_str
+                  required: yes
+                  type_params:
+                    regex: '^[a-z]+$'
+
+          - hosts: localhost
+            tasks:
+              - debug: msg="creating user {%raw%}{{ param_username }}{%endraw%}"
+
+    - assert:
+        that:
+          - "script.stdout_lines[0] == 'creating user aaaa'"
+          - "script.stdout_lines[1] == '42'"
