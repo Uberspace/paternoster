@@ -7,6 +7,7 @@ A typical boilerplate for Paternoster looks like this:
 
 - hosts: paternoster
   vars:
+    success_msg: "all good!"
     parameters:
       - name: username
         short: u
@@ -59,23 +60,53 @@ details about the environment it's in:
 
 In general the type-argument is mostly identical to the one supplied to
 the python function [`add_argument()`](https://docs.python.org/2/library/argparse.html#type).
-To enforce a certain level of security, **all strings must be of the type
-`restricted_str`**. It is not possible to add an string argument, which
-does not have a defined set of characters. In addtion to `restricted_str`
-Paternosters adds a couple of other special types, which can be used by
-referencing them as `paternoster.types.<name>`, after importing
-`paternoster.types`.
+This means that all standard python types (e.g. `int`) can be used. Since
+the input validation is quite weak on these types, paternoster supplies
+a number of additional types. They can be referenced like `paternoster.types.<name>`.
 
-| Name | Category | Description |
-| ---- | -------- | ----------- |
-| `domain` | factory | a domain with valid length, format and tld |
-| `restricted_str` | factory | string which only allows certain characters given in regex-format (e.g. `a-z0-9`). Alternatively a regex can be supplied using the `regex`-parameter. This regex must be anchored. Additonally a `minlen` (default `1`) and `maxlen` (default `255`) can be passed to restrict the strings length. |
-| `restricted_int` | factory | integer which can be restricted by a `minimum` and `maximum`-value, both of which are inclusive |
+#### `restricted_string`
 
-All custom types fall into one of two categories: "normal" or "factory":
+To enforce a certain level of security, all strings must be of the type
+`restricted_str`. This standard python `str` or `unicode` types may not
+be used. This forces the developer the make a choice about the characters,
+length and format of the given input.
 
-* Normal types can be supplied just as they are: `'type': paternoster.types.domain`.
-* Factory types require additional parameters to work properly: `'type': paternoster.types.restricted_str('a-z0-9')`.
+```yml
+type: paternoster.types.restricted_str
+type_params:
+  # Either `regex` or `allowed_chars` must be supplied, but not both.
+  # anchored regular expression, which user input must match
+  regex: "^[a-z][a-z0-9]+$"
+  # regex character class, which contains all valid characters
+  allowed_chars: a-zab
+  # minimum length of a given input (defaults to 1), optional
+  minlen: 5
+  # maximum length of a given input (defaults to 255), optional
+  maxlen: 30
+```
+
+#### `restricted_int`
+
+Integer which can optionally be restricted by a minimum as well as a maximum
+value. Both of these values are inclusive.
+
+```yml
+type: paternoster.types.restricted_int
+type_params:
+  minimum: 0
+  maximum: 30
+```
+
+#### `domain`
+
+A fully qualified domain name with valid length, format and TLD.
+
+```yml
+type: paternoster.types.domain
+type_params:
+  # whether to allow domains like "*.domain.com", defaults to false
+  wildcard: true
+```
 
 ### Dependencies
 
@@ -113,9 +144,8 @@ code `1`.
 ### Success
 
 To display a customized message when the playbook executes successfully
-just set the `success_msg`-attribute of `Paternoster`, just as demonstrated
-in the boilerplate above. The message will be written to stdout as-is.
-This behavior can be disabled by passing `""` or `None` as the `success_msg`.
+just set the `success_msg`-variable, as demonstrated in the boilerplate above.
+The message will be written to stdout as-is.
 
 ### Progress Messages
 
