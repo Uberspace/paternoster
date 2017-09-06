@@ -212,10 +212,16 @@ There are several parameters to control the behaviour of `drop_script.yml`:
 | `ignore_script_errors` | yes (default: `false`) | whether to continue even if python script has a non-zero exitcode |
 | `script_params` | yes (default: empty) | command line parameters for the script (e.g. `"--domain foo.com"`) |
 
-## PyPI
+## Releasing a new version
 
-Assuming you have been handed the required credentials, the package on
-PyPI can be updated like this:
+Assuming you have been handed the required credentials, a new version
+can be released as follows.
+
+1. adapt the version in `setup.py`, according to [semver](http://semver.org/)
+2. commit this change as `Version 1.2.3`
+3. tag the resulting commit as `v1.2.3`
+4. push the new tag as well as the `master` branch
+5. update the package on PyPI:
 
 ```
 rm dist/*
