@@ -36,7 +36,7 @@ which contains the configuration for parameter parsing and other features.
 
 - hosts: paternoster
   vars:
-    help_msg: add new user
+    description: add new user
     parameters:
       - name: username
         short: u

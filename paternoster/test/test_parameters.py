@@ -186,17 +186,17 @@ def test_success_msg(success_msg, expected, capsys):
     assert out == expected
 
 
-@pytest.mark.parametrize("help_msg,expected", [
+@pytest.mark.parametrize("description,expected", [
     ('Do things with stuff', 'Do things with stuff\n\n'),
     ('', ''),
     (None, ''),
 ])
-def test_help_msg(help_msg, expected, capsys):
+def test_description(description, expected, capsys):
     s = Paternoster(
         runner_parameters={},
         parameters=[],
         runner_class=MockRunner,
-        help_msg=help_msg,
+        description=description,
     )
     with pytest.raises(SystemExit):
         s.parse_args(['--help'])

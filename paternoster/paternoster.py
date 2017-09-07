@@ -19,14 +19,14 @@ class Paternoster:
                  parameters,
                  become_user=None, check_user=None,
                  success_msg=None,
-                 help_msg=None,
+                 description=None,
                  runner_class=AnsibleRunner,
                  ):
         self._parameters = parameters
         self._become_user = become_user
         self._check_user = check_user
         self._success_msg = success_msg
-        self._help_msg = help_msg
+        self._description = description
         self._sudo_user = None
         self._runner = runner_class(**runner_parameters)
 
@@ -72,7 +72,7 @@ class Paternoster:
     def _build_argparser(self):
         parser = argparse.ArgumentParser(
             add_help=False,
-            description=self._help_msg,
+            description=self._description,
         )
         requiredArgs = parser.add_argument_group('required arguments')
         optionalArgs = parser.add_argument_group('optional arguments')
