@@ -184,3 +184,23 @@ def test_success_msg(success_msg, expected, capsys):
 
     out, err = capsys.readouterr()
     assert out == expected
+
+
+@pytest.mark.parametrize("description,expected", [
+    ('Do things with stuff', 'Do things with stuff\n\n'),
+    ('', ''),
+    (None, ''),
+])
+def test_description(description, expected, capsys):
+    s = Paternoster(
+        runner_parameters={},
+        parameters=[],
+        runner_class=MockRunner,
+        description=description,
+    )
+    with pytest.raises(SystemExit):
+        s.parse_args(['--help'])
+
+    out, err = capsys.readouterr()
+    exp_help_text = 'usage: py.test [-h] [-v]\n\n{expected}optional arguments:'
+    assert out.startswith(exp_help_text.format(expected=expected))
