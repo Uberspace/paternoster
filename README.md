@@ -145,8 +145,8 @@ to make further changes, as the file is symlinked, not copied.
 
 The core functionality of this library can be tested using the `tox`-
 command. If only python 2.x or 3.x should be tested, the `-e` parameter
-can be used, like so: `tox -e py36`, `tox -e py27`. New tests should be
-added to the `paternoster/test`-directory.
+can be used, like so: `tox -e py36-ansible23`, `tox -e py27-ansible22`.
+New tests should be added to the `paternoster/test`-directory.
 Please refer to the [pytest-documentation](http://doc.pytest.org/) for
 further details.
 
