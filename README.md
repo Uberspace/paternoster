@@ -15,6 +15,8 @@ Once everything is set up, a paternoster script can be used like this:
 $ create-user --help
 usage: create-user [-h] -u USERNAME [-v]
 
+Create a user.
+
 required arguments:
   -u USERNAME, --username USERNAME
                         name of the user to create
@@ -36,7 +38,7 @@ which contains the configuration for parameter parsing and other features.
 
 - hosts: paternoster
   vars:
-    description: add new user
+    description: Create a user.
     parameters:
       - name: username
         short: u
