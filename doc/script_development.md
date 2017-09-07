@@ -27,7 +27,8 @@ Inside `vars` the following values can be set:
 * `parameters`: command line parameters to parse, check and pass on to ansible
 * `become_user`: use `sudo` to execute the playbook as the given user (e.g. `root`)
 * `check_user`: check that the user running the script is the one given here
-* `success_msg`: print this message once the script as exited successfully
+* `success_msg`: print this message once the script has exited successfully
+* `help_msg`: a short description of the script's purpose (for `--help` output)
 
 ## Parameters
 
