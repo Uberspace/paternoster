@@ -16,13 +16,16 @@ import paternoster.types
 class Paternoster:
     def __init__(self,
                  runner_parameters,
-                 parameters,
+                 parameters=None,
                  become_user=None, check_user=None,
                  success_msg=None,
                  description=None,
                  runner_class=AnsibleRunner,
                  ):
-        self._parameters = parameters
+        if parameters is None:
+            self._parameters = []
+        else:
+            self._parameters = parameters
         self._become_user = become_user
         self._check_user = check_user
         self._success_msg = success_msg
