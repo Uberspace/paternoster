@@ -204,3 +204,20 @@ def test_description(description, expected, capsys):
     out, err = capsys.readouterr()
     exp_help_text = 'usage: py.test [-h] [-v]\n\n{expected}optional arguments:'
     assert out.startswith(exp_help_text.format(expected=expected))
+
+
+def test_arg_parameters_none():
+    s = Paternoster(
+        runner_parameters={},
+        parameters=None,
+        runner_class=MockRunner,
+    )
+    assert s._parameters == []
+
+
+def test_arg_parameters_missing():
+    s = Paternoster(
+        runner_parameters={},
+        runner_class=MockRunner,
+    )
+    assert s._parameters == []
