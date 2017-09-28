@@ -1,5 +1,11 @@
 import sys
 import pytest
+from distutils.version import LooseVersion
+
+import ansible.release
+
+ANSIBLE_VERSION = LooseVersion(ansible.release.__version__)
+SKIP_ANSIBLE_TESTS = (sys.version_info >= (3, 0) and ANSIBLE_VERSION < LooseVersion('2.4.0'))
 
 
 @pytest.mark.parametrize("args,kwargs,isfilertn,valid", [
@@ -28,7 +34,7 @@ def test_playbook_validation(args, kwargs, isfilertn, valid, monkeypatch):
         pass
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 0), reason="requires python2")
+@pytest.mark.skipif(SKIP_ANSIBLE_TESTS, reason="ansible <2.4 requires python2")
 @pytest.mark.parametrize("verbosity,keywords,notkeywords", [
     (False, [], ["TASK [debug]", "PLAY RECAP"]),
     (True, ["TASK [debug]", "PLAY RECAP"], ["ESTABLISH LOCAL CONNECTION"]),
@@ -60,7 +66,7 @@ def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
         assert (kw not in out) and (kw not in err)
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 0), reason="requires python2")
+@pytest.mark.skipif(SKIP_ANSIBLE_TESTS, reason="ansible <2.4 requires python2")
 @pytest.mark.parametrize("task,exp_out,exp_err,exp_status", [
     ("debug: msg=hi", "hi\n", "", True),
     ("debug: var=item\n          with_items: ['a', 'b']", "a\nb\n", "", True),
