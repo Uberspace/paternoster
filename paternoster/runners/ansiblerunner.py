@@ -48,13 +48,18 @@ __main__.display = Display()
 
 import ansible.constants
 from ansible.executor.playbook_executor import PlaybookExecutor
-from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.plugins.callback import CallbackBase
-from ansible.vars import VariableManager
 import ansible.release
 
 ANSIBLE_VERSION = LooseVersion(ansible.release.__version__)
+
+if ANSIBLE_VERSION < LooseVersion('2.4.0'):
+    from ansible.inventory import Inventory
+    from ansible.vars import VariableManager
+else:
+    from ansible.inventory.manager import InventoryManager
+    from ansible.vars.manager import VariableManager
 
 
 class MinimalAnsibleCallback(CallbackBase):
@@ -107,16 +112,22 @@ class AnsibleRunner:
     def _get_playbook_executor(self, variables, verbosity):
         Options = namedtuple('Options',
                              ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check',
-                              'listhosts', 'listtasks', 'listtags', 'syntax'])
+                              'listhosts', 'listtasks', 'listtags', 'syntax', 'diff'])
 
         # -v given to us enables ansibles non-debug output.
         # So -vv should become ansibles -v.
         __main__.display.verbosity = max(0, verbosity - 1)
 
-        variable_manager = VariableManager()
         loader = DataLoader()
-        inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list='localhost,')
-        variable_manager.set_inventory(inventory)
+        if ANSIBLE_VERSION < LooseVersion('2.4.0'):
+            from ansible.inventory import Inventory
+            variable_manager = VariableManager()
+            inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list='localhost,')
+            variable_manager.set_inventory(inventory)
+        else:
+            from ansible.inventory.manager import InventoryManager
+            inventory = InventoryManager(loader=loader, sources='localhost,')
+            variable_manager = VariableManager(loader=loader, inventory=inventory)
         # force ansible to use the current python executable. Otherwise
         # it can end up choosing a python3 one (named python) or a different
         # python 2 version
@@ -135,7 +146,8 @@ class AnsibleRunner:
                 module_path=None,
                 forks=1,
                 listhosts=False, listtasks=False, listtags=False, syntax=False,
-                become=None, become_method=None, become_user=None, check=False
+                become=None, become_method=None, become_user=None, check=False,
+                diff=False,
             ),
             passwords={},
         )
