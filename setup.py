@@ -19,6 +19,7 @@ setup(name='paternoster',
       packages=[
           'paternoster',
           'paternoster.runners',
+          'paternoster.types',
       ],
       entry_points = {
           'console_scripts': ['paternoster=paternoster.shebang:main'],
