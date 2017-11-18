@@ -1,10 +1,11 @@
-from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import print_function
 
 import argparse
-import sys
-import os.path
+import getpass
 import inspect
+import os.path
+import sys
 
 import six
 
@@ -91,6 +92,8 @@ class Paternoster:
             argParams.pop('positional', None)
             argParams.pop('short', None)
             argParams.pop('name', None)
+            argParams.pop('prompt', None)
+            argParams.pop('prompt_options', None)
 
             self._convert_type(argParams)
             self._check_type(argParams)
@@ -101,6 +104,12 @@ class Paternoster:
                 paramName = ['-' + param['short'], '--' + param['name']]
 
             if param.get('required', False) or param.get('positional', False):
+                if param.get('prompt'):
+                    parser.error((
+                        "'--{}' is required and can't be combined with prompt"
+                    ).format(
+                        param['name'],
+                    ))
                 requiredArgs.add_argument(*paramName, **argParams)
             else:
                 optionalArgs.add_argument(*paramName, **argParams)
@@ -111,6 +120,40 @@ class Paternoster:
         )
 
         return parser
+
+    def _prompt_for_missing(self, argv, parser, args):
+        """
+        Return *args* after prompting the user for missing arguments.
+
+        Prompts the user for arguments (`self._parameters`), that are missing
+        from *args* (don't exist or are set to `None`). But only if they have
+        the `prompt` key set to `True` or a non empty string.
+
+        """
+        # get parameter dictionaries for missing arguments
+        missing_params = (
+            param for param in self._parameters
+            if param.get('prompt')
+            and isinstance(param.get('prompt'), (bool, six.string_types))
+            and getattr(args, param['name']) is None
+        )
+
+        # prompt for missing args
+        prompt_data = {
+            param['name']: self.get_input(param) for param in missing_params
+        }
+
+        # add prompt_data to new argv and return newly parsed arguments
+        if prompt_data:
+            argv = list(argv) if argv else sys.argv[1:]
+            for name, value in prompt_data.items():
+                argv.append('--{}'.format(name))
+                argv.append(value)
+            return parser.parse_args(argv)
+
+        # return already parsed arguments
+        else:
+            return args
 
     def _check_arg_dependencies(self, parser, args):
         for param in self._parameters:
@@ -146,13 +189,16 @@ class Paternoster:
         status = self.execute()
         sys.exit(0 if status else 1)
 
-    def parse_args(self, args=None):
+    def parse_args(self, argv=None):
         parser = self._build_argparser()
-
-        args = parser.parse_args(args)
-        self._check_arg_dependencies(parser, args)
-
-        self._parsed_args = args
+        try:
+            args = parser.parse_args(argv)
+            args = self._prompt_for_missing(argv, parser, args)
+            self._check_arg_dependencies(parser, args)
+            self._parsed_args = args
+        except ValueError as exc:
+            print(exc, file=sys.stderr)
+            sys.exit(3)
 
     def _get_runner_variables(self):
         if self._sudo_user:
@@ -168,3 +214,81 @@ class Paternoster:
         if status and self._success_msg:
             print(self._success_msg)
         return status
+
+    @staticmethod
+    def prompt(text, no_echo=False):
+        """
+        Return user input from a prompt with *text*.
+
+        If *no_echo* is set, :func:`getpass.getpass` is used to prevent echoing
+        of the user input.
+
+        """
+        try:
+            if no_echo:
+                return getpass.getpass(text)
+            else:
+                return raw_input(text)  # Python 2
+        except NameError:
+            return input(text)  # Python 3
+
+    @staticmethod
+    def get_input(param):
+        """
+        Return user input for *param*.
+
+        The `param['name']` item needs to be set. The text for the prompt is
+        taken from `param['prompt']`, if available and a non empty string.
+        Otherwise `param['name']` is used. Also you can set additional
+        arguments in `param['prompt_options']`:
+
+        :accept_empty: if `True`: allows empty input
+        :confirm: if `True` or string: prompt user for confirmation
+        :confirm_error: if string: used as confirmation error message
+        :no_echo: if `True`: don't echo the user input on the screen
+        :strip: if `True`: strips user input
+
+        Raises:
+            KeyError: if no `name` item is set for *param*.
+            ValueError: if input and confirmation do not match.
+
+        """
+        name = param['name']
+        prompt = param.get('prompt')
+        options = param.get('prompt_options', {})
+        confirmation_prompt = options.get('confirm')
+        accept_empty = options.get('accept_empty')
+        no_echo = options.get('no_echo')
+        strip = options.get('strip')
+
+        # set prompt
+        if not isinstance(prompt, six.string_types):
+            prompt = '{}: '.format(name.title())
+
+        # set confirmation prompt
+        ask_confirmation = (
+            confirmation_prompt
+            and isinstance(confirmation_prompt, (bool, six.string_types))
+        )
+        if not isinstance(confirmation_prompt, six.string_types):
+            confirmation_prompt = 'Please confirm: '
+
+        # get input
+        while True:
+            value = Paternoster.prompt(prompt, no_echo)
+            if strip:
+                value = value.strip()
+            if value or accept_empty:
+                break
+
+        # confirm
+        if ask_confirmation:
+            confirmed_value = Paternoster.prompt(confirmation_prompt, no_echo)
+            if value != confirmed_value:
+                confirm_error = (
+                    options.get('confirm_error')
+                    or 'ERROR: input does not match its confirmation'
+                )
+                raise ValueError(confirm_error)
+
+        return value
