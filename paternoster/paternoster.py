@@ -91,6 +91,7 @@ class Paternoster:
             argParams.pop('positional', None)
             argParams.pop('short', None)
             argParams.pop('name', None)
+            argParams.pop('prompt', None)
 
             self._convert_type(argParams)
             self._check_type(argParams)
@@ -111,6 +112,25 @@ class Paternoster:
         )
 
         return parser
+
+    def _prompt_for_missing(self, argv, parser, args):
+        prompt_data = {
+            param['name']: self.prompt(param) for param in (
+                param for param in self._parameters
+                if param.get('prompt')
+                and getattr(args, param['name']) is None
+            )
+        }
+
+        if prompt_data:
+            argv = list(argv) if argv else sys.argv[1:]
+            for name, value in prompt_data.items():
+                argv.append('--{}'.format(name))
+                argv.append(value)
+            return parser.parse_args(argv)
+
+        else:
+            return args
 
     def _check_arg_dependencies(self, parser, args):
         for param in self._parameters:
@@ -146,10 +166,11 @@ class Paternoster:
         status = self.execute()
         sys.exit(0 if status else 1)
 
-    def parse_args(self, args=None):
+    def parse_args(self, argv=None):
         parser = self._build_argparser()
 
-        args = parser.parse_args(args)
+        args = parser.parse_args(argv)
+        args = self._prompt_for_missing(argv, parser, args)
         self._check_arg_dependencies(parser, args)
 
         self._parsed_args = args
@@ -168,3 +189,7 @@ class Paternoster:
         if status and self._success_msg:
             print(self._success_msg)
         return status
+
+    @staticmethod
+    def prompt(param):
+        return raw_input(param['prompt'])
