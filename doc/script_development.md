@@ -43,7 +43,8 @@ except for a few special ones:
 | `type` | a class, which is parse and validate the value given by the user |
 | `type_params` | optional parameters for the type class |
 | `depends_on` | makes this argument depend on the presence of another one |
-| `positional` | indicates whether the argument is a `--keyword` one (default) or positional. Must not be supplied together with `required'. |
+| `positional` | indicates whether the argument is a `--keyword` one (default) or positional. Must not be supplied together with `required`. |
+| `prompt` | prompt to ask the user for input, if the argument is not supplied. Works only if the argument is not `required`. |
 
 All arguments to the script are passed to ansible as variables with the
 `param_`-prefix. This means that `--domain foo.com` becomes the variable
