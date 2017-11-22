@@ -118,6 +118,13 @@ class AnsibleRunner:
         # So -vv should become ansibles -v.
         __main__.display.verbosity = max(0, verbosity - 1)
 
+        # make sure ansible does not output warnings for our paternoster pseudo-play
+        __main__._real_warning = __main__.display.warning
+        def display_warning(self, msg, *args, **kwargs):
+            if not msg.startswith('Could not match supplied host pattern'):
+                __main__._real_warning(msg, *args, **kwargs)
+        __main__.display.warning = display_warning
+
         loader = DataLoader()
         if ANSIBLE_VERSION < LooseVersion('2.4.0'):
             from ansible.inventory import Inventory
