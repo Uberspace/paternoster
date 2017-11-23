@@ -1,4 +1,4 @@
 pytest
 pytest-cov
 tox
-pep8
+pycodestyle

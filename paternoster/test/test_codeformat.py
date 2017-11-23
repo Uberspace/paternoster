@@ -1,9 +1,14 @@
 import os
 import os.path
-import pep8
+
+import pycodestyle
 
 
 def test_pep8_conformance():
-    pep8style = pep8.StyleGuide(quiet=True, config_file=os.path.join(os.path.dirname(__file__), '../../tox.ini'))
-    source_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
-    assert pep8style.check_files([source_path]).total_errors == 0
+    test_path = os.path.dirname(__file__)
+    styleguide = pycodestyle.StyleGuide(
+        config_file=os.path.join(test_path, '../../tox.ini'),
+        quiet=True,
+    )
+    source_path = os.path.realpath(os.path.join(test_path, '..'))
+    assert styleguide.check_files([source_path]).total_errors == 0
