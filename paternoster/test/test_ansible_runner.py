@@ -70,6 +70,7 @@ def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
 @pytest.mark.parametrize("task,exp_out,exp_err,exp_status", [
     ("debug: msg=hi", "hi\n", "", True),
     ("debug: var=item\n          with_items: ['a', 'b']", "a\nb\n", "", True),
+    ("debug: msg='{{ item }}'\n          with_items: ['a', 'b']", "a\nb\n", "", True),
     ("debug: var=param_foo", "22\n", "", True),
     ("command: echo hi", "", "", True),
     ("fail: msg=42", "", "42\n", False),

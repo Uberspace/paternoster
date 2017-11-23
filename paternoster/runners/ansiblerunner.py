@@ -102,7 +102,7 @@ class MinimalAnsibleCallback(CallbackBase):
             if 'var' in args:
                 print(result._result[args['var']])
             if 'msg' in args:
-                print(args['msg'])
+                print(result._result['msg'])
 
 
 class AnsibleRunner:
