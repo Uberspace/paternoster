@@ -75,13 +75,13 @@ class restricted_int:
         if minimum is not None:
             try:
                 minimum = int(minimum)
-            except:
+            except (ValueError, TypeError):
                 raise ValueError('minimum is not a integer')
 
         if maximum is not None:
             try:
                 maximum = int(maximum)
-            except:
+            except (ValueError, TypeError):
                 raise ValueError('maximum is not a integer')
 
         if minimum is not None and maximum is not None and minimum > maximum:
@@ -102,6 +102,7 @@ class restricted_int:
             raise ValueError('value too big (must be <= {})'.format(self._maximum))
 
         return val
+
 
 __all__ = [
     'domain',
