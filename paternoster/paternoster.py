@@ -114,21 +114,27 @@ class Paternoster:
         return parser
 
     def _prompt_for_missing(self, argv, parser, args):
-        prompt_data = {
-            param['name']: self.prompt(param) for param in (
-                param for param in self._parameters
-                if param.get('prompt')
-                and getattr(args, param['name']) is None
-            )
+        # get parameter dictionaries for missing arguments
+        params_for_missing = (
+            param for param in self._parameters
+            if param.get('prompt')
+            and getattr(args, param['name']) is None
+        )
+
+        # prompt for missing args
+        prompts = {
+            param['name']: self.prompt(param) for param in params_for_missing
         }
 
-        if prompt_data:
+        # add data from prompts to new argv and return newly parsed arguments
+        if prompts:
             argv = list(argv) if argv else sys.argv[1:]
-            for name, value in prompt_data.items():
+            for name, value in prompts.items():
                 argv.append('--{}'.format(name))
                 argv.append(value)
             return parser.parse_args(argv)
 
+        # use already parsed arguments
         else:
             return args
 
@@ -192,4 +198,8 @@ class Paternoster:
 
     @staticmethod
     def prompt(param):
-        return raw_input(param['prompt'])
+        try:
+            value = raw_input(param['prompt'])
+        except NameError:
+            value = input(param['prompt'])
+        return value
