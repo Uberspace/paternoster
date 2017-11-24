@@ -92,6 +92,7 @@ class Paternoster:
             argParams.pop('short', None)
             argParams.pop('name', None)
             argParams.pop('prompt', None)
+            argParams.pop('prompt_options', None)
 
             self._convert_type(argParams)
             self._check_type(argParams)
@@ -114,27 +115,35 @@ class Paternoster:
         return parser
 
     def _prompt_for_missing(self, argv, parser, args):
+        """
+        Return *args* after prompting the user for missing arguments.
+
+        Prompts the user for arguments (`self._parameters`), that are missing
+        from *args* (don't exist or are set to `None`). But only if they have
+        the `prompt` key set to something that evaluates to `True`.
+
+        """
         # get parameter dictionaries for missing arguments
-        params_for_missing = (
+        missing_params = (
             param for param in self._parameters
             if param.get('prompt')
             and getattr(args, param['name']) is None
         )
 
         # prompt for missing args
-        prompts = {
-            param['name']: self.prompt(param) for param in params_for_missing
+        prompt_data = {
+            param['name']: self.get_input(param) for param in missing_params
         }
 
-        # add data from prompts to new argv and return newly parsed arguments
-        if prompts:
+        # add prompt_data to new argv and return newly parsed arguments
+        if prompt_data:
             argv = list(argv) if argv else sys.argv[1:]
-            for name, value in prompts.items():
+            for name, value in prompt_data.items():
                 argv.append('--{}'.format(name))
                 argv.append(value)
             return parser.parse_args(argv)
 
-        # use already parsed arguments
+        # return already parsed arguments
         else:
             return args
 
@@ -174,12 +183,14 @@ class Paternoster:
 
     def parse_args(self, argv=None):
         parser = self._build_argparser()
-
-        args = parser.parse_args(argv)
-        args = self._prompt_for_missing(argv, parser, args)
-        self._check_arg_dependencies(parser, args)
-
-        self._parsed_args = args
+        try:
+            args = parser.parse_args(argv)
+            args = self._prompt_for_missing(argv, parser, args)
+            self._check_arg_dependencies(parser, args)
+            self._parsed_args = args
+        except ValueError as exc:
+            print(exc, file=sys.stderr)
+            sys.exit(3)
 
     def _get_runner_variables(self):
         if self._sudo_user:
@@ -197,9 +208,57 @@ class Paternoster:
         return status
 
     @staticmethod
-    def prompt(param):
+    def prompt(text):
+        """
+        Return user input from a prompt with *text*.
+
+        Works with Python 2 and 3.
+
+        """
         try:
-            value = raw_input(param['prompt'])
+            return raw_input(text)
         except NameError:
-            value = input(param['prompt'])
+            return input(text)
+
+    @staticmethod
+    def get_input(param):
+        """
+        Return user input for *param*.
+
+        The text for the prompt is taken from `param['prompt']`. You can set
+        additional arguments in `param['prompt_options']`:
+
+        :strip: if `True`: strips user input
+        :empty: if `True`: allows empty input
+        :confirm: if `True` or string: prompt user for confirmation
+        :confirm_error: if string: used on confirmation error
+
+        Raises:
+            ValueError: if input and confirmation do not match.
+
+        """
+        prompt = param.get('prompt')
+        if not isinstance(prompt, six.string_types):
+            prompt = 'Input: '
+        options = param.get('prompt_options', {})
+
+        while True:
+            value = Paternoster.prompt(prompt)
+            if options.get('strip'):
+                value = value.strip()
+            if value or options.get('empty'):
+                break
+
+        if options.get('confirm'):
+            confirmation_prompt = options.get('confirm')
+            if not isinstance(confirmation_prompt, six.string_types):
+                confirmation_prompt = 'Please confirm: '
+            confirmed_value = Paternoster.prompt(confirmation_prompt)
+            if value != confirmed_value:
+                confirm_error = (
+                    options.get('confirm_error')
+                    or 'ERROR: input does not match its confirmation'
+                )
+                raise ValueError(confirm_error)
+
         return value
