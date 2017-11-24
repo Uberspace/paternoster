@@ -45,6 +45,7 @@ except for a few special ones:
 | `depends_on` | makes this argument depend on the presence of another one |
 | `positional` | indicates whether the argument is a `--keyword` one (default) or positional. Must not be supplied together with `required`. |
 | `prompt` | prompt to ask the user for input, if the argument is not supplied. Works only if the argument is not `required`. |
+| `prompt_options` | dictionary conatining optional settings for the prompt |
 
 All arguments to the script are passed to ansible as variables with the
 `param_`-prefix. This means that `--domain foo.com` becomes the variable
@@ -131,6 +132,15 @@ parameters:
       allowed_chars: a-z0-9
     depends_on: mailserver
 ```
+
+### Prompt Options
+
+| Name | Description |
+| ---- | ----------- |
+| `strip` | If _True_, remove whitespace at the start and end of the user input. |
+| `empty` | If _True_, allow empty input. The default is to keep prompting. |
+| `confirm` | If _True_ (or _string_), ask for input confirmation (repeat the entry). If _string_, use it for the prompt.
+| `confirm_error` | Use this _string_ as error message if confirmation fails. |
 
 ## Status Reporting
 
