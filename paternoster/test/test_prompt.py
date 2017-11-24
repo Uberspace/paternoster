@@ -115,7 +115,7 @@ class TestInput(InputBuffer):
         with pytest.raises(EOFError):
             p.get_input(dict())
 
-    def test_input_error_strip_empty(self):
+    def test_input_error_empty_opt_strip(self):
         p = Paternoster(runner_parameters={}, runner_class=MockRunner)
         self.buffer('    \n')
         with pytest.raises(EOFError):
@@ -334,3 +334,35 @@ class TestIntegration(InputBuffer):
         with pytest.raises(SystemExit) as excinfo:
             p.parse_args(argv=['--username', 'testor'])
         assert str(excinfo.value) == '2'
+
+    @pytest.mark.parametrize('value', [
+        None,
+        False,
+        0,
+        1,
+        [1, 2, 3],
+    ])
+    def test_prompt_error_wrong_type(self, value, capsys):
+        p = Paternoster(
+            runner_parameters={},
+            parameters=[
+                {
+                    'name': 'username',
+                    'short': 'u',
+                    'type': types.restricted_str(allowed_chars='a-z'),
+                    'required': True,
+                },
+                {
+                    'name': 'password',
+                    'short': 'p',
+                    'type': types.restricted_str(allowed_chars='a-z'),
+                    'prompt': value,
+                },
+            ],
+            runner_class=MockRunner,
+        )
+        self.buffer('test\n')
+        p.parse_args(argv=['--username', 'testor'])
+        args = {k: v for (k, v) in p._get_runner_variables()}
+        assert args['param_username'] == 'testor'
+        assert args['param_password'] is None

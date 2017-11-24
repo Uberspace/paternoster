@@ -127,6 +127,7 @@ class Paternoster:
         missing_params = (
             param for param in self._parameters
             if param.get('prompt')
+            and isinstance(param.get('prompt'), (bool, six.string_types))
             and getattr(args, param['name']) is None
         )
 
@@ -249,8 +250,11 @@ class Paternoster:
             if value or options.get('empty'):
                 break
 
-        if options.get('confirm'):
-            confirmation_prompt = options.get('confirm')
+        confirmation_prompt = options.get('confirm')
+        if (
+            confirmation_prompt
+            and isinstance(confirmation_prompt, (bool, six.string_types))
+        ):
             if not isinstance(confirmation_prompt, six.string_types):
                 confirmation_prompt = 'Please confirm: '
             confirmed_value = Paternoster.prompt(confirmation_prompt)
