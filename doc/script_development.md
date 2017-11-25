@@ -44,8 +44,8 @@ except for a few special ones:
 | `type_params` | optional parameters for the type class |
 | `depends_on` | makes this argument depend on the presence of another one |
 | `positional` | indicates whether the argument is a `--keyword` one (default) or positional. Must not be supplied together with `required`. |
-| `prompt` | prompt the user for input, if the argument is not supplied. If the argument is `required`, it has to be set on the command line though. You can set this to _True_ to use the default prompt, or to a (non empty) _string_ to supply your own. |
-| `prompt_options` | dictionary conatining optional settings for the prompt |
+| `prompt` | prompt the user for input, if the argument is not supplied. If the argument is `required`, it has to be set on the command line though. You can set this to _True_ to use the default prompt, or to a (non empty) _string_ to supply your own. The default prompt uses the `name` of the parameter. |
+| `prompt_options` | dictionary conatining optional settings for the prompt (see below for more information). |
 
 All arguments to the script are passed to ansible as variables with the
 `param_`-prefix. This means that `--domain foo.com` becomes the variable
@@ -137,10 +137,11 @@ parameters:
 
 | Name | Description |
 | ---- | ----------- |
-| `strip` | if _True_, remove whitespace at the start and end of the user input. |
-| `empty` | if _True_, allow empty input. The default is to keep prompting until a non empty input is recieved. |
+| `accept_empty` | if _True_, allow empty input. The default is to keep prompting until a non empty input is recieved. |
 | `confirm` | ask for input confirmation (user has to repeat the entry). You can set this to _True_ to use the default prompt, or to a (non empty) _string_ to supply your own.
 | `confirm_error` | use this (non empty) _string_ as error message if confirmation fails, instead of the default. |
+| `no_echo` | if _True_: don't echo the user input on the screen. |
+| `strip` | if _True_, remove whitespace at the start and end of the user input. |
 
 ## Status Reporting
 
