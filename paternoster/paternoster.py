@@ -224,16 +224,21 @@ class Paternoster:
         Return user input from a prompt with *text*.
 
         If *no_echo* is set, :func:`getpass.getpass` is used to prevent echoing
-        of the user input.
+        of the user input. Exits gracefully on keyboard interrupts (with return
+        code 3).
 
         """
         try:
             if no_echo:
-                return getpass.getpass(text)
+                user_input = getpass.getpass(text)
             else:
-                return raw_input(text)  # Python 2
-        except NameError:
-            return input(text)  # Python 3
+                try:
+                    user_input = raw_input(text)  # Python 2
+                except NameError:
+                    user_input = input(text)  # Python 3
+            return user_input
+        except KeyboardInterrupt:
+            sys.exit(3)
 
     @staticmethod
     def get_input(param):
