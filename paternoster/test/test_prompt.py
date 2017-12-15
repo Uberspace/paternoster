@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -72,6 +74,14 @@ class TestPrompt(PaternosterHelper, InputBuffer):
         out, err = capsys.readouterr()
         assert out == self.PROMPT_TEXT
 
+    def test_prompt_unicode(self, capsys):
+        p = self.get_paternoster()
+        self.buffer('\n')
+        prompt = u'Entör!: '
+        p.prompt(prompt)
+        out, err = capsys.readouterr()
+        assert out == prompt
+
     @pytest.mark.skipif(patch is None, reason='test needs `mock`')
     def test_echo(self):
         """Check that `getpass` is called if *no_echo* is set."""
@@ -91,6 +101,12 @@ class TestPrompt(PaternosterHelper, InputBuffer):
         self.buffer('hello world test')
         res = p.prompt(self.PROMPT_TEXT)
         assert res == 'hello world test'
+
+    def test_input_unicode(self):
+        p = self.get_paternoster()
+        self.buffer('hello wörld test! ')
+        res = p.prompt(self.PROMPT_TEXT)
+        assert res == 'hello wörld test! '
 
     def test_input_newlines(self):
         p = self.get_paternoster()
@@ -293,6 +309,22 @@ class TestInput(PaternosterHelper, InputBuffer):
             param = self.get_param(options=dict(no_echo=True))
             p.get_input(param)
             mockfunc.assert_called()
+
+
+class TestInputSignalHandling(PaternosterHelper):
+
+    def test_exit_on_keyboard_interrupt(self):
+        p = self.get_paternoster()
+        param = self.get_param()
+        if sys.version_info[0] == 2:
+            mock_target = '__builtin__.raw_input'
+        else:
+            mock_target = 'builtins.input'
+        with patch(mock_target) as mockfunc:
+            mockfunc.side_effect = KeyboardInterrupt
+            with pytest.raises(SystemExit) as exp:
+                p.get_input(param)
+            assert str(exp.value) == '3'
 
 
 class TestIntegrationParams(PaternosterHelper, InputBuffer):
