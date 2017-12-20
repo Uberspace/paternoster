@@ -207,7 +207,10 @@ class Paternoster:
         yield ('script_name', os.path.basename(sys.argv[0]))
 
         for name in vars(self._parsed_args):
-            yield ('param_' + name, getattr(self._parsed_args, name))
+            value = getattr(self._parsed_args, name)
+            if six.PY2 and isinstance(value, str):
+                value = value.decode('utf-8')
+            yield ('param_' + name, value)
 
     def execute(self):
         status = self._runner.run(self._get_runner_variables(), self._parsed_args.verbose)

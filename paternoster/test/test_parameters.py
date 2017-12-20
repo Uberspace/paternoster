@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pytest
 import six
 
@@ -138,6 +140,20 @@ def test_parameter_passing():
     s.execute()
 
     assert dict(s._runner.args[0])['param_namespace'] == 'aaaa'
+
+
+def test_parameter_passing_unicode():
+    s = Paternoster(
+        runner_parameters={},
+        parameters=[
+            {'name': 'namespace', 'short': 'e', 'type': types.restricted_str('ä')},
+        ],
+        runner_class=MockRunner
+    )
+    s.parse_args(['-e', 'ää'])
+    s.execute()
+
+    assert dict(s._runner.args[0])['param_namespace'] == u'ää'
 
 
 @pytest.mark.parametrize("value,valid", [
