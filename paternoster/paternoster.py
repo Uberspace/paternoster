@@ -19,6 +19,7 @@ class Paternoster:
                  runner_parameters,
                  parameters=None,
                  mutually_exclusive=None,
+                 required_one_of=None,
                  become_user=None, check_user=None,
                  success_msg=None,
                  description=None,
@@ -29,6 +30,7 @@ class Paternoster:
         else:
             self._parameters = parameters
         self._mutually_exclusive = mutually_exclusive or []
+        self._required_one_of = required_one_of or []
         self._become_user = become_user
         self._check_user = check_user
         self._success_msg = success_msg
@@ -176,6 +178,15 @@ class Paternoster:
                     'arguments {} are mutually exclusive.'.format(', '.join(given_args))
                 )
 
+    def _check_arg_required_one_of(self, parser, args):
+        for group in self._required_one_of:
+            given_args = [True for x in group if getattr(args, x)]
+
+            if len(given_args) == 0:
+                parser.error(
+                    'at least one of {} is needed.'.format(', '.join('--' + x for x in group))
+                )
+
     def check_user(self):
         if not self._check_user:
             return
@@ -207,6 +218,7 @@ class Paternoster:
             args = self._prompt_for_missing(argv, parser, args)
             self._check_arg_dependencies(parser, args)
             self._check_arg_mutually_exclusive(parser, args)
+            self._check_arg_required_one_of(parser, args)
             self._parsed_args = args
         except ValueError as exc:
             print(exc, file=sys.stderr)

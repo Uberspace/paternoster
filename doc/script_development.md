@@ -160,6 +160,32 @@ groups using the `mutually_exclusive` key:
 With this configuration, the script may be invoked with `--debug` or `--quiet`
 alone, but never with both: `--debug --quiet`.
 
+### (at least) one of a group
+
+Defines parameter groups of which at least one parameter must be given (e.g.
+`--webserver` or `--mailserver` when adding a domain). This can be combined with
+`mutually_exclusive` to specify a group, of which exactly one must be given. It
+is possible to specify any number of parameter groups using the
+`required_one_of` key:
+
+```
+- hosts: paternoster
+  vars:
+    description: Do something
+    parameters:
+      - name: webserver
+        short: w
+        action: store_true
+      - name: mailserver
+        short: m
+        action: store_true
+    required_one_of:
+      - ["webserver", "mailserver"]
+```
+
+With this configuration, the script may be invoked with `--webserver`,
+`--mailserver`, or `--webserver --mailserver`, but never without any arguments.
+
 ### Prompt Options
 
 | Name | Description |
