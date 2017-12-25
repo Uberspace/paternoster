@@ -38,6 +38,48 @@ def test_parameter_depends(args, valid):
         s.parse_args(args)
 
 
+@pytest.mark.parametrize("args,valid", [
+    ([], True),
+    (['--dummy'], True),
+    (['--mailserver'], True),
+    (['--webserver'], True),
+    (['--mailserver', '--dummy'], True),
+    (['--mailserver', '--webserver'], False),
+    (['--webserver', '--dummy'], False),
+    (['-w'], True),
+    (['-m', '-w'], False),
+    (['-m', '--webserver'], False),
+])
+def test_parameter_mutually_exclusive(args, valid):
+    s = Paternoster(
+        runner_parameters={'playbook': ''},
+        parameters=[
+            {
+                'name': 'mailserver', 'short': 'm',
+                'help': '', 'action': 'store_true',
+            },
+            {
+                'name': 'webserver', 'short': 'w',
+                'help': '', 'action': 'store_true',
+            },
+            {
+                'name': 'dummy', 'short': 'd',
+                'help': '', 'action': 'store_true',
+            },
+        ],
+        mutually_exclusive=[
+            ['mailserver', 'webserver'],
+            ['dummy', 'webserver'],
+        ]
+    )
+
+    if not valid:
+        with pytest.raises(SystemExit):
+            s.parse_args(args)
+    else:
+        s.parse_args(args)
+
+
 def test_find_param():
     s = Paternoster(
         runner_parameters={},

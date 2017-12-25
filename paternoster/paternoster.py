@@ -18,6 +18,7 @@ class Paternoster:
     def __init__(self,
                  runner_parameters,
                  parameters=None,
+                 mutually_exclusive=None,
                  become_user=None, check_user=None,
                  success_msg=None,
                  description=None,
@@ -27,6 +28,7 @@ class Paternoster:
             self._parameters = []
         else:
             self._parameters = parameters
+        self._mutually_exclusive = mutually_exclusive or []
         self._become_user = become_user
         self._check_user = check_user
         self._success_msg = success_msg
@@ -165,6 +167,15 @@ class Paternoster:
                     'argument --{} requires --{} to be present.'.format(param['name'], param['depends_on'])
                 )
 
+    def _check_arg_mutually_exclusive(self, parser, args):
+        for group in self._mutually_exclusive:
+            given_args = ['--' + x for x in group if getattr(args, x)]
+
+            if len(given_args) > 1:
+                parser.error(
+                    'arguments {} are mutually exclusive.'.format(', '.join(given_args))
+                )
+
     def check_user(self):
         if not self._check_user:
             return
@@ -195,6 +206,7 @@ class Paternoster:
             args = parser.parse_args(argv)
             args = self._prompt_for_missing(argv, parser, args)
             self._check_arg_dependencies(parser, args)
+            self._check_arg_mutually_exclusive(parser, args)
             self._parsed_args = args
         except ValueError as exc:
             print(exc, file=sys.stderr)

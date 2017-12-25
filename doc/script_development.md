@@ -136,6 +136,30 @@ parameters:
     depends_on: mailserver
 ```
 
+### Mutually Exclusive Parameters
+
+Mutually exclusive parameters may never be given together by the caller (e.g.
+`--debug` and `--quiet`). It is possible to specify any number of parameter
+groups using the `mutually_exclusive` key:
+
+```yml
+- hosts: paternoster
+  vars:
+    description: Do something
+    parameters:
+      - name: debug
+        short: d
+        action: store_true
+      - name: quiet
+        short: q
+        action: store_true
+    mutually_exclusive:
+      - ["debug", "quiet"]
+```
+
+With this configuration, the script may be invoked with `--debug` or `--quiet`
+alone, but never with both: `--debug --quiet`.
+
 ### Prompt Options
 
 | Name | Description |
