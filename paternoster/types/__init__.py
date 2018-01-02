@@ -18,6 +18,7 @@ class domain:
 
         if val.endswith('.'):
             val = val[:-1]
+            domain = domain[:-1]
 
         extracted = tldextract.TLDExtract(suffix_list_urls=[])(val)
 
