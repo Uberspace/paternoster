@@ -15,7 +15,7 @@ class domain:
 
         if self._wildcard and val.startswith('*.'):
             val = val[2:]
-            
+
         if val.endswith('.'):
             val = val[:-1]
 
