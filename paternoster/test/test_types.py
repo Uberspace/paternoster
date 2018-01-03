@@ -27,6 +27,7 @@ import pytest
     (("a" * 40 + '.') * 8 + "com", False, False),
     ('', False, False),
     ('example.com.', False, True),
+    ('example.com..', False, False),
     ('*.example.com.', True, True),
     ('.', False, False),
 ])
@@ -40,6 +41,21 @@ def test_type_domain(value, wildcard, valid):
             check(value)
     else:
         check(value)
+
+
+@pytest.mark.parametrize("value,wildcard,expected", [
+    ("uberspace.de", False, "uberspace.de"),
+    ("uberspace.de.", False, "uberspace.de"),
+    ("*.uberspace.de", True, "*.uberspace.de"),
+    ("*.uberspace.de.", True, "*.uberspace.de"),
+])
+def test_type_domain_return(value, wildcard, expected):
+    from ..types import domain
+
+    check = domain(wildcard)
+    actual = check(value)
+
+    assert actual == expected
 
 
 @pytest.mark.parametrize("allowed_chars,regex,minlen,maxlen,value,valid", [

@@ -111,6 +111,9 @@ type_params:
   wildcard: true
 ```
 
+Note that domains given with a trailing dot (e.g. `example.com.`) are normalized
+to their dot-less form (e.g. `example.com`).
+
 ### Dependencies
 
 In some cases a parameter may need another one to function correctly. A
