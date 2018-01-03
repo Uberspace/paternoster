@@ -26,6 +26,9 @@ import pytest
     ("a" * 65 + ".com", False, False),
     (("a" * 40 + '.') * 8 + "com", False, False),
     ('', False, False),
+    ('example.com.', False, True),
+    ('*.example.com.', True, True),
+    ('.', False, False),
 ])
 def test_type_domain(value, wildcard, valid):
     from ..types import domain

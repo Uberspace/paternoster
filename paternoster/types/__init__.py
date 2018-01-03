@@ -13,6 +13,9 @@ class domain:
         val = val.encode('idna').decode('ascii')
         domain = val
 
+        if val.endswith('.'):
+            domain = val = val[:-1]
+
         if self._wildcard and val.startswith('*.'):
             val = val[2:]
 
