@@ -79,7 +79,7 @@ def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
     ("fail: msg=42", "", "42\n", False),
     ("fail: msg=42\n          ignore_errors: yes", "", "", True),
 ])
-def test_fail_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
+def test_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
     import os
     from ..runners.ansiblerunner import AnsibleRunner
 
