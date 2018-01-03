@@ -13,12 +13,11 @@ class domain:
         val = val.encode('idna').decode('ascii')
         domain = val
 
+        if val.endswith('.'):
+            domain = val = val[:-1]
+
         if self._wildcard and val.startswith('*.'):
             val = val[2:]
-
-        if val.endswith('.'):
-            val = val[:-1]
-            domain = domain[:-1]
 
         extracted = tldextract.TLDExtract(suffix_list_urls=[])(val)
 
