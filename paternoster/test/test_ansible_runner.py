@@ -69,8 +69,11 @@ def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
 @pytest.mark.skipif(SKIP_ANSIBLE_TESTS, reason="ansible <2.4 requires python2")
 @pytest.mark.parametrize("task,exp_out,exp_err,exp_status", [
     ("debug: msg=hi", "hi\n", "", True),
-    ("debug: var=item\n          with_items: ['a', 'b']", "a\nb\n", "", True),
-    ("debug: msg='{{ item }}'\n          with_items: ['a', 'b']", "a\nb\n", "", True),
+    # the list order is not defined in some ansible versions, so we just assert
+    # that all items are present in whatever order.
+    # https://github.com/ansible/ansible/issues/21008
+    ("debug: var=item\n          with_items: ['a', 'b']", ["a", "b"], "", True),
+    ("debug: msg='{{ item }}'\n          with_items: ['a', 'b']", ["a", "b"], "", True),
     ("debug: var=param_foo", "22\n", "", True),
     ("command: echo hi", "", "", True),
     ("fail: msg=42", "", "42\n", False),
@@ -94,6 +97,17 @@ def test_fail_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
     status = AnsibleRunner(playbook_path).run([('param_foo', 22)], False)
 
     out, err = capsys.readouterr()
-    assert out == exp_out
-    assert err == exp_err
+
+    if isinstance(exp_out, list):
+        for s in exp_out:
+            assert s in out
+    else:
+        assert out == exp_out
+
+    if isinstance(exp_err, list):
+        for s in exp_err:
+            assert s in err
+    else:
+        assert err == exp_err
+
     assert status == exp_status
