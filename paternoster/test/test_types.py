@@ -58,6 +58,93 @@ def test_type_domain_return(value, wildcard, expected):
     assert actual == expected
 
 
+@pytest.mark.parametrize("value,expected", [
+    ("", {'path': '/', 'full': '/'}),
+    ("/foo", {'path': '/foo', 'full': '/foo'}),
+    (u"/föö", {'path': u'/föö', 'full': u'/föö'}),
+    ("/bla.exe", {'path': '/bla.exe'}),
+    ("/foo bar", False),
+    ('a' * 511, {'path': '/' + 'a' * 511}),
+    ('a' * 512, False),
+    ("uberspace.de", {'domain': 'uberspace.de'}),
+    ("uberspace.de/", {'domain': 'uberspace.de', 'full': 'uberspace.de/'}),
+    ("uberspace.de/bla", {'domain': 'uberspace.de', 'path': '/bla'}),
+    (
+        "https://uberspace.de/bla",
+        {'scheme': 'https', 'domain': 'uberspace.de', 'path': '/bla', 'full': 'https://uberspace.de/bla'}
+    ),
+    ("https://*.uberspace.de/bla", False),
+    ("uberspace.deee", False),
+    ("https://", {'scheme': 'https', 'path': '/'}),
+    ("https://uberspace.deee", False),
+    ("https://uberspac" + "e" * 56 + ".de", False),
+    ("äää://uberspace.de", False),
+    ("://uberspace.de", False),
+    ('a' * 255 + "://uberspace.de", {'scheme': 'a' * 255, 'domain': 'uberspace.de'}),
+    ('a' * 256 + "://uberspace.de", False),
+    ("https://foo://", False),
+    ("https://foo://a", False),
+])
+def test_type_uri(value, expected):
+    from ..types import uri
+
+    check = uri()
+
+    if expected:
+        actual = check(value)
+
+        assert 'scheme' in actual
+        assert 'domain' in actual
+        assert 'path' in actual
+
+        for k, v in expected.items():
+            assert actual.pop(k, None) == v, k
+
+        assert not actual.get('schema')
+        assert not actual.get('domain')
+        assert 'path' not in actual or actual['path'] == '/'
+    else:
+        try:
+            with pytest.raises(ValueError):
+                x = check(value)
+        finally:
+            try:
+                print('invalid return: {}'.format(x))
+            except:  # noqa
+                pass
+
+
+@pytest.mark.parametrize("value,required,expected", [
+    ("", ["scheme", "domain"], ["scheme", "domain"]),
+    ("http://", ["scheme", "domain"], ["domain"]),
+    ("google.com", ["scheme", "domain"], ["scheme"]),
+    ("", ["scheme"], ["scheme"]),
+    ("google.com", ["scheme"], ["scheme"]),
+    ("", ["domain"], ["domain"]),
+    ("https://", ["domain"], ["domain"]),
+])
+def test_type_uri_optional(value, required, expected):
+    from ..types import uri
+
+    args = {'optional_' + k: False for k in required}
+    check = uri(**args)
+
+    with pytest.raises(ValueError) as excinfo:
+        check(value)
+
+    msg = str(excinfo)
+    assert 'missing' in msg
+    for e in expected:
+        assert e in msg
+
+
+def test_type_uri_domain_options():
+    from ..types import uri
+
+    check = uri(domain_options={'wildcard': True})
+    check('https://*.foo.com')
+
+
 @pytest.mark.parametrize("allowed_chars,regex,minlen,maxlen,value,valid", [
     ("a-z", None, None, None, "aaaaaabb", True),
     ("a-z", None, None, None, "aaaaaabb2", False),

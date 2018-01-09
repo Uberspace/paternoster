@@ -1,5 +1,7 @@
 import re
 import tldextract
+import six.moves.urllib as urllib
+import os.path
 
 
 class domain:
@@ -33,6 +35,73 @@ class domain:
             raise ValueError('invalid domain')
 
         return domain
+
+
+class uri:
+    __name__ == 'URI'
+    SCHEME_REGEX = r'\A[a-z][a-z0-9+.-]*\Z'
+    SCHEME_MAX_LEN = 255
+
+    PATH_REGEX = r'\A/([a-zA-Z\x7f-\xff.]+/?)*\Z'
+    PATH_MAX_LEN = 512
+
+    def __init__(self, optional_scheme=True, optional_domain=True, domain_options={}):
+        self._required = filter(bool, [
+            'scheme' if not optional_scheme else None,
+            'domain' if not optional_domain else None,
+        ])
+        self._domaincheck = domain(domain_options)
+
+    def __call__(self, val):
+        parsed = urllib.parse.urlsplit(val)
+
+        result = {
+            'scheme': parsed.scheme,
+            'domain': parsed.netloc,
+            'path': parsed.path,
+        }
+
+        # correctly parse scheme-less URIs like "google.com/foobar"
+        if not result['domain']:
+            maybedomain, _, maybepath = result['path'].partition('/')
+
+            if '.' in maybedomain:
+                result['domain'] = maybedomain
+                result['path'] = maybepath
+
+        # === check scheme
+        if result['scheme']:
+            if len(result['scheme']) > self.SCHEME_MAX_LEN:
+                raise ValueError('scheme too long')
+            elif not re.match(self.SCHEME_REGEX, result['scheme']):
+                raise ValueError('invalid scheme')
+
+            result['scheme'] = result['scheme'].lower()
+
+        # === check domain
+        if result['domain']:
+            result['domain'] = self._domaincheck(result['domain'])
+
+        # === check path
+        result['path'] = '/' + result['path'].lstrip('/')
+        if len(result['path']) > self.PATH_MAX_LEN:
+            raise ValueError('path too long')
+        elif not re.match(self.PATH_REGEX, result['path']):
+            raise ValueError('invalid path')
+
+        # normalize falsy values
+        result = {k: v if v else '' for k, v in result.items()}
+
+        missing = [k for k in self._required if not result[k]]
+        if missing:
+            raise ValueError('missing ' + ', '.join(missing))
+
+        if result['scheme']:
+            result['full'] = u'{scheme}://{domain}{path}'.format(**result)
+        else:
+            result['full'] = u'{domain}{path}'.format(**result)
+
+        return result
 
 
 class restricted_str:

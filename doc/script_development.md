@@ -114,6 +114,39 @@ type_params:
 Note that domains given with a trailing dot (e.g. `example.com.`) are normalized
 to their dot-less form (e.g. `example.com`).
 
+#### `uri`
+
+A Uniform Resource Identifier (URI), with its scheme (protocol), domain (host)
+and path. By default all of these parts are optional, defaulting to `''` or
+`/` (for path). This results in an empty string being a valid URI, representing
+a scheme-less, domain-less URI with path `/`.
+
+```yml
+type: paternoster.types.uri
+type_params:
+  # whether to allow domains without scheme/protocol, defaults to true
+  optional_scheme: false
+  # whether to allow domains without domain/host, defaults to true
+  optional_domain: false
+  # options to pass onto the domain type, defaults to {}, see respective docs
+  domain_options:
+    wildcard: true
+```
+
+The parsed components can be accessed as dictionary keys in the resulting value:
+
+```json
+{
+  "scheme": "https",
+  "domain": "uberspace.de",
+  "path": "/bla",
+  "full": "https://uberspace.de/bla"
+}
+```
+
+As noted above, all components not present in the original URI will have a value
+of `''`, except for `path` which will default to `/`.
+
 ### Dependencies
 
 In some cases a parameter may need another one to function correctly. A
