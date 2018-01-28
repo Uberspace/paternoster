@@ -47,17 +47,25 @@ class Paternoster:
         raise KeyError('Parameter {0} could not be found'.format(fname))
 
     def _check_type(self, argParams):
-        """ assert that an argument does not use a string type opposed to an restricted_str, else raise a ValueError """
+        """ assert that given argument uses restricted_str in place of str/unicode, else raise ValueError """
         action_whitelist = ('store_true', 'store_false', 'store_const', 'append_const', 'count')
         action = argParams.get('action', 'store')
 
-        if 'type' not in argParams and action not in action_whitelist:
+        has_choices = ('choices' in argParams)
+        is_whitelist_action = (action in action_whitelist)
+
+        if is_whitelist_action:  # the passed value is hardcoded by the dev
+            return
+        if has_choices:  # there is a whitelist of valid values
+            return
+
+        argtype = argParams.get('type', str)
+        has_type = ('type' in argParams)
+        is_raw_string = (inspect.isclass(argtype) and issubclass(argtype, six.string_types))
+
+        if not has_type:
             raise ValueError('a type must be specified for each user-supplied argument')
-
-        type = argParams.get('type', str)
-        is_str_type = inspect.isclass(type) and issubclass(type, six.string_types)
-
-        if is_str_type and action not in action_whitelist:
+        if is_raw_string:
             raise ValueError('restricted_str instead of str or unicode must be used for all string arguments')
 
     def _convert_type(sefl, argParams):

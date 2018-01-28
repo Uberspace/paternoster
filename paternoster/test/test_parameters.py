@@ -139,12 +139,18 @@ def test_find_param():
         s._find_param('somethingelse')
 
 
+class FakeStr(str):
+    pass
+
+
 @pytest.mark.parametrize("param,valid", filter(lambda x: x is not None, [
     ({}, False),
     ({'type': str}, False),
     ({'type': unicode}, False) if six.PY2 else None,
+    ({'type': FakeStr}, False),
     ({'type': types.restricted_str('a')}, True),
     ({'type': lambda x: x}, True),
+    ({'choices': ['a', 'b']}, True),
     ({'action': 'store_true'}, True),
     ({'action': 'store_false'}, True),
     ({'action': 'store_const', 'const': 5}, True),
@@ -153,7 +159,7 @@ def test_find_param():
     ({'action': 'append', 'type': types.restricted_str('a')}, True),
     ({'action': 'append_const', 'const': 5}, True),
 ]))
-def test_forced_restricted_str(param, valid):
+def test_type_mandatory(param, valid):
     p = {'name': 'namespace', 'short': 'e'}
     p.update(param)
     s = Paternoster(
