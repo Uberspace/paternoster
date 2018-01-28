@@ -22,7 +22,8 @@ def test_parameter_depends(args, valid):
         parameters=[
             {
                 'name': 'mailserver', 'short': 'm',
-                'help': '', 'action': 'store_true'
+                'help': '', 'action': 'store_true',
+                'dest': 'bla',
             },
             {
                 'name': 'namespace', 'short': 'e',
@@ -65,6 +66,7 @@ def test_parameter_mutually_exclusive(args, valid):
             {
                 'name': 'dummy', 'short': 'd',
                 'help': '', 'action': 'store_true',
+                'dest': 'foo',
             },
         ],
         mutually_exclusive=[
@@ -99,6 +101,7 @@ def test_parameter_required_one_of(args, valid):
             {
                 'name': 'webserver', 'short': 'w',
                 'help': '', 'action': 'store_true',
+                'dest': 'foo',
             },
             {
                 'name': 'dummy', 'short': 'd',

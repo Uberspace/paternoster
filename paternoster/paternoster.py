@@ -165,10 +165,15 @@ class Paternoster:
         else:
             return args
 
+    def _argument_given(self, args, name):
+        param = self._find_param(name)
+        dest = param.get('dest', param['name'])
+        return getattr(args, dest)
+
     def _check_arg_dependencies(self, parser, args):
         for param in self._parameters:
-            param_given = getattr(args, param['name'], None)
-            dependency_given = 'depends_on' not in param or getattr(args, param['depends_on'], None)
+            param_given = self._argument_given(args, param['name'])
+            dependency_given = ('depends_on' not in param) or self._argument_given(args, param['depends_on'])
 
             if param_given and not dependency_given:
                 parser.error(
@@ -177,7 +182,7 @@ class Paternoster:
 
     def _check_arg_mutually_exclusive(self, parser, args):
         for group in self._mutually_exclusive:
-            given_args = ['--' + x for x in group if getattr(args, x)]
+            given_args = ['--' + a for a in group if self._argument_given(args, a)]
 
             if len(given_args) > 1:
                 parser.error(
@@ -186,7 +191,7 @@ class Paternoster:
 
     def _check_arg_required_one_of(self, parser, args):
         for group in self._required_one_of:
-            given_args = [True for x in group if getattr(args, x)]
+            given_args = [True for a in group if self._argument_given(args, a)]
 
             if len(given_args) == 0:
                 parser.error(
