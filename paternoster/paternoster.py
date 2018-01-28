@@ -214,18 +214,12 @@ class Paternoster:
         This renames all the arguments to their "dest" name, or leaves them as-is, if non is given.
         """
 
-        new_args = argparse.Namespace()
-
-        for param in list(self._parameters) + [{'name': 'verbose'}]:
+        for param in self._parameters:
             name = param['name']
 
-            if hasattr(args, name):
-                if param.get('dest'):
-                    setattr(new_args, param['dest'], getattr(args, name))
-                else:
-                    setattr(new_args, name, getattr(args, name))
-
-        return new_args
+            if hasattr(args, name) and param.get('dest'):
+                setattr(args, param['dest'], getattr(args, name))
+                delattr(args, name)
 
     def check_user(self):
         if not self._check_user:
@@ -259,7 +253,7 @@ class Paternoster:
             self._check_arg_dependencies(parser, args)
             self._check_arg_mutually_exclusive(parser, args)
             self._check_arg_required_one_of(parser, args)
-            args = self._apply_dest(args)
+            self._apply_dest(args)
             self._parsed_args = args
         except ValueError as exc:
             print(exc, file=sys.stderr)
