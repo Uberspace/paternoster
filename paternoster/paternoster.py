@@ -102,10 +102,16 @@ class Paternoster:
             self._convert_type(argParams)
             self._check_type(argParams)
 
+            if 'name' not in param:
+                raise Exception('Parameter without name given: {}'.format(param))
+
             if param.get('positional', False):
                 paramName = [param['name']]
             else:
-                paramName = ['-' + param['short'], '--' + param['name']]
+                if 'short' in param:
+                    paramName = ['-' + param['short'], '--' + param['name']]
+                else:
+                    paramName = ['--' + param['name']]
 
             if param.get('required', False) or param.get('positional', False):
                 if param.get('prompt'):

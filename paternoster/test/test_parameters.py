@@ -207,6 +207,18 @@ def test_parameter_required(required, argv, valid):
         s.parse_args(argv)
 
 
+def test_arg_parameter_no_short():
+    s = Paternoster(
+        runner_parameters={},
+        parameters=[
+            {'name': 'namespace', 'type': types.restricted_str('a')},
+        ],
+        runner_class=MockRunner,
+    )
+    args = s.parse_args(['--namespace', 'aa'])
+    assert s._parsed_args.namespace == 'aa'
+
+
 def test_parameter_passing():
     s = Paternoster(
         runner_parameters={},
