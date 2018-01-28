@@ -107,6 +107,9 @@ class Paternoster:
             argParams.pop('prompt', None)
             argParams.pop('prompt_options', None)
 
+            # remove dest here so the actual argument names are preserved
+            argParams.pop('dest', None)
+
             self._convert_type(argParams)
             self._check_type(argParams)
 
@@ -175,8 +178,7 @@ class Paternoster:
 
     def _argument_given(self, args, name):
         param = self._find_param(name)
-        dest = param.get('dest', param['name'])
-        return getattr(args, dest)
+        return getattr(args, param['name'])
 
     def _check_arg_dependencies(self, parser, args):
         for param in self._parameters:
@@ -205,6 +207,25 @@ class Paternoster:
                 parser.error(
                     'at least one of {} is needed.'.format(', '.join('--' + x for x in group))
                 )
+
+    def _apply_dest(self, args):
+        """
+        The dest attribute is removed earlier so the actual argument names are preserved for dependency checking.
+        This renames all the arguments to their "dest" name, or leaves them as-is, if non is given.
+        """
+
+        new_args = argparse.Namespace()
+
+        for param in list(self._parameters) + [{'name': 'verbose'}]:
+            name = param['name']
+
+            if hasattr(args, name):
+                if param.get('dest'):
+                    setattr(new_args, param['dest'], getattr(args, name))
+                else:
+                    setattr(new_args, name, getattr(args, name))
+
+        return new_args
 
     def check_user(self):
         if not self._check_user:
@@ -238,6 +259,7 @@ class Paternoster:
             self._check_arg_dependencies(parser, args)
             self._check_arg_mutually_exclusive(parser, args)
             self._check_arg_required_one_of(parser, args)
+            args = self._apply_dest(args)
             self._parsed_args = args
         except ValueError as exc:
             print(exc, file=sys.stderr)

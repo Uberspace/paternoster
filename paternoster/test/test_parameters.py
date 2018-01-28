@@ -83,6 +83,50 @@ def test_parameter_mutually_exclusive(args, valid):
 
 
 @pytest.mark.parametrize("args,valid", [
+    ([], True),
+    (['--mailserver'], True),
+    (['--webserver'], True),
+    (['--webserver', '--mailserver'], False),
+])
+def test_parameter_mutually_exclusive_dest(args, valid):
+    s = Paternoster(
+        runner_parameters={'playbook': ''},
+        parameters=[
+            {'name': 'mailserver', 'action': 'store_true', 'dest': 'server'},
+            {'name': 'webserver', 'action': 'store_true', 'dest': 'server'},
+        ],
+        mutually_exclusive=[
+            ['mailserver', 'webserver'],
+        ]
+    )
+
+    if not valid:
+        with pytest.raises(SystemExit):
+            s.parse_args(args)
+    else:
+        s.parse_args(args)
+
+
+def test_parameter_dest():
+    s = Paternoster(
+        runner_parameters={'playbook': ''},
+        parameters=[
+            {'name': 'mailserver', 'action': 'store_true', 'dest': 'server'},
+        ],
+    )
+
+    s.parse_args(['--mailserver'])
+    assert hasattr(s._parsed_args, 'server')
+    assert s._parsed_args.server is True
+    assert not hasattr(s._parsed_args, 'mailserver')
+
+    s.parse_args([])
+    assert hasattr(s._parsed_args, 'server')
+    assert s._parsed_args.server is False
+    assert not hasattr(s._parsed_args, 'mailserver')
+
+
+@pytest.mark.parametrize("args,valid", [
     ([], False),
     (['--dummy'], False),
     (['--mailserver'], True),
