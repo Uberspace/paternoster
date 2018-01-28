@@ -78,6 +78,14 @@ def test_verbose(verbosity, keywords, notkeywords, capsys, monkeypatch):
     ("command: echo hi", "", "", True),
     ("fail: msg=42", "", "42\n", False),
     ("fail: msg=42\n          ignore_errors: yes", "", "", True),
+    ("""fail: msg='{{ item }}'
+          with_items:
+            - /bin/true
+            - /bin/maybe""", "", ["/bin/true", "/bin/maybe"], False),
+    ("""command: '{{ item }}'
+          with_items:
+            - /bin/true
+            - /bin/maybe""", "", ["No such file"], False)
 ])
 def test_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
     import os
