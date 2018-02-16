@@ -201,7 +201,7 @@ Defines parameter groups of which at least one parameter must be given (e.g.
 is possible to specify any number of parameter groups using the
 `required_one_of` key:
 
-```
+```yml
 - hosts: paternoster
   vars:
     description: Do something
