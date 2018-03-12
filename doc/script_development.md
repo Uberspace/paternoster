@@ -45,7 +45,7 @@ except for a few special ones:
 | `depends_on` | makes this argument depend on the presence of another one |
 | `positional` | indicates whether the argument is a `--keyword` one (default) or positional. Must not be supplied together with `required`. |
 | `prompt` | prompt the user for input, if the argument is not supplied. If the argument is `required`, it has to be set on the command line though. You can set this to _True_ to use the default prompt, or to a (non empty) _string_ to supply your own. The default prompt uses the `name` of the parameter. |
-| `prompt_options` | dictionary conatining optional settings for the prompt (see below for more information). |
+| `prompt_options` | dictionary containing optional settings for the prompt (see below for more information). |
 
 All arguments to the script are passed to ansible as variables with the
 `param_`-prefix. This means that `--domain foo.com` becomes the variable
