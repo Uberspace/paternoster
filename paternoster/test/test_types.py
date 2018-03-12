@@ -43,6 +43,14 @@ def test_type_domain(value, wildcard, valid):
         check(value)
 
 
+def test_type_domain_detect_email():
+    from ..types import domain
+
+    with pytest.raises(ValueError) as exc:
+        domain()('foo@bar.com')
+    assert 'this looks like an email-adress' in str(exc.value)
+
+
 @pytest.mark.parametrize("value,wildcard,expected", [
     ("uberspace.de", False, "uberspace.de"),
     ("uberspace.de.", False, "uberspace.de"),
