@@ -15,6 +15,12 @@ class domain:
         val = val.encode('idna').decode('ascii')
         domain = val
 
+        if '@' in domain:
+            raise ValueError(
+                "this looks like an email-adress, "
+                "try only supplying the part after the @"
+            )
+
         if val.endswith('.'):
             domain = val = val[:-1]
 
