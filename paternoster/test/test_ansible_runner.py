@@ -119,3 +119,41 @@ def test_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
         assert err == exp_err
 
     assert status == exp_status
+
+
+@pytest.mark.skipif(SKIP_ANSIBLE_TESTS, reason="ansible <2.4 requires python2")
+def test_msg_handling(capsys, monkeypatch):
+    """Don't display warning on missing `msg` key in `results`."""
+    import os
+    from ..runners.ansiblerunner import AnsibleRunner
+
+    playbook_path = '/tmp/paternoster-test-playbook.yml'
+    playbook = """
+    - hosts: all
+      gather_facts: no
+      tasks:
+      - debug:
+          msg: start
+      - assert:
+          that: 1 == 0
+        ignore_errors: yes
+        with_items:
+        - 1
+        - 2
+      - debug:
+          msg: stop
+    """
+
+    with open(playbook_path, 'w') as f:
+        f.write(playbook)
+
+    monkeypatch.setattr(os, 'chdir', lambda *args, **kwargs: None)
+    AnsibleRunner(playbook_path).run([], False)
+
+    exp_stdout = "start\nstop\n"
+    exp_stderr = ''
+
+    out, err = capsys.readouterr()
+
+    assert out == exp_stdout
+    assert err == exp_stderr
