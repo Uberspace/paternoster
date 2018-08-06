@@ -111,18 +111,24 @@ def test_parameter_dest():
     s = Paternoster(
         runner_parameters={'playbook': ''},
         parameters=[
-            {'name': 'mailserver', 'action': 'store_true', 'dest': 'server'},
+            {'name': 'mailserver', 'action': 'store_const', 'const': 'mail', 'dest': 'server'},
+            {'name': 'webserver', 'action': 'store_const', 'const': 'web', 'dest': 'server'},
         ],
     )
 
-    s.parse_args(['--mailserver'])
-    assert hasattr(s._parsed_args, 'server')
-    assert s._parsed_args.server is True
-    assert not hasattr(s._parsed_args, 'mailserver')
-
     s.parse_args([])
     assert hasattr(s._parsed_args, 'server')
-    assert s._parsed_args.server is False
+    assert s._parsed_args.server is None
+    assert not hasattr(s._parsed_args, 'mailserver')
+
+    s.parse_args(['--webserver'])
+    assert hasattr(s._parsed_args, 'server')
+    assert s._parsed_args.server == 'web'
+    assert not hasattr(s._parsed_args, 'mailserver')
+
+    s.parse_args(['--mailserver'])
+    assert hasattr(s._parsed_args, 'server')
+    assert s._parsed_args.server == 'mail'
     assert not hasattr(s._parsed_args, 'mailserver')
 
 

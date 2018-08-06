@@ -215,10 +215,15 @@ class Paternoster:
         """
 
         for param in self._parameters:
-            name = param['name']
+            if not param.get('dest'):
+                continue
 
-            if hasattr(args, name) and param.get('dest'):
-                setattr(args, param['dest'], getattr(args, name))
+            name = param['name']
+            dest = param['dest']
+            value = getattr(args, name)
+
+            if value is not None or not hasattr(args, dest):
+                setattr(args, dest, value)
                 delattr(args, name)
 
     def check_user(self):
