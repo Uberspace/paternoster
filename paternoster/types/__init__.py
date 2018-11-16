@@ -1,3 +1,5 @@
+# -*- encoding: utf8 -*-
+
 import re
 import tldextract
 import six.moves.urllib as urllib
@@ -48,7 +50,7 @@ class uri:
     SCHEME_REGEX = r'\A[a-z][a-z0-9+.-]*\Z'
     SCHEME_MAX_LEN = 255
 
-    PATH_REGEX = r'\A/([a-zA-Z\x7f-\xff.]+/?)*\Z'
+    PATH_REGEX = ur'\A/([a-zA-ZüäöÜÄÖß0-9._=-]+/?)*\Z'
     PATH_MAX_LEN = 512
 
     def __init__(self, optional_scheme=True, optional_domain=True, domain_options={}):
