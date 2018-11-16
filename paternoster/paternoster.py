@@ -46,6 +46,12 @@ class Paternoster:
 
         raise KeyError('Parameter {0} could not be found'.format(fname))
 
+    def _get_param_val(self, args, fname):
+        """ get the value of a parameter, named by either its short- or long-name """
+        param = self._find_param(fname)
+        name = param['name'].replace('-', '_')
+        return getattr(args, name)
+
     def _check_type(self, argParams):
         """ assert that given argument uses restricted_str in place of str/unicode, else raise ValueError """
         action_whitelist = ('store_true', 'store_false', 'store_const', 'append_const', 'count')
@@ -156,7 +162,7 @@ class Paternoster:
             param for param in self._parameters
             if param.get('prompt')
             and isinstance(param.get('prompt'), (bool, six.string_types))
-            and getattr(args, param['name']) is None
+            and self._get_param_val(args, param['name']) is None
         )
 
         # prompt for missing args
@@ -178,7 +184,7 @@ class Paternoster:
 
     def _argument_given(self, args, name):
         param = self._find_param(name)
-        return getattr(args, param['name'])
+        return self._get_param_val(args, param['name'])
 
     def _check_arg_dependencies(self, parser, args):
         for param in self._parameters:
@@ -220,7 +226,7 @@ class Paternoster:
 
             name = param['name']
             dest = param['dest']
-            value = getattr(args, name)
+            value = self._get_param_val(args, name)
 
             if value is not None or not hasattr(args, dest):
                 setattr(args, dest, value)

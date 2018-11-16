@@ -132,6 +132,16 @@ def test_parameter_dest():
     assert not hasattr(s._parsed_args, 'mailserver')
 
 
+def test_parameter_dashed():
+    s = Paternoster(
+        runner_parameters={'playbook': ''},
+        parameters=[
+            {'name': 'mail-server', 'action': 'store_true'},
+        ],
+    )
+    s.parse_args(['--mail-server'])
+
+
 @pytest.mark.parametrize("args,valid", [
     ([], False),
     (['--dummy'], False),
