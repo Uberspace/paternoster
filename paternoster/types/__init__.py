@@ -8,6 +8,7 @@ import os.path
 
 class domain:
     __name__ = 'domain'
+
     DOMAIN_REGEX = r'\A(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])\Z'  # noqa
 
     def __init__(self, wildcard=False):
@@ -46,7 +47,8 @@ class domain:
 
 
 class uri:
-    __name__ == 'URI'
+    __name__ = 'URI'
+
     SCHEME_REGEX = r'\A[a-z][a-z0-9+.-]*\Z'
     SCHEME_MAX_LEN = 255
 
