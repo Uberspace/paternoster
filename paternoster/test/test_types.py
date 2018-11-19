@@ -69,6 +69,7 @@ def test_type_domain_return(value, wildcard, expected):
 @pytest.mark.parametrize("value,expected", [
     ("", {'path': '/', 'full': '/'}),
     ("/foo", {'path': '/foo', 'full': '/foo'}),
+    ("/foo/", {'path': '/foo', 'full': '/foo'}),
     (u"/föö", {'path': u'/föö', 'full': u'/föö'}),
     ("/0a0", {'path': '/0a0'}),
     ("/bla.foo", {'path': '/bla.foo'}),

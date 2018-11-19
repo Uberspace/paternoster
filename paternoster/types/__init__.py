@@ -93,7 +93,7 @@ class uri:
             result['domain'] = self._domaincheck(result['domain'])
 
         # === check path
-        result['path'] = '/' + result['path'].lstrip('/')
+        result['path'] = '/' + result['path'].strip('/')
         if len(result['path']) > self.PATH_MAX_LEN:
             raise ValueError('path too long')
         elif not re.match(self.PATH_REGEX, result['path']):
