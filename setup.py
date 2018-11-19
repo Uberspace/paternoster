@@ -10,9 +10,7 @@ except ImportError:
 
 setup(name='paternoster',
       version='2.6.0',
-      description='Paternoster provides users with the ability to run certain tasks as '
-                  'root or another user, while ensuring safety by providing a common '
-                  'interface and battle tested parameter parsing/checking.',
+      description='Paternoster provides allows to run ansible playbooks like ordinary python or bash scripts.',
       author='uberspace.de',
       author_email='hallo@uberspace.de',
       url='https://github.com/uberspace/paternoster',
