@@ -9,7 +9,7 @@ except ImportError:
     sys.exit(1)
 
 setup(name='paternoster',
-      version='2.7.0',
+      version='2.7.1',
       description='Paternoster provides allows to run ansible playbooks like ordinary python or bash scripts.',
       author='uberspace.de',
       author_email='hallo@uberspace.de',
