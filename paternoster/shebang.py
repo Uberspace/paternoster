@@ -15,7 +15,7 @@ from paternoster.runners.ansiblerunner import AnsibleRunner
 
 def _load_playbook(path):
     with open(path) as f:
-        playbook = yaml.load(f)
+        playbook = yaml.safe_load(f)
 
     assert type(playbook) == list
     return playbook
