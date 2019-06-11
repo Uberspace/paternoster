@@ -109,10 +109,12 @@ type: paternoster.types.domain
 type_params:
   # whether to allow domains like "*.domain.com", defaults to false
   wildcard: true
+  maxlen: 255
 ```
 
 Note that domains given with a trailing dot (e.g. `example.com.`) are normalized
-to their dot-less form (e.g. `example.com`).
+to their dot-less form (e.g. `example.com`). The `maxlen` parameter restricts
+simple string length before normalization.
 
 #### `uri`
 
