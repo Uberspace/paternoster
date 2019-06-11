@@ -11,8 +11,9 @@ class domain:
 
     DOMAIN_REGEX = r'\A(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])\Z'  # noqa
 
-    def __init__(self, wildcard=False):
+    def __init__(self, wildcard=False, maxlen=255):
         self._wildcard = wildcard
+        self.maxlen = maxlen
 
     def __call__(self, val):
         val = val.encode('idna').decode('ascii')
@@ -32,7 +33,10 @@ class domain:
 
         extracted = tldextract.TLDExtract(suffix_list_urls=[])(val)
 
-        if any(map(lambda p: len(p) > 63, val.split('.'))) or len(val) > 255:
+        if (
+            any(map(lambda p: len(p) > 63, val.split('.')))
+            or len(val) > self.maxlen
+        ):
             raise ValueError('domain too long')
         if val.count('.') < 1:
             raise ValueError('domain has too few components')
