@@ -51,6 +51,24 @@ def test_type_domain_detect_email():
     assert 'this looks like an email-adress' in str(exc.value)
 
 
+def test_type_domain_maxlen():
+    from ..types import domain
+
+    d_name = (
+        'abc.def.ghi.klmn.opq.rst.uvw.xyz.now.you.know.my.abc.next.time.just.'
+        'sing.the.fuck.with.me.because.if.you.dont.i.will.literally.kill.you.'
+        'you.fucking.idiot.lets.try.again.shall.we.abc.def.ghi.klmn.opq.rst.'
+        'uvw.xyz.fuck.were.missing.a.letter.there.someth.co'
+    )
+
+    d = domain()(d_name)
+    assert d == d_name
+
+    with pytest.raises(ValueError) as exc:
+        domain(maxlen=64)(d_name)
+        assert 'domain too long' in str(exc.value)
+
+
 @pytest.mark.parametrize("value,wildcard,expected", [
     ("uberspace.de", False, "uberspace.de"),
     ("uberspace.de.", False, "uberspace.de"),
