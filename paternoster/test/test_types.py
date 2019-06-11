@@ -56,9 +56,9 @@ def test_type_domain_maxlen():
 
     d_name = (
         'abc.def.ghi.klmn.opq.rst.uvw.xyz.now.you.know.my.abc.next.time.just.'
-        'sing.the.fuck.with.me.because.if.you.dont.i.will.literally.kill.you.'
-        'you.fucking.idiot.lets.try.again.shall.we.abc.def.ghi.klmn.opq.rst.'
-        'uvw.xyz.fuck.were.missing.a.letter.there.someth.co'
+        'sing.the.xxxx.with.me.because.if.you.dont.i.will.literally.xxxx.xxx.'
+        'you.xxxxxxx.xxxxx.lets.try.again.shall.we.abc.def.ghi.klmn.opq.rst.'
+        'uvw.xyz.xxxx.were.missing.a.letter.there.someth.co'
     )
 
     d = domain()(d_name)
