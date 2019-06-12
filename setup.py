@@ -9,7 +9,7 @@ except ImportError:
     sys.exit(1)
 
 setup(name='paternoster',
-      version='2.7.1',
+      version='2.8.0',
       description='Paternoster provides allows to run ansible playbooks like ordinary python or bash scripts.',
       author='uberspace.de',
       author_email='hallo@uberspace.de',
@@ -19,7 +19,7 @@ setup(name='paternoster',
           'paternoster.runners',
           'paternoster.types',
       ],
-      entry_points = {
+      entry_points={
           'console_scripts': ['paternoster=paternoster.shebang:main'],
       },
       install_requires=[
@@ -27,13 +27,13 @@ setup(name='paternoster',
           'six',
       ],
       extras_require={
-        'ansible21': ['ansible==2.1.*'],
-        'ansible22': ['ansible==2.2.*'],
-        'ansible23': ['ansible==2.3.*'],
-        'ansible24': ['ansible==2.4.*'],
-        'ansible25': ['ansible==2.5.*'],
-        'ansible26': ['ansible==2.6.*'],
-        'ansible27': ['ansible==2.7.*'],
+          'ansible21': ['ansible==2.1.*'],
+          'ansible22': ['ansible==2.2.*'],
+          'ansible23': ['ansible==2.3.*'],
+          'ansible24': ['ansible==2.4.*'],
+          'ansible25': ['ansible==2.5.*'],
+          'ansible26': ['ansible==2.6.*'],
+          'ansible27': ['ansible==2.7.*'],
       },
       classifiers=[
           'Development Status :: 5 - Production/Stable',
