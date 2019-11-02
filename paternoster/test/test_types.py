@@ -71,6 +71,7 @@ def test_type_domain_maxlen():
 
 @pytest.mark.parametrize("value,wildcard,expected", [
     ("uberspace.de", False, "uberspace.de"),
+    ("ubERspaCE.dE", False, "uberspace.de"),
     ("uberspace.de.", False, "uberspace.de"),
     ("*.uberspace.de", True, "*.uberspace.de"),
     ("*.uberspace.de.", True, "*.uberspace.de"),

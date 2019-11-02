@@ -47,7 +47,7 @@ class domain:
         if not extracted.domain:
             raise ValueError('invalid domain')
 
-        return domain
+        return domain.lower()
 
 
 class uri:
