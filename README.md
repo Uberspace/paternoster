@@ -159,6 +159,9 @@ used, like so: `tox -e py36-ansible23`, `tox -e py27-ansible22`. New tests
 should be added to the `paternoster/test`-directory. Please refer to the
 [pytest-documentation][] for further details.
 
+NOTE: you might need to install the the proper _"devel"_ package, for the Python
+versions you want to test.
+
 ### Integration Tests
 
 Some features (like the `become_root` function) require a correctly setup Linux
