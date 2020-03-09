@@ -4,7 +4,7 @@ import os.path
 import subprocess
 try:
     from ConfigParser import ConfigParser as ConfigParser
-except:
+except ImportError:
     from configparser import ConfigParser as ConfigParser
 
 
@@ -78,6 +78,7 @@ def main():
         _run_file(args.file, ansible_versions)
     else:
         _run_all(ansible_versions)
+
 
 if __name__ == '__main__':
     main()

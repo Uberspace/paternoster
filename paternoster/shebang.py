@@ -2,14 +2,12 @@
 # part of a shebang line, at the beginning of a script.
 from __future__ import absolute_import
 
-import argparse
 import os.path
 import sys
 
 import yaml
 
 import paternoster.types
-from paternoster.runners.ansiblerunner import AnsibleRunner
 
 
 def _load_playbook(path):
@@ -36,7 +34,7 @@ def main():
 
     sys.argv = [playbookpath] + sys.argv[2:]
 
-    s = paternoster.Paternoster(
+    paternoster.Paternoster(
         runner_parameters={'playbook': playbookpath},
         **config
     ).auto()
