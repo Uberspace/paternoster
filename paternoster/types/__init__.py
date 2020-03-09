@@ -1,9 +1,9 @@
 # -*- encoding: utf8 -*-
-
-import re
-import tldextract
-import six.moves.urllib as urllib
 import os.path
+import re
+
+import six.moves.urllib as urllib
+import tldextract
 
 
 class domain:

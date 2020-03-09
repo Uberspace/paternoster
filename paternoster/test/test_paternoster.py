@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+import sys
 
 import pytest
-import sys
 
 from .mockrunner import MockRunner
 

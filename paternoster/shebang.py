@@ -1,14 +1,13 @@
 # this code is executed when paternoster is used as
 # part of a shebang line, at the beginning of a script.
-
 from __future__ import absolute_import
 
-import sys
-import os.path
-import yaml
 import argparse
+import os.path
+import sys
 
-import paternoster
+import yaml
+
 import paternoster.types
 from paternoster.runners.ansiblerunner import AnsibleRunner
 
