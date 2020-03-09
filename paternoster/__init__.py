@@ -1,1 +1,1 @@
-from .paternoster import Paternoster
+from .paternoster import Paternoster # noqa F401

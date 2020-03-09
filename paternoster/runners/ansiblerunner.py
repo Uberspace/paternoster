@@ -5,17 +5,18 @@ import sys
 from collections import namedtuple
 from distutils.version import LooseVersion
 
-# Ansible loads the ansible.cfg in the following order. Each ansible.cfg
-# automatically overwrites all values of the former ones.
+# Ansible loads the ansible.cfg in the following order. Ansible will process the
+# list below and use the first file found, all others are ignored.
+# see: https://docs.ansible.com/ansible/latest/reference_appendices/config.html#the-configuration-file
 #
 #  1. Path given in $ANSIBLE_CONFIG
 #  2. ansible.cfg file in the current directory
 #  3. .ansible.cfg file in the home directory
 #  4. /etc/ansible/ansible.cfg
 #
-# Since the current directory is controlled by the user and we don't
-# want them to be able to load their own config and thus their own
-# ansible modules, we need to counter them by setting the env-variable.
+# Since the current directory is controlled by the user and we don't want them
+# to be able to load their own config and thus their own ansible modules, we
+# need to counter them by setting the env-variable.
 os.environ['ANSIBLE_CONFIG'] = '/etc/ansible/ansible.cfg'
 
 # by default ansible uses "$HOME/.ansible/tmp" as the directory to drop
@@ -66,9 +67,9 @@ class MinimalAnsibleCallback(CallbackBase):
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
         msg = result._result.get('msg')
-        taks_ignores_errors = getattr(result, '_task_fields', {}).get('ignore_errors', False)
+        task_ignores_errors = getattr(result, '_task_fields', {}).get('ignore_errors', False)
         if (
-            not ignore_errors and not taks_ignores_errors
+            not ignore_errors and not task_ignores_errors
             and msg is not None and msg != 'All items completed'
         ):
             print(msg, file=sys.stderr)
@@ -135,12 +136,10 @@ class AnsibleRunner:
 
         loader = DataLoader()
         if ANSIBLE_VERSION < LooseVersion('2.4.0'):
-            from ansible.inventory import Inventory
             variable_manager = VariableManager()
             inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list='localhost,')
             variable_manager.set_inventory(inventory)
         else:
-            from ansible.inventory.manager import InventoryManager
             inventory = InventoryManager(loader=loader, sources='localhost,')
             variable_manager = VariableManager(loader=loader, inventory=inventory)
         # force ansible to use the current python executable. Otherwise

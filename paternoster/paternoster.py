@@ -9,7 +9,6 @@ import sys
 
 import six
 
-import paternoster.types
 from .root import become_user
 from .root import check_user
 from .runners.ansiblerunner import AnsibleRunner

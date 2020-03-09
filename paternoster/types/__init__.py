@@ -1,5 +1,4 @@
 # -*- encoding: utf8 -*-
-import os.path
 import re
 
 import six.moves.urllib as urllib
@@ -192,6 +191,7 @@ class restricted_int:
 
 __all__ = [
     'domain',
+    'uri',
     'restricted_int',
     'restricted_str',
 ]

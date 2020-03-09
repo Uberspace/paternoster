@@ -203,10 +203,10 @@ class FakeStr(str):
     pass
 
 
-@pytest.mark.parametrize("param,valid", filter(lambda x: x is not None, [
+cases_mandatory_parameters = [
+    # parameters, parses okay with empty args
     ({}, False),
     ({'type': str}, False),
-    ({'type': unicode}, False) if six.PY2 else None,
     ({'type': FakeStr}, False),
     ({'type': types.restricted_str('a')}, True),
     ({'type': lambda x: x}, True),
@@ -218,7 +218,15 @@ class FakeStr(str):
     ({'action': 'append', 'type': str}, False),
     ({'action': 'append', 'type': types.restricted_str('a')}, True),
     ({'action': 'append_const', 'const': 5}, True),
-]))
+]
+
+if six.PY2:
+    cases_mandatory_parameters += [
+        ({'type': unicode}, False), # noqa F821
+    ]
+
+
+@pytest.mark.parametrize("param,valid", cases_mandatory_parameters)
 def test_type_mandatory(param, valid):
     p = {'name': 'namespace', 'short': 'e'}
     p.update(param)
@@ -284,7 +292,7 @@ def test_arg_parameter_no_short():
         ],
         runner_class=MockRunner,
     )
-    args = s.parse_args(['--namespace', 'aa'])
+    s.parse_args(['--namespace', 'aa'])
     assert s._parsed_args.namespace == 'aa'
 
 
