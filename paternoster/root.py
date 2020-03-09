@@ -1,8 +1,7 @@
-import os
 import os.path
-import sys
 import pwd
 import re
+import sys
 
 
 def become_user(user):

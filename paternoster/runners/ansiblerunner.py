@@ -1,8 +1,7 @@
 from __future__ import print_function
 
-import sys
-import os
 import os.path
+import sys
 from collections import namedtuple
 from distutils.version import LooseVersion
 

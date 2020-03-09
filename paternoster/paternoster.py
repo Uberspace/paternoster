@@ -9,9 +9,10 @@ import sys
 
 import six
 
-from .runners.ansiblerunner import AnsibleRunner
-from .root import become_user, check_user
 import paternoster.types
+from .root import become_user
+from .root import check_user
+from .runners.ansiblerunner import AnsibleRunner
 
 
 class Paternoster:

@@ -1,8 +1,8 @@
 import sys
-import pytest
 from distutils.version import LooseVersion
 
 import ansible.release
+import pytest
 
 ANSIBLE_VERSION = LooseVersion(ansible.release.__version__)
 SKIP_ANSIBLE_TESTS = (sys.version_info >= (3, 0) and ANSIBLE_VERSION < LooseVersion('2.4.0'))

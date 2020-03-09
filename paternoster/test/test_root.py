@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-
-import pytest
 import os
 import pwd
+
+import pytest
 
 
 @pytest.mark.parametrize("sudo_user,valid", [

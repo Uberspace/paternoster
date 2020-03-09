@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
 import pytest
 import six
 
-from .. import Paternoster, types
+from .. import Paternoster
+from .. import types
 from .mockrunner import MockRunner
 
 

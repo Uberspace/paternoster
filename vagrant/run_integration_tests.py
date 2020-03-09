@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import argparse
 import os.path
 import subprocess
@@ -64,12 +63,12 @@ def _run_all(ansible_versions):
 
 def main():
     ansible_versions = _ansible_versions()
-  
+
     parser = argparse.ArgumentParser(description='Run paternoster integration tests.')
     parser.add_argument('ansible', nargs='?', choices=list(ansible_versions.keys()) + ['all'], default='all')
     parser.add_argument('--file', help='test file to run, otherwise run all')
     args = parser.parse_args()
-    
+
     if args.ansible == 'all':
         ansible_versions = _ansible_versions().values()
     else:
