@@ -1,2 +1,2 @@
-pycodestyle
 tox
+-r lint.txt
