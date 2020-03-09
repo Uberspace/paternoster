@@ -3,11 +3,11 @@
 <img align="left" height="150" src="logo.png">
 
 Paternoster enables ansible playbooks to be run like normal bash or python
-scripts. It parses the given parameters using python's [argparse](https://docs.python.org/2/library/argparse.html)
-and the passes them on to the actual playbook via the ansible API. In addition
-it provides an automated way to run commands as another user, which can be used
-to give normal shell users special privileges, while still having a sleek and
-easy to understand user interface.
+scripts. It parses the given parameters using python's [argparse][] and the
+passes them on to the actual playbook via the ansible API. In addition it
+provides an automated way to run commands as another user, which can be used to
+give normal shell users special privileges, while still having a sleek and easy
+to understand user interface.
 
 Once everything is set up, a paternoster script can be used like this:
 
@@ -46,7 +46,7 @@ which contains the configuration for parameter parsing and other features.
         type: paternoster.types.restricted_str
         required: yes
         type_params:
-          regex: '^[a-z]+$'
+          regex: "^[a-z]+$"
 
 - hosts: localhost
   tasks:
@@ -54,13 +54,14 @@ which contains the configuration for parameter parsing and other features.
 ```
 
 For more information on how to develop scripts using paternoster, please refer
-the the corresponding sub-document: [`doc/script_development.md`](doc/script_development.md).
+the the corresponding sub-document:
+[`doc/script_development.md`][docs-script_dev].
 
 ## Privilege Escalation
 
 Paternoster also provides an automated way to run commands as another user. To
 use this feature, set the `become_user` to the desired username. This causes
-paternoster to execute itself as the given user using sudo. For this to work a
+paternoster to execute itself as the given user using _sudo_. For this to work a
 sudoers-config has to be created by the developer.
 
 Please refer to the Deployment section of this document for further details.
@@ -80,51 +81,52 @@ a few changes to your `sudo`-configuration are needed. boils down to:
 ALL ALL = NOPASSWD: /usr/local/bin/your-script-name
 ```
 
-This line allows *any* user to execute the given command as root.
+This line allows _any_ user to execute the given command as root.
 
-Please refer to the [`sudoers(5)`-manpage](https://www.sudo.ws/man/1.8.17/sudoers.man.html) for details.
+Please refer to the [`sudoers(5)`-manpage][man-sudoers] for details.
 
 ## Notes
 
-* this library makes use of the `tldextract`-module. Internally this
+- This library makes use of the [tldextract-module][]. Internally this
   relies on a list of top level domains, which changes every so often.
-  Execute the `tldextract --update`-command as root in a cronjob or
+  Execute the `tldextract --update`-command as root in a _cronjob_ or
   similar to keep the list up to date.
 
 # Library-Development
 
-Most tasks can be achieved by writing
-scripts only. Therefore, the library does not need to be changed in most
-cases. Sometimes it might be desirable to provide a new type or feature
-to all other scripts. To fulfill these needs, the following section
-outlines the setup and development process for library.
+Most tasks can be achieved by writing scripts only. Therefore, the library does
+not need to be changed in most cases. Sometimes it might be desirable to provide
+a new type or feature to all other scripts. To fulfill these needs, the
+following section outlines the setup and development process for library.
 
 ## Setup
+
 To get a basic environment up and running, use the following commands:
 
-```bash
+```shell
 virtualenv venv --python python2.7
 source venv/bin/activate
 python setup.py develop
-pip install -r dev-requirements.txt
+pip install -r requirements.txt
+pre-commit install --overwrite --install-hooks
 ```
 
-This project uses python 2.7, because python 3.x is not yet supported by
+This project uses _Python_ `2.7`, because _Python_ `3.x` is not yet supported by
 ansible. All non-ansible code is tested with python 3 as well.
 
 ### Vagrant
 
-Most features, where unit tests suffice can be tested using a virtualenv only. If your development
-relies on the sudo-mechanism, you can spin up a [vagrant VM](https://vagrantup.com) which provides
-a dummy `uberspace-add-domain`-script as well as the library-code in the
-`/vagrant`-directory.
+Most features, where unit tests suffice can be tested using a _virtualenv_ only.
+If your development relies on the sudo-mechanism, you can spin up a [vagrant
+VM][] which provides a dummy `uberspace-add-domain`-script as well as the
+library-code in the `/vagrant`-directory.
 
-```bash
+```shell
 vagrant up
 vagrant ssh
 ```
 
-inside the host:
+And inside the host:
 
 ```
 Last login: Wed Aug  3 17:23:02 2016 from 10.0.2.2
@@ -135,26 +137,33 @@ PLAY [test play] ************** (...)
 
 If you want to add your own scripts, just add the corresponding files in
 `vagrant/files/scripts`. You can deploy it using the following command:
-`ansible-playbook vagrant/site.yml --tags scripts`.
-Once your script has been deployed, you can just edit the source file
-to make further changes, as the file is symlinked, not copied.
+`ansible-playbook vagrant/site.yml --tags scripts`. Once your script has been
+deployed, you can just edit the source file to make further changes, as the file
+is symlinked, not copied.
 
 ## Tests
 
+### Linter
+
+To lint the source code, you can run:
+
+```shell
+tox -e lint
+```
+
 ### Unit Tests
 
-The core functionality of this library can be tested using the `tox`-
-command. If only python 2.x or 3.x should be tested, the `-e` parameter
-can be used, like so: `tox -e py36-ansible23`, `tox -e py27-ansible22`.
-New tests should be added to the `paternoster/test`-directory.
-Please refer to the [pytest-documentation](http://doc.pytest.org/) for
-further details.
+The core functionality of this library can be tested using the `tox`- command.
+If only _Python_ `2.x` or `3.x` should be tested, the `-e` parameter can be
+used, like so: `tox -e py36-ansible23`, `tox -e py27-ansible22`. New tests
+should be added to the `paternoster/test`-directory. Please refer to the
+[pytest-documentation][] for further details.
 
 ### Integration Tests
 
-Some features (like the `become_root` function) require a correctly
-setup linux environment. They can be tested using the provided ansible
-playbooks in `vagrant/tests`.
+Some features (like the `become_root` function) require a correctly setup Linux
+environment. They can be tested using the provided ansible playbooks in
+`vagrant/tests`.
 
 The playbooks can be invoked using the `run_integration_tests.py`-utility:
 
@@ -176,8 +185,7 @@ Run paternoster integration tests.
 
 #### Boilerplate
 
-A typical [ansible playbook](http://docs.ansible.com/ansible/playbooks.html)
-for a system-test might look like this:
+A typical [ansible playbook][] for a system-test might look like this:
 
 ```yaml
 - name: give this test a proper name
@@ -203,22 +211,22 @@ for a system-test might look like this:
 Most of the heavy lifting is done by the included `drop_script.yml`-file. It
 creates the required python-script & playbook, executes it and stores the result
 in the `script`-variable. After the execution, all created files are removed.
-After the script has been executed, the [`assert`-module](http://docs.ansible.com/ansible/assert_module.html)
+After the script has been executed, the [`assert`-module][ansible-assert-module]
 can be used to check the results.
 
-There are several parameters to control the behaviour of `drop_script.yml`:
+There are several parameters to control the behavior of `drop_script.yml`:
 
-| Name | Optional | Description |
-| ---- | -------- | ----------- |
-| `script` | no | the **content** of a python script to save as `/usr/local/bin/uberspace-unittest` and execute |
-| `playbook` | yes (default: empty) | the **content** of a playbook to save as `/opt/uberspace/playbooks/uberspace-unittest.yml` |
-| `ignore_script_errors` | yes (default: `false`) | whether to continue even if python script has a non-zero exitcode |
-| `script_params` | yes (default: empty) | command line parameters for the script (e.g. `"--domain foo.com"`) |
+| Name                   | Optional               | Description                                                                                   |
+| ---------------------- | ---------------------- | --------------------------------------------------------------------------------------------- |
+| `script`               | no                     | the **content** of a python script to save as `/usr/local/bin/uberspace-unittest` and execute |
+| `playbook`             | yes (default: empty)   | the **content** of a playbook to save as `/opt/uberspace/playbooks/uberspace-unittest.yml`    |
+| `ignore_script_errors` | yes (default: `false`) | whether to continue even if python script has a non-zero exitcode                             |
+| `script_params`        | yes (default: empty)   | command line parameters for the script (e.g. `"--domain foo.com"`)                            |
 
 ## Releasing a new version
 
-Assuming you have been handed the required credentials, a new version
-can be released as follows.
+Assuming you have been handed the required credentials, a new version can be
+released as follows.
 
 1. adapt the version in `setup.py`, according to [semver](http://semver.org/)
 2. commit this change as `Version 1.2.3`
@@ -226,7 +234,7 @@ can be released as follows.
 4. push the new tag as well as the `master` branch
 5. update the package on PyPI:
 
-```
+```shell
 rm dist/*
 python setup.py sdist bdist_wheel
 twine upload dist/*
@@ -234,6 +242,17 @@ twine upload dist/*
 
 # License
 
-All code in this repository (including this document) is licensed under
-the MIT license. The logo (both the png and svg versions) is licensed
-unter the [CC-BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.
+All code in this repository (including this document) is licensed under the MIT
+license. The logo (both the _png_ and _svg_ versions) is licensed unter the
+[CC-BY-NC-ND 4.0][] license.
+
+[ansible playbook]: http://docs.ansible.com/ansible/playbooks.html
+[ansible-assert-module]: http://docs.ansible.com/ansible/assert_module.html
+[argparse]: https://docs.python.org/2/library/argparse.html
+[cc-by-nc-nd 4.0]: https://creativecommons.org/licenses/by-nc-nd/4.0/
+[docs-script_dev]: doc/script_development.md
+[man-sudoers]: https://www.sudo.ws/man/1.8.17/sudoers.man.html
+[pytest-documentation]: http://doc.pytest.org/
+[semver]: http://semver.org/
+[tldextract-module]: https://github.com/john-kurkowski/tldextract
+[vagrant-vm]: https://vagrantup.com/
