@@ -1,0 +1,30 @@
+---
+default_language_version:
+    python: python3
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: master
+      hooks:
+          # Generall Stuff
+          - id: trailing-whitespace
+          - id: mixed-line-ending
+            args: [--fix=lf]
+          - id: end-of-file-fixer
+            exclude: "^(.bumpversion.cfg|CHANGELOG.rst)$"
+          # VCS
+          - id: check-merge-conflict
+          # Config / Data Files
+          - id: check-yaml
+          # Python
+          - id: debug-statements
+    # Python: flakes8 (syntax check with pyflakes only)
+    - repo: https://gitlab.com/pycqa/flake8
+      rev: master
+      hooks:
+          - id: flake8
+    # Python: reorder imports
+    - repo: https://github.com/asottile/reorder_python_imports
+      rev: master
+      hooks:
+          - id: reorder-python-imports
+            args: [--application-directories=.]
