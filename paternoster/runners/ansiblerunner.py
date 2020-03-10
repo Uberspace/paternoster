@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import os.path
 import sys
-from collections import namedtuple
 from distutils.version import LooseVersion
 
 # Ansible loads the ansible.cfg in the following order. Ansible will process the
@@ -50,6 +49,7 @@ import ansible.constants
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.parsing.dataloader import DataLoader
 from ansible.plugins.callback import CallbackBase
+
 import ansible.release
 
 ANSIBLE_VERSION = LooseVersion(ansible.release.__version__)
@@ -60,6 +60,20 @@ if ANSIBLE_VERSION < LooseVersion('2.4.0'):
 else:
     from ansible.inventory.manager import InventoryManager
     from ansible.vars.manager import VariableManager
+
+if ANSIBLE_VERSION < LooseVersion('2.8.0'):
+    from collections import namedtuple
+    Options = namedtuple(
+        'Options',
+        [
+            'connection', 'module_path', 'forks', 'become', 'become_method',
+            'become_user', 'check', 'listhosts', 'listtasks', 'listtags',
+            'syntax', 'diff'
+        ]
+    )
+else:
+    from ansible import context
+    from ansible.module_utils.common.collections import ImmutableDict
 
 
 class MinimalAnsibleCallback(CallbackBase):
@@ -118,10 +132,6 @@ class AnsibleRunner:
         self._playbook = playbook
 
     def _get_playbook_executor(self, variables, verbosity):
-        Options = namedtuple('Options',
-                             ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check',
-                              'listhosts', 'listtasks', 'listtags', 'syntax', 'diff'])
-
         # -v given to us enables ansibles non-debug output.
         # So -vv should become ansibles -v.
         __main__.display.verbosity = max(0, verbosity - 1)
@@ -142,29 +152,63 @@ class AnsibleRunner:
         else:
             inventory = InventoryManager(loader=loader, sources='localhost,')
             variable_manager = VariableManager(loader=loader, inventory=inventory)
+
         # force ansible to use the current python executable. Otherwise
         # it can end up choosing a python3 one (named python) or a different
         # python 2 version
-        variable_manager.set_host_variable(inventory.localhost, 'ansible_python_interpreter', sys.executable)
+        variable_manager.set_host_variable(
+            inventory.localhost, 'ansible_python_interpreter', sys.executable
+        )
 
         for name, value in variables:
             variable_manager.set_host_variable(inventory.localhost, name, value)
 
-        pexec = PlaybookExecutor(
-            playbooks=[self._playbook],
-            inventory=inventory,
-            variable_manager=variable_manager,
-            loader=loader,
-            options=Options(
+        if ANSIBLE_VERSION < LooseVersion('2.8.0'):
+            cli_options = Options(
+                become=None,
+                become_method=None,
+                become_user=None,
+                check=False,
                 connection='local',
-                module_path=None,
-                forks=1,
-                listhosts=False, listtasks=False, listtags=False, syntax=False,
-                become=None, become_method=None, become_user=None, check=False,
                 diff=False,
-            ),
-            passwords={},
-        )
+                forks=1,
+                listhosts=False,
+                listtags=False,
+                listtasks=False,
+                module_path=None,
+                syntax=False,
+            )
+        else:
+            cli_options = ImmutableDict(
+                become=None,
+                become_method=None,
+                become_user=None,
+                check=False,
+                connection='local',
+                diff=False,
+                forks=1,
+                listhosts=False,
+                listtags=False,
+                listtasks=False,
+                module_path=None,
+                syntax=False,
+                start_at_task=None,
+            )
+
+        if ANSIBLE_VERSION < LooseVersion('2.8.0'):
+            pexec = PlaybookExecutor(
+                playbooks=[self._playbook],
+                inventory=inventory,
+                variable_manager=variable_manager,
+                loader=loader,
+                options=cli_options,
+                passwords={},
+            )
+        else:
+            context.CLIARGS = cli_options
+            pexec = PlaybookExecutor(
+                [self._playbook], inventory, variable_manager, loader, {}
+            )
 
         ansible.constants.RETRY_FILES_ENABLED = False
 
