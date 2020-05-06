@@ -72,6 +72,20 @@ Please refer to the Deployment section of this document for further details.
 
 The python module can be installed using pip: `pip install paternoster`.
 
+## COPR
+
+Paternoster is also available [as a COPR](https://copr.fedorainfracloud.org/coprs/veecue/paternoster/)
+for Fedora 30, 31, 32 as well as CentOS 8 EPEL.
+
+This is not packaged and we do not check its content.
+
+## AUR
+
+Paternoster is also available [as an AUR package](https://aur.archlinux.org/packages/paternoster/)
+for arch linux.
+
+This is not packaged and we do not check its content.
+
 ## sudo
 
 If you are planning to let users execute certain commands as root,
