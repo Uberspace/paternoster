@@ -153,15 +153,13 @@ class AnsibleRunner:
             inventory = InventoryManager(loader=loader, sources='localhost,')
             variable_manager = VariableManager(loader=loader, inventory=inventory)
 
+        variables = dict(variables)
         # force ansible to use the current python executable. Otherwise
         # it can end up choosing a python3 one (named python) or a different
         # python 2 version
-        variable_manager.set_host_variable(
-            inventory.localhost, 'ansible_python_interpreter', sys.executable
-        )
+        variables['ansible_python_interpreter'] = sys.executable
 
-        for name, value in variables:
-            variable_manager.set_host_variable(inventory.localhost, name, value)
+        variable_manager._extra_vars = variables
 
         if ANSIBLE_VERSION < LooseVersion('2.8.0'):
             cli_options = Options(
