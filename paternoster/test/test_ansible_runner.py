@@ -122,6 +122,34 @@ def test_output(task, exp_out, exp_err, exp_status, capsys, monkeypatch):
 
 
 @pytest.mark.skipif(SKIP_ANSIBLE_TESTS, reason="ansible <2.4 requires python2")
+def test_paramater_passing(capsys, monkeypatch):
+    import os
+    from ..runners.ansiblerunner import AnsibleRunner
+
+    playbook_path = '/tmp/paternoster-test-playbook.yml'
+    playbook = """
+    - hosts: all
+      gather_facts: no
+      tasks:
+        - debug: var=param_foo
+        - set_fact:
+            param_foo: new value
+        - debug: var=param_foo
+    """
+
+    with open(playbook_path, 'w') as f:
+        f.write(playbook)
+
+    monkeypatch.setattr(os, 'chdir', lambda *args, **kwargs: None)
+    AnsibleRunner(playbook_path).run([('param_foo', 'param_foo value')], False)
+
+    out, err = capsys.readouterr()
+
+    assert 'param_foo value' in out
+    assert 'new value' in out
+
+
+@pytest.mark.skipif(SKIP_ANSIBLE_TESTS, reason="ansible <2.4 requires python2")
 def test_msg_handling_hide_warnings(capsys, monkeypatch):
     """Don't display warning on missing `msg` key in `results`."""
     import os
