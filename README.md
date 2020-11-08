@@ -9,6 +9,9 @@ provides an automated way to run commands as another user, which can be used to
 give normal shell users special privileges, while still having a sleek and easy
 to understand user interface.
 
+Ansible 2.1.x to 2.10.x as well as python 2.7 to 3.8 is supported and tested
+automatically. We recommend using ansible 2.8+ and python 3.6+.
+
 Once everything is set up, a paternoster script can be used like this:
 
 ```
