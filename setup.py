@@ -37,6 +37,7 @@ setup(name='paternoster',
           'ansible27': ['ansible==2.7.*'],
           'ansible28': ['ansible==2.8.*'],
           'ansible29': ['ansible==2.9.*'],
+          'ansible210': ['ansible==2.10.*'],
       },
       classifiers=[
           'Development Status :: 5 - Production/Stable',
