@@ -78,7 +78,7 @@ The python module can be installed using pip: `pip install paternoster`.
 ## COPR
 
 Paternoster is also available [as a COPR](https://copr.fedorainfracloud.org/coprs/veecue/paternoster/)
-for Fedora 30, 31, 32 as well as CentOS 8 EPEL.
+for Fedora as well as CentOS EPEL.
 
 This is not packaged by us, and we do not check its content.
 
