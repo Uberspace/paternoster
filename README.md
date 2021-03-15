@@ -181,7 +181,7 @@ versions you want to test.
 
 ### Integration Tests
 
-Some features (like the `become_root` function) require a correctly setup Linux
+Some features (like the `become_user` function) require a correctly setup Linux
 environment. They can be tested using the provided ansible playbooks in
 `vagrant/tests`.
 
