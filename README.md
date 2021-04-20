@@ -85,6 +85,15 @@ dnf install paternoster
 
 This is not packaged by us, and we do not check its content.
 
+## RHEL/CentOS
+
+Paternoster is also available in [EPEL](https://fedoraproject.org/wiki/EPEL) for RHEL7, RHEL8, CentOS7 and CentOS8.
+
+```
+yum install epel-release
+yum install paternoster
+```
+
 ## AUR
 
 Paternoster is also available [as an AUR package](https://aur.archlinux.org/packages/paternoster/)
