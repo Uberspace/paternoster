@@ -75,6 +75,9 @@ Please refer to the Deployment section of this document for further details.
 
 The python module can be installed using pip: `pip install paternoster`.
 
+Note that this is the only distribution packaged by us. We do not and cannot
+check the content of all other, following methods.
+
 ## Fedora
 
 Paternoster is also available [as a Fedora package](https://src.fedoraproject.org/rpms/paternoster).
@@ -82,8 +85,6 @@ Paternoster is also available [as a Fedora package](https://src.fedoraproject.or
 ```
 dnf install paternoster
 ```
-
-This is not packaged by us, and we do not check its content.
 
 ## RHEL/CentOS
 
@@ -98,8 +99,6 @@ yum install paternoster
 
 Paternoster is also available [as an AUR package](https://aur.archlinux.org/packages/paternoster/)
 for arch linux.
-
-This is not packaged by us, and we do not check its content.
 
 ## sudo
 
